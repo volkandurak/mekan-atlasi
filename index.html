@@ -215,15 +215,16 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
 
 /* Popup */
 .popup{
-  position:absolute;bottom:0;left:0;right:0;z-index:50;
+  position:fixed;bottom:0;left:0;right:0;z-index:500;
   background:rgba(15,15,35,.98);
   backdrop-filter:blur(16px);
   border-radius:22px 22px 0 0;
   transform:translateY(100%);
-  transition:transform .25s cubic-bezier(.34,1.2,.64,1);
+  transition:transform .28s cubic-bezier(.34,1.2,.64,1);
   border-top:1px solid rgba(255,255,255,.08);
-  max-height:88vh;
+  max-height:82vh;
   overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .popup.visible{transform:none}
 .pop-handle{width:36px;height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 0;padding-top:14px}
@@ -2578,10 +2579,31 @@ function showStreetView(lat, lng){
   const frame = document.getElementById('popSvFrame');
   const overlay = document.getElementById('popSvOverlay');
   sv.style.display = 'block';
-  const url = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&location=${lat},${lng}&fov=90&heading=0&pitch=0`;
-  frame.src = url;
-  frame.onload = () => { frame.style.display='block'; overlay.style.display='none'; };
-  frame.onerror = () => { overlay.innerHTML = '🌐<span>Street View mevcut değil</span>'; };
+
+  // Street View Static API - iframe yerine img kullan (daha az kısıtlama)
+  const staticUrl = `https://maps.googleapis.com/maps/api/streetview?size=400x160&location=${lat},${lng}&fov=90&heading=0&pitch=0&key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0`;
+
+  // Önce static img dene
+  const img = document.createElement('img');
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:12px;display:none';
+  img.src = staticUrl;
+  img.onload = () => {
+    overlay.style.display = 'none';
+    img.style.display = 'block';
+    sv.appendChild(img);
+  };
+  img.onerror = () => {
+    // Static API yoksa embed iframe dene
+    frame.src = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&location=${lat},${lng}&fov=90`;
+    frame.style.display = 'block';
+    overlay.style.display = 'none';
+    frame.onerror = () => {
+      // İkisi de yoksa harita embed göster
+      frame.src = `https://www.google.com/maps/embed/v1/place?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&q=${lat},${lng}&zoom=16`;
+      frame.style.display = 'block';
+      overlay.style.display = 'none';
+    };
+  };
 }
 
 function fetchPlaceDetails(pl){
@@ -2590,31 +2612,34 @@ function fetchPlaceDetails(pl){
 
   const req = {
     query: pl.name + ' ' + pl.address + ' İstanbul',
-    fields: ['place_id','name','photos','rating','user_ratings_total',
-             'opening_hours','formatted_phone_number','website','url'],
+    fields: ['place_id'],
     locationBias: new google.maps.LatLngBounds(
-      {lat: pl.lat - 0.005, lng: pl.lng - 0.005},
-      {lat: pl.lat + 0.005, lng: pl.lng + 0.005}
+      {lat: pl.lat - 0.008, lng: pl.lng - 0.008},
+      {lat: pl.lat + 0.008, lng: pl.lng + 0.008}
     )
   };
 
-  svc.findPlaceFromQuery(req, (results, status) => {
-    if(status === google.maps.places.PlacesServiceStatus.OK && results && results[0]){
-      const pid = results[0].place_id;
-      svc.getDetails({
-        placeId: pid,
-        fields: ['photos','rating','user_ratings_total','opening_hours',
-                 'formatted_phone_number','website','url','geometry']
-      }, (place, dstatus) => {
+  try {
+    svc.findPlaceFromQuery(req, (results, status) => {
+      if(status === google.maps.places.PlacesServiceStatus.OK && results && results[0]){
+        const pid = results[0].place_id;
+        svc.getDetails({
+          placeId: pid,
+          fields: ['photos','rating','user_ratings_total','opening_hours',
+                   'formatted_phone_number','website','url']
+        }, (place, dstatus) => {
+          document.getElementById('popLoading').style.display = 'none';
+          if(dstatus === google.maps.places.PlacesServiceStatus.OK && place){
+            renderPlaceDetails(place);
+          }
+        });
+      } else {
         document.getElementById('popLoading').style.display = 'none';
-        if(dstatus === google.maps.places.PlacesServiceStatus.OK && place){
-          renderPlaceDetails(place);
-        }
-      });
-    } else {
-      document.getElementById('popLoading').style.display = 'none';
-    }
-  });
+      }
+    });
+  } catch(e) {
+    document.getElementById('popLoading').style.display = 'none';
+  }
 }
 
 function renderPlaceDetails(place){
