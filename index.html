@@ -107,30 +107,38 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
   transform-origin:center;
   cursor:pointer;
   z-index:7;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;
   transform:translate(-50%,-50%) scale(1);
   transition:transform .18s cubic-bezier(.34,1.56,.64,1), opacity .18s;
 }
 .seg-btn:active .seg-inner{transform:scale(.92)}
 .seg-inner{
-  width:62px;height:62px;
+  width:64px;height:64px;
   border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;
+  display:flex;align-items:center;justify-content:center;
   box-shadow:0 3px 16px rgba(0,0,0,.35);
-  border:2px solid rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.25);
   transition:transform .12s, box-shadow .12s;
   padding:6px;
+  flex-shrink:0;
 }
-.seg-ico{width:26px;height:26px;flex-shrink:0}
-.seg-ico svg{width:100%;height:100%}
+.seg-inner-txt{
+  font-size:8.5px;font-weight:900;color:#fff;
+  text-align:center;line-height:1.3;
+  text-shadow:0 1px 4px rgba(0,0,0,.4);
+  word-break:keep-all;
+  white-space:normal;
+}
 .seg-lbl{
-  font-size:8px;font-weight:800;color:#fff;
-  text-align:center;line-height:1.2;
-  text-shadow:0 1px 4px rgba(0,0,0,.5);
-  width:72px;
-  margin-top:2px;
+  position:absolute;
+  font-size:9.5px;font-weight:800;color:#fff;
+  text-align:center;line-height:1.3;
+  text-shadow:0 1px 8px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,.9);
+  width:80px;
+  pointer-events:none;
+  white-space:normal;
+  word-break:keep-all;
 }
 
 /* Sub mode — alt kategoriler */
@@ -284,7 +292,10 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
   <!-- Üst başlık -->
   <div class="home-header">
     <div class="header-title">MEKAN <span>ATLASI</span></div>
-    <div class="header-profile" onclick="goTab('profile', document.getElementById('tab-prof'))">👤</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div id="mapToggleBtn" onclick="toggleMapTheme()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#fff;user-select:none" title="Harita temasını değiştir">🌙</div>
+      <div class="header-profile" onclick="goTab('profile', document.getElementById('tab-prof'))">👤</div>
+    </div>
   </div>
 
   <!-- Wheel -->
@@ -410,50 +421,124 @@ const ICONS = {
 
 /* ════════════════ DATA ════════════════ */
 const CATS = [
-  {id:"okuma",   n:"Okuma &\nAraştırma",     c:"#E53935",
+  {id:"okuma",   n:"Okuma\nAraştırma",      c:"#E53935",
    subs:["Kütüphaneler","Araştırma merkezleri","Arşiv merkezleri","Sessiz çalışma kafeleri","Sahaflar","Kitap evleri","Bağımsız yayınevi mekânları","Fanzin dükkânları","Akademik çalışma salonları"]},
-  {id:"calisma", n:"Sessiz &\nÜretken",       c:"#1565C0",
+  {id:"calisma", n:"Sessiz\nÜretken",        c:"#1565C0",
    subs:["Paylaşımlı ofisler","Freelancer kafeler","Tasarım stüdyoları","Mimarlık ofisleri","Yazı evleri","Podcast stüdyoları","Sessiz avlular","Teras çalışma alanları","Kütüphane kabinleri"]},
-  {id:"kultur",  n:"Kültür &\nSanat",          c:"#F9A825",
+  {id:"kultur",  n:"Kültür\nSanat",           c:"#F9A825",
    subs:["Kültür merkezleri","Sanat galerileri","Bağımsız sanat alanları","Atölyeler","Fotoğraf stüdyoları","Küçük tiyatro salonları","Performans alanları","Müzeler"]},
-  {id:"muzik",   n:"Müzik &\nPerformans",      c:"#1976D2",
+  {id:"muzik",   n:"Müzik\nPerformans",       c:"#1976D2",
    subs:["Canlı müzik mekânları","Caz kulüpleri","Plakçılar","Enstrüman atölyeleri","Konservatuvar salonları","Açık hava performans alanları"]},
-  {id:"dusunce", n:"Düşünce &\nFikir",         c:"#7B1FA2",
+  {id:"dusunce", n:"Düşünce\nFikir",          c:"#7B1FA2",
    subs:["Felsefe kafeleri","Tartışma kulüpleri","Sivil toplum merkezleri","Enstitüler","Seminer salonları","Meetup mekânları","Girişimcilik merkezleri"]},
-  {id:"sessiz",  n:"Meditatif &\nSessiz",       c:"#2E7D32",
+  {id:"sessiz",  n:"Meditatif\nSessiz",        c:"#2E7D32",
    subs:["Tarihi avlular","Camilerin iç avluları","Sessiz park köşeleri","Bahçeler","Manastır yapıları","Meditasyon merkezleri"]},
-  {id:"tasarim", n:"Tasarım &\nÜretim",         c:"#E65100",
+  {id:"tasarim", n:"Tasarım\nÜretim",          c:"#E65100",
    subs:["Maker space'ler","3D baskı atölyeleri","Ahşap atölyeleri","Tasarım kolektifleri","Zanaat çarşıları","Moda tasarım atölyeleri"]},
-  {id:"sinema",  n:"Sinema &\nGörsel",          c:"#546E7A",
+  {id:"sinema",  n:"Sinema\nGörsel Kültür",    c:"#546E7A",
    subs:["Bağımsız sinemalar","Açık hava sinemaları","Film festivali mekânları","Sinema müzeleri"]},
-  {id:"tarih",   n:"Tarih &\nHafıza",           c:"#6D4C41",
+  {id:"tarih",   n:"Tarih\nMekânsal Hafıza",   c:"#6D4C41",
    subs:["Hanlar","Tarihi pasajlar","Restorasyonlu yapılar","Endüstriyel miras","Tarihi kütüphaneler","Arkeolojik alanlar"]},
   {id:"acik",    n:"İlham Veren\nAçık Mekanlar",c:"#0277BD",
    subs:["Boğaz sahil şeritleri","Adalar","Tepeler","Seyir terasları","Tarihi sur dipleri"]},
-  {id:"sosyal",  n:"Sosyal &\nYaratıcı",        c:"#C62828",
+  {id:"sosyal",  n:"Sosyal\nYaratıcı Buluşma", c:"#C62828",
    subs:["Oyun kafeler","Satranç kulüpleri","Kitap kulübü mekânları","Şiir gecesi mekânları"]},
-  {id:"manzara", n:"Manzara\nNoktaları",         c:"#00838F",
+  {id:"manzara", n:"Manzara\nNoktaları",        c:"#00838F",
    subs:["Boğaz seyir terasları","Tepeler","Ada manzaraları","Tarihi surlar","Gün batımı noktaları"]},
 ];
 
 const TAGS = ["Ücretsiz","Wi-Fi","Sessiz","Doğal ışık","Kahve","Çay","Rezervasyon","Çocuk dostu","24 saat","Tarihî yapı","Boğaz manzarası"];
 
 let PLACES = [
-  {id:1,name:"Beyazıt Devlet Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Beyazıt, İstanbul",lat:41.0106,lng:28.9650,desc:"İstanbul'un en köklü kütüphanelerinden biri.",tags:["Ücretsiz","Sessiz","Tarihî yapı"]},
-  {id:2,name:"Karaköy Sahaflar",cat:"okuma",sub:"Sahaflar",address:"Karaköy, Beyoğlu",lat:41.0219,lng:28.9745,desc:"İkinci el kitap ve fanzin cenneti.",tags:["Ücretsiz"]},
-  {id:3,name:"Depo İstanbul",cat:"kultur",sub:"Performans alanları",address:"Tophane, İstanbul",lat:41.0250,lng:28.9790,desc:"Eski tütün deposundan dönüştürülen kültür merkezi.",tags:["Tarihî yapı"]},
-  {id:4,name:"Arsen Lupe Kafe",cat:"calisma",sub:"Freelancer kafeler",address:"Cihangir, Beyoğlu",lat:41.0305,lng:28.9810,desc:"Derin koltuklarıyla ideal çalışma kafesi.",tags:["Wi-Fi","Kahve","Sessiz"]},
-  {id:5,name:"İstanbul Modern",cat:"kultur",sub:"Müzeler",address:"Karaköy, İstanbul",lat:41.0233,lng:28.9810,desc:"Çağdaş Türk ve uluslararası sanat eserleri.",tags:["Boğaz manzarası"]},
-  {id:6,name:"Nardis Jazz Club",cat:"muzik",sub:"Caz kulüpleri",address:"Kuledibi, Beyoğlu",lat:41.0275,lng:28.9746,desc:"İstanbul'un en sevilen jazz mekanlarından.",tags:[]},
-  {id:7,name:"Santral Kampüs Kütüphanesi",cat:"calisma",sub:"Kütüphane kabinleri",address:"Eyüp, İstanbul",lat:41.0600,lng:28.9295,desc:"Tarihi santralden dönüştürülmüş kampüs.",tags:["Tarihî yapı","Sessiz","Wi-Fi"]},
-  {id:8,name:"Pierre Loti Tepesi",cat:"acik",sub:"Tepeler",address:"Eyüp, İstanbul",lat:41.0572,lng:28.9282,desc:"Haliç manzaralı eşsiz seyir terası.",tags:["Ücretsiz","Boğaz manzarası"]},
-  {id:9,name:"Sahne Beyoğlu",cat:"kultur",sub:"Küçük tiyatro salonları",address:"Taksim, Beyoğlu",lat:41.0390,lng:28.9880,desc:"Bağımsız yapımların sahnesi.",tags:["Rezervasyon"]},
-  {id:10,name:"Mısır Çarşısı",cat:"tarih",sub:"Hanlar",address:"Eminönü, İstanbul",lat:41.0163,lng:28.9720,desc:"17. yüzyıldan kalma han yapısı.",tags:["Ücretsiz","Tarihî yapı"]},
-  {id:11,name:"Çukurcuma Antika Çarşısı",cat:"tarih",sub:"Tarihi pasajlar",address:"Cihangir, Beyoğlu",lat:41.0300,lng:28.9780,desc:"Zamanın durduğu antika dükkânları.",tags:["Ücretsiz"]},
-  {id:12,name:"Ada Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Büyükada, Adalar",lat:40.8757,lng:29.1264,desc:"Büyükada'nın nostaljik kitaplığı.",tags:["Sessiz","Ücretsiz","Doğal ışık"]},
+  /* ── OKUMA & ARAŞTIRMA ── */
+  {id:1, name:"Beyazıt Devlet Kütüphanesi", cat:"okuma", sub:"Kütüphaneler", address:"Beyazıt, Fatih, İstanbul", lat:41.0111, lng:28.9655, desc:"1884'te açılan, İstanbul'un ilk devlet kütüphanesi.", tags:["Ücretsiz","Sessiz","Tarihî yapı"]},
+  {id:2, name:"İstanbul Üniversitesi Merkez Kütüphanesi", cat:"okuma", sub:"Kütüphaneler", address:"Ordu Cd., Fatih, İstanbul", lat:41.0098, lng:28.9621, desc:"Kampüs kütüphanesi, geniş okuma salonları.", tags:["Sessiz","Wi-Fi"]},
+  {id:3, name:"İBB Atatürk Kitaplığı", cat:"okuma", sub:"Kütüphaneler", address:"Taksim, Beyoğlu, İstanbul", lat:41.0391, lng:28.9896, desc:"Boğaz manzaralı geniş okuma salonları ve şehrin en büyük halk kütüphanesi.", tags:["Ücretsiz","Wi-Fi","Sessiz","Boğaz manzarası"]},
+  {id:4, name:"Millet Yazma Eser Kütüphanesi", cat:"okuma", sub:"Araştırma merkezleri", address:"Fatih, İstanbul", lat:41.0170, lng:28.9498, desc:"Osmanlı dönemi el yazma eserleri koleksiyonu.", tags:["Ücretsiz","Tarihî yapı","Sessiz"]},
+  {id:5, name:"Sahaflar Çarşısı", cat:"okuma", sub:"Sahaflar", address:"Beyazıt, Fatih, İstanbul", lat:41.0102, lng:28.9661, desc:"İstanbul'un tarihi ikinci el ve nadir kitap pazarı.", tags:["Ücretsiz","Tarihî yapı"]},
+  {id:6, name:"Homer Kitabevi", cat:"okuma", sub:"Kitap evleri", address:"Yeni Çarşı Cd., Beyoğlu, İstanbul", lat:41.0319, lng:28.9783, desc:"Türkçe ve yabancı dil kitapların üç katlı bağımsız kitabevi.", tags:["Kahve"]},
+  {id:7, name:"Robinson Crusoe 389", cat:"okuma", sub:"Kitap evleri", address:"İstiklal Cd., Beyoğlu, İstanbul", lat:41.0321, lng:28.9761, desc:"SALT Beyoğlu içinde, geniş yabancı dil koleksiyonu.", tags:["Kahve"]},
+  {id:8, name:"Pandora Kitabevi", cat:"okuma", sub:"Kitap evleri", address:"Vali Konağı Cd., Şişli, İstanbul", lat:41.0494, lng:28.9880, desc:"Şişli'nin köklü bağımsız kitabevi, İngilizce kitap çeşitliliği.", tags:[]},
+  {id:9, name:"SALT Galata Kütüphanesi", cat:"okuma", sub:"Araştırma merkezleri", address:"Bankalar Cd., Karaköy, İstanbul", lat:41.0239, lng:28.9735, desc:"Osmanlı bankasından dönüştürülen kamusal araştırma kütüphanesi.", tags:["Ücretsiz","Wi-Fi","Tarihî yapı"]},
+
+  /* ── ÇALIŞMA & ÜRETKENLİK ── */
+  {id:10, name:"Kolektif House Levent", cat:"calisma", sub:"Paylaşımlı ofisler", address:"Talat Paşa Cd., Levent, İstanbul", lat:41.0798, lng:29.0086, desc:"24 saat açık, modern coworking alanı.", tags:["Wi-Fi","Kahve","24 saat"]},
+  {id:11, name:"Books & Coffee Karaköy", cat:"calisma", sub:"Freelancer kafeler", address:"Arap Cami Sk., Karaköy, İstanbul", lat:41.0229, lng:28.9742, desc:"Kitaplı şık kafe, çalışmak için ideal sessiz ortam.", tags:["Wi-Fi","Kahve","Sessiz"]},
+  {id:12, name:"Arsen Lupen Taksim", cat:"calisma", sub:"Freelancer kafeler", address:"Mis Sk., Beyoğlu, İstanbul", lat:41.0361, lng:28.9816, desc:"Şiir gecelerinin ev sahibi alternatif kafe-bar.", tags:["Kahve"]},
+  {id:13, name:"Santral İstanbul Kampüsü", cat:"calisma", sub:"Kütüphane kabinleri", address:"Eyüpsultan, İstanbul", lat:41.0678, lng:28.9467, desc:"Tarihi Bomonti bira fabrikasından dönüştürülen üniversite kampüsü.", tags:["Wi-Fi","Tarihî yapı","Sessiz"]},
+  {id:14, name:"İBB Atatürk Kitaplığı Çalışma Salonu", cat:"calisma", sub:"Sessiz avlular", address:"Taksim, Beyoğlu, İstanbul", lat:41.0391, lng:28.9896, desc:"Sakin ve verimli, Boğaz manzaralı çalışma salonları.", tags:["Ücretsiz","Wi-Fi","Sessiz","Boğaz manzarası"]},
+
+  /* ── KÜLTÜR & SANAT ── */
+  {id:15, name:"İstanbul Modern", cat:"kultur", sub:"Müzeler", address:"Tophane İskele Cd., Beyoğlu, İstanbul", lat:41.0259, lng:28.9828, desc:"Türkiye'nin ilk modern sanat müzesi, Galataport'ta.", tags:["Boğaz manzarası","Rezervasyon"]},
+  {id:16, name:"Pera Müzesi", cat:"kultur", sub:"Müzeler", address:"Meşrutiyet Cd., Beyoğlu, İstanbul", lat:41.0319, lng:28.9751, desc:"Oryantalist ve Osmanlı dönemi sanat eserleri.", tags:["Rezervasyon"]},
+  {id:17, name:"SALT Galata", cat:"kultur", sub:"Sanat galerileri", address:"Bankalar Cd., Karaköy, İstanbul", lat:41.0239, lng:28.9735, desc:"Osmanlı bankasından dönüştürülen sanat ve araştırma merkezi.", tags:["Ücretsiz","Tarihî yapı","Wi-Fi"]},
+  {id:18, name:"Depo İstanbul", cat:"kultur", sub:"Performans alanları", address:"Lüleci Hendek Cd., Tophane, İstanbul", lat:41.0269, lng:28.9783, desc:"Tütün deposundan dönüştürülen bağımsız kültür platformu.", tags:["Tarihî yapı"]},
+  {id:19, name:"Asmalı Sahne", cat:"kultur", sub:"Küçük tiyatro salonları", address:"Asmalı Mescit, Beyoğlu, İstanbul", lat:41.0294, lng:28.9734, desc:"Bağımsız oyunların sergilendiği küçük sahne.", tags:["Rezervasyon"]},
+  {id:20, name:"AKM Yeşilçam Sineması", cat:"kultur", sub:"Performans alanları", address:"Taksim, Beyoğlu, İstanbul", lat:41.0367, lng:28.9877, desc:"Atatürk Kültür Merkezi bünyesinde sanat ve festival filmleri.", tags:["Rezervasyon"]},
+
+  /* ── MÜZİK & PERFORMANS ── */
+  {id:21, name:"Nardis Jazz Club", cat:"muzik", sub:"Caz kulüpleri", address:"Galata Kulesi Sk., Beyoğlu, İstanbul", lat:41.0253, lng:28.9739, desc:"Galata'da canlı caz müziğinin kalbi.", tags:["Rezervasyon"]},
+  {id:22, name:"Salon İKSV", cat:"muzik", sub:"Canlı müzik mekânları", address:"Sadi Konuralp Cd., Beyoğlu, İstanbul", lat:41.0284, lng:28.9719, desc:"İstanbul Kültür Sanat Vakfı'nın butik konser salonu.", tags:["Rezervasyon"]},
+  {id:23, name:"IF Performance Hall Beşiktaş", cat:"muzik", sub:"Canlı müzik mekânları", address:"Hasfırın Cd., Beşiktaş, İstanbul", lat:41.0441, lng:29.0065, desc:"Alternatif ve rock konserlerinin önemli durağı.", tags:["Rezervasyon"]},
+  {id:24, name:"Babylon Bomontiada", cat:"muzik", sub:"Canlı müzik mekânları", address:"Tarihi Bomonti Bira Fabrikası, Şişli, İstanbul", lat:41.0583, lng:28.9798, desc:"Tarihi bira fabrikasında dünya müziği festivalleri.", tags:["Tarihî yapı","Rezervasyon"]},
+
+  /* ── DÜŞÜNCE & FİKİR ── */
+  {id:25, name:"TEDxİstanbul Ofisi", cat:"dusunce", sub:"Meetup mekânları", address:"Teşvikiye, Şişli, İstanbul", lat:41.0482, lng:28.9963, desc:"Fikir ve konuşma etkinliklerinin merkezi.", tags:[]},
+  {id:26, name:"SALT Galata Seminer Salonu", cat:"dusunce", sub:"Seminer salonları", address:"Bankalar Cd., Karaköy, İstanbul", lat:41.0239, lng:28.9735, desc:"Kamusal araştırma ve tartışma etkinlikleri.", tags:["Ücretsiz","Tarihî yapı"]},
+  {id:27, name:"İstanbul Bilgi Üniversitesi Santral", cat:"dusunce", sub:"Girişimcilik merkezleri", address:"Kazım Karabekir Cd., Eyüpsultan, İstanbul", lat:41.0678, lng:28.9467, desc:"Enerji santrali, müze ve yenilikçi kampüs.", tags:["Tarihî yapı","Wi-Fi"]},
+  {id:28, name:"Pera Müzesi Seminer Odası", cat:"dusunce", sub:"Seminer salonları", address:"Meşrutiyet Cd., Beyoğlu, İstanbul", lat:41.0319, lng:28.9751, desc:"Sanat ve kültür seminerlerine ev sahipliği.", tags:["Rezervasyon"]},
+
+  /* ── MEDİTATİF & SESSİZ ── */
+  {id:29, name:"Gülhane Parkı", cat:"sessiz", sub:"Bahçeler", address:"Cankurtaran, Fatih, İstanbul", lat:41.0133, lng:28.9815, desc:"Topkapı Sarayı'nın eski bahçesi, şehrin en huzurlu parkı.", tags:["Ücretsiz","Doğal ışık"]},
+  {id:30, name:"Ayasofya Avlusu", cat:"sessiz", sub:"Camilerin iç avluları", address:"Sultan Ahmet, Fatih, İstanbul", lat:41.0086, lng:28.9802, desc:"Tarihin ağırlığını hissettiren büyük avlu.", tags:["Ücretsiz","Tarihî yapı"]},
+  {id:31, name:"Mihrimah Sultan Camii Avlusu", cat:"sessiz", sub:"Camilerin iç avluları", address:"Edirnekapı, Fatih, İstanbul", lat:41.0292, lng:28.9358, desc:"Mimar Sinan'ın şeffaf ışık oyunlarıyla ünlü camisi.", tags:["Ücretsiz","Tarihî yapı","Sessiz"]},
+  {id:32, name:"Rum Patrikhanesi Avlusu", cat:"sessiz", sub:"Tarihi avlular", address:"Fener, Fatih, İstanbul", lat:41.0292, lng:28.9517, desc:"Ekümenik Patrikane'nin sakin taş avlusu.", tags:["Ücretsiz","Tarihî yapı","Sessiz"]},
+  {id:33, name:"Boğaziçi Üniversitesi Bahçesi", cat:"sessiz", sub:"Sessiz park köşeleri", address:"Bebek, Beşiktaş, İstanbul", lat:41.0844, lng:29.0468, desc:"Boğaz manzaralı eşsiz kampüs bahçesi.", tags:["Ücretsiz","Doğal ışık","Boğaz manzarası"]},
+
+  /* ── TASARIM & ÜRETİM ── */
+  {id:34, name:"MNO Sadekar Tasarım Atölyesi", cat:"tasarim", sub:"Zanaat çarşıları", address:"Ömer Avni, Beyoğlu, İstanbul", lat:41.0354, lng:28.9929, desc:"Gümüş takı tasarımı ustalık atölyesi.", tags:["Rezervasyon"]},
+  {id:35, name:"Atelier La Reine", cat:"tasarim", sub:"Moda tasarım atölyeleri", address:"Emin Ali Paşa Cd., Kadıköy, İstanbul", lat:40.9605, lng:29.0901, desc:"Zanaat ve koku atölyelerinin buluştuğu yaratıcı mekan.", tags:["Rezervasyon"]},
+  {id:36, name:"Çukurcuma Antika Çarşısı", cat:"tasarim", sub:"Zanaat çarşıları", address:"Çukur Cuma Cd., Beyoğlu, İstanbul", lat:41.0310, lng:28.9797, desc:"Antika, tasarım objesi ve zanaat ürünlerinin kalbi.", tags:["Ücretsiz"]},
+  {id:37, name:"Kapalıçarşı El Sanatları Atölyeleri", cat:"tasarim", sub:"Zanaat çarşıları", address:"Kapalıçarşı, Fatih, İstanbul", lat:41.0106, lng:28.9681, desc:"Geleneksel deri, altın ve halı işçiliği atölyeleri.", tags:["Ücretsiz","Tarihî yapı"]},
+
+  /* ── SİNEMA & GÖRSEL KÜLTÜR ── */
+  {id:38, name:"Rexx Sineması", cat:"sinema", sub:"Bağımsız sinemalar", address:"Sakız Gülü Sk., Kadıköy, İstanbul", lat:40.9874, lng:29.0271, desc:"Kadıköy'ün efsane retro sinema salonu.", tags:["Rezervasyon"]},
+  {id:39, name:"AKM Yeşilçam Sineması", cat:"sinema", sub:"Bağımsız sinemalar", address:"Taksim, Beyoğlu, İstanbul", lat:41.0367, lng:28.9877, desc:"Atatürk Kültür Merkezi'nde sanat filmleri.", tags:["Rezervasyon"]},
+  {id:40, name:"Pera Müzesi Sinema Salonu", cat:"sinema", sub:"Film festivali mekânları", address:"Meşrutiyet Cd., Beyoğlu, İstanbul", lat:41.0319, lng:28.9751, desc:"İstanbul Film Festivali'nin gözde mekânı.", tags:["Rezervasyon"]},
+  {id:41, name:"İstanbul Modern Sinema", cat:"sinema", sub:"Film festivali mekânları", address:"Tophane, Beyoğlu, İstanbul", lat:41.0259, lng:28.9828, desc:"Çağdaş sinema ve belgesel gösterimleri.", tags:["Rezervasyon","Boğaz manzarası"]},
+
+  /* ── TARİH & MEKÂNSAL HAFIZA ── */
+  {id:42, name:"Mısır Çarşısı", cat:"tarih", sub:"Hanlar", address:"Rüstem Paşa, Fatih, İstanbul", lat:41.0165, lng:28.9705, desc:"17. yüzyıldan kalma baharatçı hanı.", tags:["Ücretsiz","Tarihî yapı"]},
+  {id:43, name:"Topkapı Sarayı", cat:"tarih", sub:"Restorasyonlu yapılar", address:"Cankurtaran, Fatih, İstanbul", lat:41.0115, lng:28.9834, desc:"Osmanlı İmparatorluğu'nun 400 yıllık idare merkezi.", tags:["Tarihî yapı","Boğaz manzarası"]},
+  {id:44, name:"Rumeli Hisarı", cat:"tarih", sub:"Restorasyonlu yapılar", address:"Sarıyer, İstanbul", lat:41.0848, lng:29.0567, desc:"Fatih Sultan Mehmed'in Boğaz'daki görkemli kalesi.", tags:["Tarihî yapı","Boğaz manzarası"]},
+  {id:45, name:"Balat Semti", cat:"tarih", sub:"Tarihi pasajlar", address:"Balat, Fatih, İstanbul", lat:41.0292, lng:28.9493, desc:"Osmanlı, Rum, Yahudi ve Ermeni izlerini taşıyan tarihi mahalle.", tags:["Ücretsiz","Tarihî yapı","Doğal ışık"]},
+  {id:46, name:"Millet Yazma Eser Kütüphanesi", cat:"tarih", sub:"Tarihi kütüphaneler", address:"Fatih, İstanbul", lat:41.0170, lng:28.9498, desc:"1700 yılında kurulan el yazması eserler kütüphanesi.", tags:["Ücretsiz","Tarihî yapı","Sessiz"]},
+  {id:47, name:"Fener Rum Patrikhanesi", cat:"tarih", sub:"Restorasyonlu yapılar", address:"Fener, Fatih, İstanbul", lat:41.0292, lng:28.9517, desc:"Ekümenik Ortodoks Patrikhanesi'nin tarihi binası.", tags:["Ücretsiz","Tarihî yapı"]},
+
+  /* ── İLHAM VEREN AÇIK MEKANLAR ── */
+  {id:48, name:"Pierre Loti Tepesi", cat:"acik", sub:"Tepeler", address:"Eyüpsultan, İstanbul", lat:41.0543, lng:28.9334, desc:"Haliç manzaralı teleferikle çıkılan seyir tepesi.", tags:["Ücretsiz","Boğaz manzarası","Doğal ışık"]},
+  {id:49, name:"Çamlıca Tepesi Seyir Terası", cat:"acik", sub:"Seyir terasları", address:"Üsküdar, İstanbul", lat:41.0275, lng:29.0684, desc:"İstanbul'un 360° panoramik manzara noktası.", tags:["Ücretsiz","Boğaz manzarası"]},
+  {id:50, name:"Büyükada", cat:"acik", sub:"Adalar", address:"Adalar, İstanbul", lat:40.8560, lng:29.1187, desc:"Motorlu araç yok, yalnızca bisiklet ve fayton — şehirden kaçış.", tags:["Ücretsiz","Doğal ışık","Boğaz manzarası"]},
+  {id:51, name:"Bebek Sahili", cat:"acik", sub:"Boğaz sahil şeritleri", address:"Bebek, Beşiktaş, İstanbul", lat:41.0777, lng:29.0440, desc:"Boğaz kıyısında nefes alan sabah yürüyüş rotası.", tags:["Ücretsiz","Boğaz manzarası","Doğal ışık"]},
+  {id:52, name:"Yenikapı Sahili", cat:"acik", sub:"Boğaz sahil şeritleri", address:"Fatih, İstanbul", lat:40.9987, lng:28.9407, desc:"Marmara kıyısında geniş yürüyüş ve bisiklet parkuru.", tags:["Ücretsiz","Doğal ışık"]},
+  {id:53, name:"Gülhane Parkı", cat:"acik", sub:"Tarihi sur dipleri", address:"Cankurtaran, Fatih, İstanbul", lat:41.0133, lng:28.9815, desc:"Topkapı surları dibinde sakin ve gölgeli park.", tags:["Ücretsiz","Tarihî yapı","Doğal ışık"]},
+
+  /* ── SOSYAL & YARATICI BULUŞMA ── */
+  {id:54, name:"Arsen Lupen Şiir Gecesi", cat:"sosyal", sub:"Şiir gecesi mekânları", address:"Mis Sk., Beyoğlu, İstanbul", lat:41.0361, lng:28.9816, desc:"Her Salı İngilizce spoken word etkinlikleri.", tags:["Kahve"]},
+  {id:55, name:"Asmalı Sahne", cat:"sosyal", sub:"Kitap kulübü mekânları", address:"Asmalı Mescit, Beyoğlu, İstanbul", lat:41.0294, lng:28.9734, desc:"Bağımsız tiyatro ve edebiyat buluşmaları.", tags:["Rezervasyon"]},
+  {id:56, name:"Depo İstanbul", cat:"sosyal", sub:"Kitap kulübü mekânları", address:"Tophane, Beyoğlu, İstanbul", lat:41.0269, lng:28.9783, desc:"Sosyal meseleler üzerine tartışma ve buluşma mekânı.", tags:["Tarihî yapı"]},
+
+  /* ── MANZARA NOKTALARI ── */
+  {id:57, name:"Galata Kulesi", cat:"manzara", sub:"Tepeler", address:"Bereketzade, Beyoğlu, İstanbul", lat:41.0256, lng:28.9741, desc:"İstanbul siluetinin simgesi, 360° şehir manzarası.", tags:["Tarihî yapı","Boğaz manzarası"]},
+  {id:58, name:"Pierre Loti Seyir Noktası", cat:"manzara", sub:"Boğaz seyir terasları", address:"Eyüpsultan, İstanbul", lat:41.0543, lng:28.9334, desc:"Haliç ve tarihi yarımada manzarası.", tags:["Ücretsiz","Boğaz manzarası"]},
+  {id:59, name:"Çamlıca Tepesi", cat:"manzara", sub:"Tepeler", address:"Üsküdar, İstanbul", lat:41.0275, lng:29.0684, desc:"İstanbul Boğazı'nın en geniş seyir noktası.", tags:["Ücretsiz","Boğaz manzarası"]},
+  {id:60, name:"Rumeli Hisarı Surları", cat:"manzara", sub:"Boğaz seyir terasları", address:"Sarıyer, İstanbul", lat:41.0848, lng:29.0567, desc:"Boğaz'ın en dar noktasında tarihi kale manzarası.", tags:["Tarihî yapı","Boğaz manzarası"]},
+  {id:61, name:"Büyükada Tepesi", cat:"manzara", sub:"Ada manzaraları", address:"Büyükada, Adalar, İstanbul", lat:40.8700, lng:29.1200, desc:"Adaların en güzel panoramik noktası.", tags:["Ücretsiz","Doğal ışık","Boğaz manzarası"]},
+  {id:62, name:"Bebek Boğaz Kıyısı", cat:"manzara", sub:"Boğaz seyir terasları", address:"Bebek, Beşiktaş, İstanbul", lat:41.0777, lng:29.0440, desc:"Boğaz yalıları ve köprü manzarasıyla eşsiz kıyı şeridi.", tags:["Ücretsiz","Boğaz manzarası"]},
+  {id:63, name:"Arnavutköy İskelesi", cat:"manzara", sub:"Boğaz seyir terasları", address:"Beşiktaş, İstanbul", lat:41.0668, lng:29.0434, desc:"Tarihi yalılar ve Boğaz manzarasıyla ünlü iskele.", tags:["Ücretsiz","Boğaz manzarası"]},
 ];
 
-let nid=13, map, bgMap, markers=[], mapReady=false, bgMapReady=false;
+let nid=64, map, bgMap, markers=[], mapReady=false, bgMapReady=false;
 let activeFilter=null, isMod=false, selTags=[];
 const PW='mekanatlasi2025';
 function gc(id){return CATS.find(c=>c.id===id)}
@@ -511,11 +596,41 @@ function buildSegments(){
   const cx = wrap.offsetWidth/2;
   const cy = wrap.offsetHeight/2;
   const n  = CATS.length;
+  const CIRC_R = 30;     // daire yarıçapı
+  const LBL_GAP = 6;     // daire kenarı ile etiket arası boşluk
+  const LBL_DIST = CIRC_R + LBL_GAP; // daire merkezinden etiket kenarına
 
   CATS.forEach((cat,i)=>{
     const angle = -Math.PI/2 + (2*Math.PI*i)/n;
     const sx = cx + SEG_RADIUS*Math.cos(angle);
     const sy = cy + SEG_RADIUS*Math.sin(angle);
+
+    // Yatay konuma göre text-align ve pozisyon
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const isRight  = cosA >  0.3;
+    const isLeft   = cosA < -0.3;
+    const lblAlign = isRight ? 'left' : (isLeft ? 'right' : 'center');
+
+    // Etiket: dairenin dış kenarından başlıyor
+    // transform:translate(-50%,-50%) ile btn merkezi sx,sy
+    // etiket sol kenarı/sağ kenarı daireden LBL_DIST uzakta
+    let lblStyle = '';
+    if(isRight){
+      // Etiket dairenin sağında
+      lblStyle = `left:${CIRC_R + LBL_GAP}px; top:50%; transform:translateY(-50%); text-align:left;`;
+    } else if(isLeft){
+      // Etiket dairenin solunda
+      lblStyle = `right:${CIRC_R + LBL_GAP}px; top:50%; transform:translateY(-50%); text-align:right;`;
+    } else if(sinA < 0){
+      // Üstte
+      lblStyle = `bottom:${CIRC_R + LBL_GAP}px; left:50%; transform:translateX(-50%); text-align:center;`;
+    } else {
+      // Altta
+      lblStyle = `top:${CIRC_R + LBL_GAP}px; left:50%; transform:translateX(-50%); text-align:center;`;
+    }
+
+    const fullName = cat.n.replace('\n','<br>');
 
     const btn = document.createElement('div');
     btn.className = 'seg-btn';
@@ -523,10 +638,9 @@ function buildSegments(){
     btn.style.left = sx+'px';
     btn.style.top  = sy+'px';
     btn.innerHTML = `
-      <div class="seg-inner" style="background:${cat.c}cc;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
-        <div class="seg-ico">${ICONS[cat.id]||''}</div>
-      </div>
-      <div class="seg-lbl">${cat.n.replace('\n',' ').split('&')[0].trim()}</div>`;
+      <div class="seg-inner" style="background:${cat.c}">
+        <div class="seg-inner-txt">${fullName}</div>
+      </div>`;
     btn.addEventListener('click', ()=>selectCat(cat));
     cont.appendChild(btn);
   });
@@ -540,7 +654,7 @@ function selectCat(cat){
   activeCat=cat;
 
   // Merkezi güncelle
-  document.getElementById('centerCityLine').textContent = cat.n.replace('\n',' ').split('&')[0].trim().toUpperCase();
+  document.getElementById('centerCityLine').textContent = cat.n.replace('\n',' ').toUpperCase();
   document.getElementById('centerTitle').textContent = cat.n.replace('\n',' ');
   document.getElementById('centerSub').textContent = cat.subs.length+' alt kategori';
 
@@ -679,7 +793,7 @@ const MAP_STYLE=[
   {elementType:"labels.text.stroke",stylers:[{color:"#1a1a2e"}]},
 ];
 
-const BG_MAP_STYLE=[
+const BG_MAP_STYLE_DARK=[
   {featureType:"water",elementType:"geometry",stylers:[{color:"#0d2137"}]},
   {featureType:"landscape",elementType:"geometry",stylers:[{color:"#111525"}]},
   {featureType:"road",elementType:"geometry",stylers:[{color:"#1a1f32"}]},
@@ -687,6 +801,76 @@ const BG_MAP_STYLE=[
   {featureType:"transit",stylers:[{visibility:"off"}]},
   {elementType:"labels",stylers:[{visibility:"off"}]},
 ];
+const BG_MAP_STYLE_LIGHT=[
+  {featureType:"water",elementType:"geometry",stylers:[{color:"#C9E8F5"}]},
+  {featureType:"landscape",elementType:"geometry",stylers:[{color:"#F5F0E8"}]},
+  {featureType:"road",elementType:"geometry",stylers:[{color:"#FFFFFF"}]},
+  {featureType:"road.highway",elementType:"geometry.fill",stylers:[{color:"#EDE8D8"}]},
+  {featureType:"poi.park",elementType:"geometry",stylers:[{color:"#D5EDDA"}]},
+  {featureType:"poi",elementType:"labels",stylers:[{visibility:"off"}]},
+  {featureType:"transit",stylers:[{visibility:"off"}]},
+  {elementType:"labels",stylers:[{visibility:"off"}]},
+];
+let mapTheme = 'dark';
+let BG_MAP_STYLE = BG_MAP_STYLE_DARK;
+
+function toggleMapTheme(){
+  mapTheme = mapTheme==='dark' ? 'light' : 'dark';
+  BG_MAP_STYLE = mapTheme==='dark' ? BG_MAP_STYLE_DARK : BG_MAP_STYLE_LIGHT;
+  const btn = document.getElementById('mapToggleBtn');
+  btn.textContent = mapTheme==='dark' ? '🌙' : '☀️';
+
+  const fog = document.querySelector('.map-fog');
+  const header = document.querySelector('.home-header');
+  const tabBar = document.querySelector('.tab-bar');
+  const wCenter = document.getElementById('wheelCenter');
+  const body = document.body;
+
+  if(mapTheme==='light'){
+    fog.style.background='radial-gradient(ellipse at center, rgba(255,255,255,.25) 0%, rgba(240,235,225,.7) 100%)';
+    header.style.background='linear-gradient(to bottom, rgba(240,235,225,.95) 0%, transparent 100%)';
+    header.querySelectorAll('*').forEach(el=>{
+      if(el.classList.contains('header-title')) el.style.color='#1a1a2e';
+      if(el.tagName==='SPAN') el.style.color='#1565C0';
+    });
+    document.querySelector('.header-title').style.color='#1a1a2e';
+    document.querySelector('.header-title span').style.color='#1565C0';
+    tabBar.style.background='rgba(245,240,232,.92)';
+    tabBar.style.borderTop='1px solid rgba(0,0,0,.1)';
+    document.querySelectorAll('.tab-item').forEach(t=>{
+      t.style.color='rgba(0,0,0,.35)';
+    });
+    document.querySelectorAll('.tab-item.active').forEach(t=>t.style.color='#1565C0');
+    wCenter.style.background='rgba(255,255,255,.82)';
+    wCenter.style.borderColor='rgba(0,0,0,.1)';
+    document.getElementById('centerCityLine').style.color='rgba(0,0,0,.4)';
+    document.getElementById('centerTitle').style.color='#1a1a2e';
+    document.getElementById('centerSub').style.color='rgba(0,0,0,.35)';
+    document.querySelectorAll('.seg-lbl').forEach(l=>{
+      l.style.color='#1a1a2e';
+      l.style.textShadow='0 1px 4px rgba(255,255,255,.9), 0 0 12px rgba(255,255,255,.8)';
+    });
+  } else {
+    fog.style.background='radial-gradient(ellipse at center, rgba(10,10,30,.35) 0%, rgba(10,10,30,.65) 100%)';
+    header.style.background='linear-gradient(to bottom, rgba(10,10,30,.8) 0%, transparent 100%)';
+    document.querySelector('.header-title').style.color='#fff';
+    document.querySelector('.header-title span').style.color='#64B5F6';
+    tabBar.style.background='rgba(15,15,35,.88)';
+    tabBar.style.borderTop='1px solid rgba(255,255,255,.08)';
+    document.querySelectorAll('.tab-item').forEach(t=>t.style.color='rgba(255,255,255,.4)');
+    document.querySelectorAll('.tab-item.active').forEach(t=>t.style.color='#64B5F6');
+    wCenter.style.background='rgba(15,15,35,.85)';
+    wCenter.style.borderColor='rgba(255,255,255,.2)';
+    document.getElementById('centerCityLine').style.color='rgba(255,255,255,.5)';
+    document.getElementById('centerTitle').style.color='#fff';
+    document.getElementById('centerSub').style.color='rgba(255,255,255,.4)';
+    document.querySelectorAll('.seg-lbl').forEach(l=>{
+      l.style.color='#fff';
+      l.style.textShadow='0 1px 8px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,.9)';
+    });
+  }
+  if(bgMap) bgMap.setOptions({styles: BG_MAP_STYLE});
+}
 
 function initMap(){
   // Ana harita
@@ -703,7 +887,7 @@ function initMap(){
   if(!bgMapReady){
     bgMap=new google.maps.Map(document.getElementById('bgMap'),{
       center:{lat:41.0082,lng:28.9784},zoom:12,
-      styles:BG_MAP_STYLE,
+      styles:BG_MAP_STYLE_DARK,
       disableDefaultUI:true,gestureHandling:'none',
     });
     bgMapReady=true;
@@ -751,7 +935,7 @@ function buildChips(){
     const b=document.createElement('button');
     const on=activeFilter&&activeFilter.cat===cat.id&&!activeFilter.sub;
     b.className='chip'+(on?' on':'');
-    b.textContent=cat.n.replace('\n',' ').split('&')[0].trim();
+    b.textContent=cat.n.replace('\n',' ');
     b.onclick=()=>{activeFilter={cat:cat.id};updateMarkers();buildChips();};
     bar.appendChild(b);
   });
@@ -893,10 +1077,18 @@ function showNotif(msg){
 });
 
 /* ════════════════ INIT ════════════════ */
-window.addEventListener('load',()=>{
+function tryInitWheel(){
+  const wrap = document.getElementById('wheelWrap');
+  if(!wrap || wrap.offsetWidth === 0){
+    // Boyut henüz hazır değil, 50ms sonra tekrar dene
+    setTimeout(tryInitWheel, 50);
+    return;
+  }
   initWheel();
   buildList();
-});
+}
+
+window.addEventListener('load', tryInitWheel);
 window.addEventListener('resize',()=>{
   if(wheelMode==='home') drawWheelConnectors();
   else drawSubConnectors(activeCat);
