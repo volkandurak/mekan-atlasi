@@ -1,1541 +1,912 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mekan Atlası: İstanbul</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --ink: #0e0e0e;
-      --parchment: #f5f0e8;
-      --gold: #ffffff;
-      --gold-light: #e8e8e8;
-      --rust: #8b3a2a;
-      --teal: #2a6b6e;
-      --cream: #faf7f0;
-      --muted: #6b6257;
-      --border: rgba(255,255,255,0.15);
-      --sidebar-w: 280px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      background: var(--ink);
-      color: var(--parchment);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── HEADER ── */
-    header {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      padding: 0 12px;
-      height: 60px;
-      background: var(--ink);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-      z-index: 200;
-      position: relative;
-    }
-
-    .logo {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      line-height: 1.2;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-    }
-
-    .header-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-    }
-
-    .logo-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--gold);
-      letter-spacing: 0.02em;
-    }
-
-    .logo-sub {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      color: rgba(255,255,255,0.5);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-
-    .logo-ornament {
-      font-size: 22px;
-      color: var(--gold);
-      margin-right: 8px;
-      line-height: 1;
-    }
-
-    .header-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-
-    .mode-badge {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .mode-badge.moderator {
-      background: var(--gold);
-      color: var(--ink);
-      font-weight: 700;
-    }
-
-    .mode-badge.viewer {
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    .mode-badge.viewer.active {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-
-    .search-wrap {
-      position: relative;
-    }
-
-    .search-wrap input {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      color: var(--parchment);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px;
-      padding: 4px 8px 4px 24px;
-      border-radius: 2px;
-      width: 100px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .search-wrap input:focus { border-color: var(--gold); }
-    .search-wrap input::placeholder { color: var(--muted); }
-
-    .search-icon {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* ── MAIN LAYOUT ── */
-    .main {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sidebar-w);
-      flex-shrink: 0;
-      background: #111;
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .category-header {
-      padding: 18px 20px 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .category-header h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      font-weight: 400;
-    }
-
-    .category-scroll {
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .category-scroll::-webkit-scrollbar { width: 4px; }
-    .category-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-    .cat-item {
-      border-bottom: 1px solid rgba(201,168,76,0.08);
-    }
-
-    .cat-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: background 0.15s;
-      user-select: none;
-    }
-
-    .cat-header:hover { background: rgba(201,168,76,0.05); }
-    .cat-header.open { background: rgba(201,168,76,0.08); }
-
-    .cat-emoji { font-size: 16px; flex-shrink: 0; }
-
-    .cat-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--parchment);
-      flex: 1;
-      line-height: 1.3;
-    }
-
-    .cat-count {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      color: var(--muted);
-    }
-
-    .cat-arrow {
-      color: var(--muted);
-      font-size: 10px;
-      transition: transform 0.2s;
-    }
-
-    .cat-header.open .cat-arrow { transform: rotate(90deg); color: var(--gold); }
-
-    .sub-list {
-      display: none;
-      padding: 4px 0 8px 0;
-      background: rgba(0,0,0,0.3);
-    }
-
-    .sub-list.visible { display: block; }
-
-    .sub-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 20px 7px 46px;
-      cursor: pointer;
-      transition: all 0.15s;
-      position: relative;
-    }
-
-    .sub-item:hover { background: rgba(201,168,76,0.06); }
-
-    .sub-item.active { background: rgba(201,168,76,0.12); }
-    .sub-item.active .sub-name { color: var(--gold); }
-
-    .sub-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      border: 1px solid var(--muted);
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-
-    .sub-item.active .sub-dot,
-    .sub-item:hover .sub-dot {
-      background: var(--gold);
-      border-color: var(--gold);
-    }
-
-    .sub-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.3;
-      transition: color 0.15s;
-    }
-
-    .sub-count-badge {
-      margin-left: auto;
-      font-family: 'Space Mono', monospace;
-      font-size: 8px;
-      color: var(--teal);
-      background: rgba(42,107,110,0.15);
-      padding: 1px 5px;
-      border-radius: 2px;
-    }
-
-    /* ── MAP AREA ── */
-    .map-area {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* ── MAP OVERLAY UI ── */
-    .map-overlay {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      pointer-events: none;
-    }
-
-    .map-stat-card {
-      background: rgba(14,14,14,0.92);
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      min-width: 160px;
-      pointer-events: all;
-      backdrop-filter: blur(10px);
-    }
-
-    .stat-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      color: var(--gold);
-      line-height: 1;
-    }
-
-    .stat-sub {
-      font-size: 10px;
-      color: var(--muted);
-      font-family: 'Cormorant Garamond', serif;
-      margin-top: 2px;
-    }
-
-    /* ── BOTTOM PANEL ── */
-    .bottom-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: linear-gradient(to top, rgba(14,14,14,0.98) 0%, transparent 100%);
-      padding: 20px 24px 16px;
-      pointer-events: none;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-    }
-
-    .filter-pills {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      pointer-events: all;
-    }
-
-    .pill {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 5px 10px;
-      border-radius: 1px;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid rgba(201,168,76,0.2);
-      color: var(--muted);
-      background: rgba(14,14,14,0.8);
-    }
-
-    .pill:hover { border-color: var(--gold); color: var(--gold); }
-    .pill.active { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 700; }
-
-    .map-credit {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 10px;
-      color: var(--muted);
-      pointer-events: all;
-    }
-
-    /* ── ADD PLACE MODAL ── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 500;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(4px);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-backdrop.open { display: flex; }
-
-    .modal {
-      background: #111;
-      border: 1px solid var(--border);
-      width: 520px;
-      max-width: 95vw;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-      animation: modalIn 0.25s ease;
-    }
-
-    @keyframes modalIn {
-      from { opacity: 0; transform: translateY(20px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .modal-header {
-      padding: 22px 24px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .modal-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      color: var(--gold);
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 2px 6px;
-      transition: color 0.2s;
-    }
-    .modal-close:hover { color: var(--parchment); }
-
-    .modal-body { padding: 20px 24px; }
-
-    .form-row { margin-bottom: 16px; }
-
-    .form-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--parchment);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 15px;
-      padding: 9px 12px;
-      border-radius: 2px;
-      outline: none;
-      transition: border-color 0.2s;
-      appearance: none;
-    }
-
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--gold);
-    }
-
-    .form-textarea { height: 80px; resize: vertical; }
-
-    .form-select option { background: #1a1a1a; }
-
-    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-
-    .tag {
-      padding: 4px 10px;
-      border: 1px solid var(--border);
-      border-radius: 1px;
-      font-size: 11px;
-      font-family: 'Cormorant Garamond', serif;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .tag:hover { border-color: var(--gold); color: var(--gold); }
-    .tag.sel { background: var(--gold); color: var(--ink); border-color: var(--gold); }
-
-    .btn-primary {
-      background: var(--gold);
-      color: var(--ink);
-      border: none;
-      padding: 11px 28px;
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 2px;
-      font-weight: 700;
-      transition: background 0.2s;
-      margin-top: 8px;
-    }
-
-    .btn-primary:hover { background: var(--gold-light); }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 11px 20px;
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: all 0.2s;
-      margin-top: 8px;
-      margin-left: 8px;
-    }
-
-    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
-
-    /* ── ADD BUTTON ── */
-    .fab {
-      position: absolute;
-      bottom: 60px;
-      right: 16px;
-      z-index: 100;
-      background: var(--gold);
-      color: var(--ink);
-      border: none;
-      width: 48px;
-      height: 48px;
-      border-radius: 2px;
-      font-size: 22px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(201,168,76,0.3);
-      transition: all 0.2s;
-      font-weight: 700;
-    }
-
-    .fab:hover { background: var(--gold-light); transform: scale(1.05); }
-
-    .fab-label {
-      position: absolute;
-      bottom: 60px;
-      right: 72px;
-      z-index: 100;
-      background: rgba(14,14,14,0.92);
-      border: 1px solid var(--border);
-      padding: 6px 10px;
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .fab:hover + .fab-label { opacity: 1; }
-
-    /* ── PLACE INFO POPUP ── */
-    .place-popup {
-      display: none;
-      position: absolute;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 150;
-      background: rgba(14,14,14,0.96);
-      border: 1px solid var(--border);
-      padding: 16px 20px;
-      min-width: 280px;
-      max-width: 380px;
-      animation: popupIn 0.2s ease;
-      backdrop-filter: blur(10px);
-    }
-
-    @keyframes popupIn {
-      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-
-    .place-popup.visible { display: block; }
-
-    .popup-cat {
-      font-family: 'Space Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 6px;
-    }
-
-    .popup-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 17px;
-      color: var(--parchment);
-      margin-bottom: 4px;
-    }
-
-    .popup-address {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .popup-desc {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px;
-      color: rgba(245,240,232,0.7);
-      line-height: 1.5;
-      margin-bottom: 12px;
-    }
-
-    .popup-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
-
-    .popup-tag {
-      font-family: 'Space Mono', monospace;
-      font-size: 8px;
-      padding: 3px 7px;
-      border: 1px solid rgba(201,168,76,0.3);
-      color: var(--gold);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .popup-close {
-      position: absolute;
-      top: 10px; right: 10px;
-      background: none; border: none;
-      color: var(--muted); cursor: pointer; font-size: 14px;
-    }
-
-    /* ── LOADING ── */
-    .map-loading {
-      position: absolute;
-      inset: 0;
-      background: var(--ink);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      gap: 16px;
-    }
-
-    .loading-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      color: var(--gold);
-    }
-
-    .loading-spinner {
-      width: 32px;
-      height: 32px;
-      border: 2px solid var(--border);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .loading-text {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    /* ── NOTIFICATION ── */
-    .notif {
-      position: fixed;
-      top: 74px;
-      right: 16px;
-      z-index: 600;
-      background: rgba(14,14,14,0.96);
-      border: 1px solid var(--gold);
-      padding: 10px 16px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
-      color: var(--gold);
-      border-radius: 2px;
-      display: none;
-      animation: notifIn 0.25s ease;
-    }
-
-    @keyframes notifIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    /* ── MAP DARK STYLE (applied via JS) ── */
-    .gm-style .gm-style-iw-c {
-      background: #111 !important;
-      border: 1px solid var(--border) !important;
-      border-radius: 2px !important;
-    }
-
-    /* ── LEGEND ── */
-    .legend {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      z-index: 100;
-      display: none;
-    }
-
-    .legend.visible { display: block; }
-
-    .legend-inner {
-      background: rgba(14,14,14,0.92);
-      border: 1px solid var(--border);
-      padding: 12px 14px;
-      backdrop-filter: blur(10px);
-    }
-
-    .legend-title {
-      font-family: 'Space Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
-      cursor: pointer;
-      padding: 2px 0;
-      transition: opacity 0.15s;
-    }
-
-    .legend-item:hover { opacity: 0.7; }
-
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .legend-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 11px;
-      color: var(--parchment);
-      white-space: nowrap;
-    }
-
-    /* ── TOGGLE SIDEBAR ── */
-    .toggle-sidebar {
-      position: absolute;
-      left: var(--sidebar-w);
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 200;
-      background: var(--ink);
-      border: 1px solid var(--border);
-      border-left: none;
-      color: var(--muted);
-      padding: 8px 4px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.2s;
-      line-height: 1;
-    }
-
-    .toggle-sidebar:hover { color: var(--gold); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      :root { --sidebar-w: 260px; }
-      .sidebar { 
-        position: fixed; 
-        left: 0; top: 60px; bottom: 0; 
-        z-index: 150; 
-        transform: translateX(-100%); 
-        transition: transform 0.3s;
-        width: 260px !important;
-      }
-      .sidebar.open { transform: translateX(0); }
-      .toggle-sidebar { left: 0 !important; }
-      .toggle-sidebar.sidebar-open { left: 260px !important; }
-      .header-actions .search-wrap input { width: 140px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mekan Atlası · İstanbul</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#1a1a2e}
+body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-width:430px;margin:0 auto;height:100vh;position:relative;}
+
+/* ── SCREENS ── */
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
+.screen.active{display:flex}
+
+/* ── NOTIF ── */
+.notif{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999;background:#111;color:#fff;padding:9px 20px;border-radius:30px;font-size:13px;font-weight:700;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3);}
+
+/* ════════════════════════════
+   HOME — WHEEL SCREEN
+════════════════════════════ */
+#sc-home{position:relative;overflow:hidden}
+
+/* Harita arka plan */
+#bgMap{position:absolute;inset:0;z-index:0}
+
+/* Harita üstü karartma */
+.map-fog{
+  position:absolute;inset:0;z-index:1;
+  background:radial-gradient(ellipse at center, rgba(10,10,30,.35) 0%, rgba(10,10,30,.65) 100%);
+  pointer-events:none;
+}
+
+/* En üst başlık */
+.home-header{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  padding:18px 20px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(to bottom, rgba(10,10,30,.8) 0%, transparent 100%);
+}
+.header-title{
+  font-size:22px;font-weight:900;color:#fff;
+  letter-spacing:.5px;text-shadow:0 2px 12px rgba(0,0,0,.5);
+}
+.header-title span{color:#64B5F6}
+.header-profile{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.15);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;
+  color:#fff;
+}
+
+/* Alt tab bar */
+.tab-bar{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  display:flex;
+  background:rgba(15,15,35,.88);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.08);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:10px 4px 8px;cursor:pointer;gap:3px;
+  color:rgba(255,255,255,.4);font-size:10px;font-weight:800;
+  transition:color .15s;
+}
+.tab-item.active{color:#64B5F6}
+.tab-ico{font-size:20px;line-height:1}
+
+/* ── WHEEL CONTAINER ── */
+#wheelWrap{
+  position:absolute;inset:0;z-index:5;
+  display:flex;align-items:center;justify-content:center;
+}
+#wheelCanvas{position:absolute;inset:0;pointer-events:none}
+
+/* Merkez daire */
+#wheelCenter{
+  position:absolute;
+  width:110px;height:110px;
+  border-radius:50%;
+  background:rgba(15,15,35,.85);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:2.5px solid rgba(255,255,255,.2);
+  box-shadow:0 0 0 8px rgba(255,255,255,.04), 0 8px 40px rgba(0,0,0,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;
+  z-index:8;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  transform-origin:center;
+}
+#wheelCenter:active{transform:scale(.96)}
+#centerCityLine{font-size:9px;font-weight:800;color:rgba(255,255,255,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
+#centerTitle{font-size:17px;font-weight:900;color:#fff;text-align:center;line-height:1.15;letter-spacing:-.3px;}
+#centerSub{font-size:8px;font-weight:700;color:rgba(255,255,255,.4);margin-top:3px;text-align:center;}
+
+/* Segment butonları (DOM) */
+.seg-btn{
+  position:absolute;
+  transform-origin:center;
+  cursor:pointer;
+  z-index:7;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;
+  transform:translate(-50%,-50%) scale(1);
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), opacity .18s;
+}
+.seg-btn:active .seg-inner{transform:scale(.92)}
+.seg-inner{
+  width:62px;height:62px;
+  border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;
+  box-shadow:0 3px 16px rgba(0,0,0,.35);
+  border:2px solid rgba(255,255,255,.18);
+  transition:transform .12s, box-shadow .12s;
+  padding:6px;
+}
+.seg-ico{width:26px;height:26px;flex-shrink:0}
+.seg-ico svg{width:100%;height:100%}
+.seg-lbl{
+  font-size:8px;font-weight:800;color:#fff;
+  text-align:center;line-height:1.2;
+  text-shadow:0 1px 4px rgba(0,0,0,.5);
+  width:72px;
+  margin-top:2px;
+}
+
+/* Sub mode — alt kategoriler */
+.sub-node{
+  position:absolute;
+  transform:translate(-50%,-50%) scale(0);
+  opacity:0;
+  transition:transform .32s cubic-bezier(.34,1.56,.64,1), opacity .25s ease;
+  z-index:7;
+  cursor:pointer;
+}
+.sub-node.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
+.sub-node:active .sub-inner{transform:scale(.92)}
+.sub-inner{
+  background:rgba(20,20,45,.9);
+  backdrop-filter:blur(8px);
+  border-radius:14px;
+  padding:8px 10px 9px;
+  width:84px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  text-align:center;
+  border-bottom:3px solid var(--c,#fff);
+  border-top:1px solid rgba(255,255,255,.1);
+  transition:transform .12s;
+}
+.sub-ico{width:24px;height:24px;border-radius:7px;padding:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sub-ico svg{width:100%;height:100%}
+.sub-name{font-size:8px;font-weight:800;color:#fff;line-height:1.25;}
+.sub-cnt{font-size:8px;font-weight:700;color:rgba(255,255,255,.4)}
+
+/* FAB */
+#fabBtn{
+  position:fixed;bottom:80px;right:18px;z-index:300;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#64B5F6,#1565C0);
+  box-shadow:0 4px 20px rgba(21,101,192,.5);
+  display:none;align-items:center;justify-content:center;
+  font-size:26px;color:#fff;cursor:pointer;border:none;
+}
+
+/* ════════════════════════════
+   MAP SCREEN
+════════════════════════════ */
+#sc-map{position:relative}
+.map-topbar{
+  padding:14px 16px 10px;
+  background:rgba(15,15,35,.95);
+  backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.back-btn{
+  width:36px;height:36px;background:rgba(255,255,255,.1);
+  border-radius:12px;border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;cursor:pointer;flex-shrink:0;
+}
+.map-chips-wrap{
+  overflow-x:auto;flex:1;scrollbar-width:none;
+  display:flex;gap:6px;
+}
+.map-chips-wrap::-webkit-scrollbar{display:none}
+.chip{
+  white-space:nowrap;padding:6px 13px;
+  border-radius:20px;border:none;
+  background:rgba(255,255,255,.1);
+  color:rgba(255,255,255,.7);
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  cursor:pointer;flex-shrink:0;
+}
+.chip.on{background:#64B5F6;color:#fff}
+#map{flex:1}
+#mapLoading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(15,15,35,.8);color:#fff;font-weight:700;font-size:14px;z-index:10}
+
+/* Popup */
+.popup{
+  position:absolute;bottom:0;left:0;right:0;z-index:50;
+  background:rgba(15,15,35,.96);
+  backdrop-filter:blur(16px);
+  border-radius:22px 22px 0 0;
+  padding:16px 18px 30px;
+  transform:translateY(100%);
+  transition:transform .25s cubic-bezier(.34,1.2,.64,1);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.popup.visible{transform:none}
+.pop-handle{width:36px;height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 14px}
+.pop-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;color:#fff;margin-bottom:8px}
+.pop-name{font-size:18px;font-weight:900;color:#fff;letter-spacing:-.3px;margin-bottom:4px}
+.pop-addr{font-size:12px;color:rgba(255,255,255,.5);font-weight:600;margin-bottom:6px}
+.pop-desc{font-size:13px;color:rgba(255,255,255,.7);font-weight:600;line-height:1.5;margin-bottom:10px}
+.pop-tags{display:flex;flex-wrap:wrap;gap:5px}
+.popup-tag{padding:4px 10px;background:rgba(255,255,255,.08);border-radius:20px;font-size:10px;font-weight:700;color:rgba(255,255,255,.6)}
+
+/* ════════════════════════════
+   LIST SCREEN
+════════════════════════════ */
+#sc-list{background:#0f0f1f}
+.list-topbar{padding:16px 18px 12px;background:rgba(15,15,35,.98);flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06)}
+.list-topbar h2{font-size:20px;font-weight:900;color:#fff}
+.list-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none}
+.list-body::-webkit-scrollbar{display:none}
+.list-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border-radius:14px;padding:12px 13px;cursor:pointer}
+.list-item-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:8px}
+.list-item-ico svg{width:100%;height:100%}
+.list-item-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.2px}
+.list-item-sub{font-size:11px;color:rgba(255,255,255,.4);font-weight:700;margin:2px 0}
+.list-item-addr{font-size:11px;color:rgba(255,255,255,.35);font-weight:600}
+
+/* ════════════════════════════
+   PROFILE SCREEN
+════════════════════════════ */
+#sc-profile{background:#0f0f1f;align-items:center;justify-content:center}
+.profile-body{padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:rgba(100,181,246,.15);border:2px solid rgba(100,181,246,.3);display:flex;align-items:center;justify-content:center;font-size:36px}
+.profile-name{font-size:20px;font-weight:900;color:#fff}
+.profile-role{font-size:12px;color:rgba(255,255,255,.4);font-weight:700}
+.profile-btn{width:100%;max-width:280px;padding:14px;border-radius:14px;border:none;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;background:rgba(100,181,246,.15);color:#64B5F6;border:1px solid rgba(100,181,246,.2)}
+.profile-btn.danger{background:rgba(229,57,53,.12);color:#EF9A9A;border-color:rgba(229,57,53,.2)}
+
+/* ════════════════════════════
+   BOTTOM SHEETS
+════════════════════════════ */
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.sheet{background:#1a1a2e;border-radius:22px 22px 0 0;width:100%;max-width:430px;max-height:92vh;overflow-y:auto;padding:18px 20px 36px;animation:sheetUp .22s ease;border-top:1px solid rgba(255,255,255,.08)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.sheet-handle{width:36px;height:3.5px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px}
+.sheet-title{font-size:19px;font-weight:800;color:#fff;letter-spacing:-.4px;margin-bottom:14px}
+.form-label{display:block;font-size:10px;font-weight:800;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.form-input,.form-select,.form-textarea{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;padding:11px 13px;outline:none;margin-bottom:13px;appearance:none}
+.form-textarea{height:76px;resize:none}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.form-tag{padding:5px 12px;background:rgba(255,255,255,.07);border-radius:20px;font-size:11.5px;font-weight:700;color:rgba(255,255,255,.6);cursor:pointer;border:1px solid rgba(255,255,255,.08);font-family:'Nunito',sans-serif}
+.form-tag.on{background:#64B5F6;color:#fff;border-color:#64B5F6}
+.sheet-btn{width:100%;background:#64B5F6;color:#fff;border:none;padding:13px;border-radius:13px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
+.pw-error{color:#EF9A9A;font-size:12px;font-weight:700;margin-top:-9px;margin-bottom:12px;display:none}
+</style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="header-left">
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" id="searchInput" placeholder="Mekan ara…" oninput="filterPlaces(this.value)">
-    </div>
-  </div>
-  <div class="logo">
-    <div class="logo-text">
-      <span class="logo-title">Mekan Atlası</span>
-      <span class="logo-sub">İstanbul</span>
-    </div>
-  </div>
-  <div class="header-right">
-    <button class="mode-badge viewer active" id="viewerBtn" onclick="setMode('viewer')" style="display:none">Görüntüle</button>
-    <button class="mode-badge moderator" id="modBtn" onclick="promptModeratorLogin()">Moderatör</button>
-  </div>
-</header>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="category-header">
-      <h3>Kategoriler & Mekan Türleri</h3>
-    </div>
-    <div class="category-scroll" id="categoryList"></div>
-  </div>
-
-  <!-- TOGGLE SIDEBAR -->
-  <button class="toggle-sidebar" id="sidebarToggle" onclick="toggleSidebar()">◀</button>
-
-  <!-- MAP AREA -->
-  <div class="map-area">
-    <!-- Loading -->
-    <div class="map-loading" id="mapLoading">
-      <div class="loading-logo">✦ Mekan Atlası</div>
-      <div class="loading-spinner"></div>
-      <div class="loading-text">İstanbul Haritası Yükleniyor…</div>
-    </div>
-
-    <div id="map"></div>
-
-    <!-- Stats -->
-    <div class="map-overlay">
-      <div class="map-stat-card">
-        <div class="stat-label">Toplam Mekan</div>
-        <div class="stat-value" id="totalCount">0</div>
-        <div class="stat-sub">İstanbul geneli</div>
-      </div>
-      <div class="map-stat-card">
-        <div class="stat-label">Aktif Filtre</div>
-        <div class="stat-value" id="activeFilter" style="font-size:13px; padding-top:4px">Tümü</div>
-      </div>
-    </div>
-
-    <!-- Legend -->
-    <div class="legend" id="legend">
-      <div class="legend-inner" id="legendInner"></div>
-    </div>
-
-    <!-- FAB -->
-    <button class="fab" id="addBtn" onclick="openModal()" style="display:none" title="Mekan Ekle">+</button>
-    <div class="fab-label">Mekan Ekle</div>
-
-    <!-- Bottom -->
-    <div class="bottom-bar">
-      <div class="filter-pills" id="filterPills"></div>
-      <div class="map-credit">© Mekan Atlası İstanbul</div>
-    </div>
-
-    <!-- Popup -->
-    <div class="place-popup" id="placePopup">
-      <button class="popup-close" onclick="closePopup()">✕</button>
-      <div class="popup-cat" id="popupCat"></div>
-      <div class="popup-name" id="popupName"></div>
-      <div class="popup-address" id="popupAddress"></div>
-      <div class="popup-desc" id="popupDesc"></div>
-      <div class="popup-tags" id="popupTags"></div>
-    </div>
-  </div>
-</div>
-
-<!-- NOTIFICATION -->
 <div class="notif" id="notif"></div>
 
-<!-- MODERATÖR GİRİŞ MODALI -->
-<div class="modal-backdrop" id="loginBackdrop">
-  <div class="modal" style="max-width:340px">
-    <div class="modal-header">
-      <div class="modal-title">Moderatör Girişi</div>
-      <button class="modal-close" onclick="closeLogin()">✕</button>
+<!-- ════ HOME ════ -->
+<div class="screen active" id="sc-home">
+  <!-- Arka plan harita -->
+  <div id="bgMap"></div>
+  <div class="map-fog"></div>
+
+  <!-- Üst başlık -->
+  <div class="home-header">
+    <div class="header-title">MEKAN <span>ATLASI</span></div>
+    <div class="header-profile" onclick="goTab('profile', document.getElementById('tab-prof'))">👤</div>
+  </div>
+
+  <!-- Wheel -->
+  <div id="wheelWrap">
+    <canvas id="wheelCanvas"></canvas>
+    <div id="wheelCenter" onclick="onCenterClick()">
+      <div id="centerCityLine">İSTANBUL</div>
+      <div id="centerTitle">Keşfet</div>
+      <div id="centerSub">12 kategori</div>
     </div>
-    <div class="modal-body">
-      <p style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--muted); margin-bottom:18px;">
-        Mekan eklemek için moderatör şifresini girin.
-      </p>
-      <div class="form-row">
-        <label class="form-label">Şifre</label>
-        <input type="password" class="form-input" id="modPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()">
-      </div>
-      <div id="loginError" style="color:#e05050; font-family:'Space Mono',monospace; font-size:10px; margin-top:8px; display:none;">
-        ✕ Hatalı şifre
-      </div>
-      <button class="btn-primary" onclick="checkPassword()" style="margin-top:12px; width:100%">Giriş Yap</button>
-      <p style="font-family:'Cormorant Garamond',serif; font-size:11px; color:var(--muted); margin-top:14px; text-align:center;">
-        Moderatör olmak ister misiniz?<br>
-        <a href="mailto:volkandurak@gmail.com" style="color:var(--gold);">İletişime geçin</a>
-      </p>
+    <div id="segContainer"></div>
+    <div id="subContainer"></div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-home" onclick="goTab('home',this)">
+      <div class="tab-ico">🗺</div><span>Keşfet</span>
+    </div>
+    <div class="tab-item" id="tab-map" onclick="goTab('map',this)">
+      <div class="tab-ico">📍</div><span>Harita</span>
+    </div>
+    <div class="tab-item" id="tab-list" onclick="goTab('list',this)">
+      <div class="tab-ico">☰</div><span>Liste</span>
+    </div>
+    <div class="tab-item" id="tab-prof" onclick="goTab('profile',this)">
+      <div class="tab-ico">👤</div><span>Profil</span>
+    </div>
+  </div>
+
+  <button id="fabBtn" onclick="openAddSheet()">+</button>
+</div>
+
+<!-- ════ MAP ════ -->
+<div class="screen" id="sc-map">
+  <div class="map-topbar">
+    <button class="back-btn" onclick="goTab('home',document.getElementById('tab-home'))">←</button>
+    <div class="map-chips-wrap" id="mapChips"></div>
+  </div>
+  <div style="position:relative;flex:1">
+    <div id="map" style="width:100%;height:100%"></div>
+    <div id="mapLoading">Harita yükleniyor…</div>
+    <div class="popup" id="popup">
+      <div class="pop-handle"></div>
+      <div class="pop-badge" id="popBadge"></div>
+      <div class="pop-name" id="popName"></div>
+      <div class="pop-addr" id="popAddr"></div>
+      <div class="pop-desc" id="popDesc"></div>
+      <div class="pop-tags" id="popTags"></div>
     </div>
   </div>
 </div>
 
-<!-- ADD PLACE MODAL -->
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Yeni Mekan Ekle</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <label class="form-label">Mekan Adı *</label>
-        <input type="text" class="form-input" id="fName" placeholder="Mekanın adı">
-      </div>
-      <div class="form-row-2">
-        <div class="form-row" style="margin-bottom:0">
-          <label class="form-label">Ana Kategori *</label>
-          <select class="form-select" id="fCat" onchange="updateSubCats()">
-            <option value="">Seçin…</option>
-          </select>
-        </div>
-        <div class="form-row" style="margin-bottom:0">
-          <label class="form-label">Alt Kategori</label>
-          <select class="form-select" id="fSubCat">
-            <option value="">Seçin…</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row" style="margin-top:16px">
-        <label class="form-label">Adres / Semt *</label>
-        <input type="text" class="form-input" id="fAddress" placeholder="Örn: Karaköy, Beyoğlu">
-      </div>
-      <div class="form-row-2">
-        <div class="form-row" style="margin-bottom:0">
-          <label class="form-label">Enlem</label>
-          <input type="number" class="form-input" id="fLat" placeholder="41.0082" step="0.0001">
-        </div>
-        <div class="form-row" style="margin-bottom:0">
-          <label class="form-label">Boylam</label>
-          <input type="number" class="form-input" id="fLng" placeholder="28.9784" step="0.0001">
-        </div>
-      </div>
-      <div class="form-row" style="margin-top:16px">
-        <label class="form-label">Açıklama</label>
-        <textarea class="form-textarea" id="fDesc" placeholder="Mekan hakkında kısa bir not…"></textarea>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Etiketler</label>
-        <div class="tag-list" id="tagList"></div>
-      </div>
-      <div style="display:flex; align-items:center; margin-top:4px">
-        <button class="btn-primary" onclick="submitPlace()">Mekanı Kaydet</button>
-        <button class="btn-secondary" onclick="closeModal()">Vazgeç</button>
-      </div>
-    </div>
+<!-- ════ LIST ════ -->
+<div class="screen" id="sc-list">
+  <div class="list-topbar"><h2>Tüm Mekanlar</h2></div>
+  <div class="list-body" id="listEl"></div>
+</div>
+
+<!-- ════ PROFILE ════ -->
+<div class="screen" id="sc-profile">
+  <div class="profile-body">
+    <div class="profile-avatar">🗺</div>
+    <div class="profile-name">Mekan Atlası</div>
+    <div class="profile-role" id="profileRole">Ziyaretçi</div>
+    <button class="profile-btn" id="modBtn" onclick="promptLogin()">Moderatör Girişi</button>
+    <button class="profile-btn danger" id="modLogout" style="display:none" onclick="logoutMod()">Çıkış Yap</button>
   </div>
 </div>
 
-<!-- GOOGLE MAPS -->
+<!-- SHEETS -->
+<div class="overlay" id="loginSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Moderatör Girişi</div>
+    <label class="form-label">Şifre</label>
+    <input class="form-input" id="pwInput" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="pw-error" id="pwError">✕ Hatalı şifre</div>
+    <button class="sheet-btn" onclick="checkPw()">Giriş Yap</button>
+  </div>
+</div>
+
+<div class="overlay" id="addSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Mekan Ekle</div>
+    <label class="form-label">Mekan Adı *</label>
+    <input class="form-input" id="fName" placeholder="Mekan adı…">
+    <label class="form-label">Kategori *</label>
+    <select class="form-select" id="fCat" onchange="fillSubs()"></select>
+    <label class="form-label">Alt Kategori</label>
+    <select class="form-select" id="fSub"></select>
+    <label class="form-label">Adres *</label>
+    <input class="form-input" id="fAddr" placeholder="Adres…">
+    <div class="form-row2">
+      <div><label class="form-label">Enlem</label><input class="form-input" id="fLat" placeholder="41.00…"></div>
+      <div><label class="form-label">Boylam</label><input class="form-input" id="fLng" placeholder="28.97…"></div>
+    </div>
+    <label class="form-label">Açıklama</label>
+    <textarea class="form-textarea" id="fDesc" placeholder="Kısa açıklama…"></textarea>
+    <label class="form-label">Etiketler</label>
+    <div class="tag-row" id="fTagsEl"></div>
+    <button class="sheet-btn" onclick="savePlace()">Kaydet</button>
+  </div>
+</div>
+
 <script>
-// ════════════════════════════════════════════════
-//  DATA: KATEGORİLER & ÖRNEK MEKANLAR
-// ════════════════════════════════════════════════
+/* ════════════════ SVG ICONS ════════════════ */
+const ICONS = {
+  okuma:`<svg viewBox="0 0 48 48" fill="none"><path d="M8 10C8 10 16 7 24 10C32 7 40 10 40 10L40 38C40 38 32 35 24 38C16 35 8 38 8 38Z" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><line x1="24" y1="10" x2="24" y2="38" stroke="#fff" stroke-width="2"/><line x1="14" y1="15" x2="22" y2="17" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="14" y1="21" x2="22" y2="23" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="26" y1="15" x2="34" y2="13" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><line x1="26" y1="21" x2="34" y2="19" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  calisma:`<svg viewBox="0 0 48 48" fill="none"><rect x="8" y="28" width="32" height="4" rx="2" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><path d="M14 28L16 14Q17 12 19 12H29Q31 12 32 14L34 28" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><ellipse cx="24" cy="10" rx="4" ry="2.5" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><path d="M20 32L18 38M28 32L30 38" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  kultur:`<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="21" r="12" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><circle cx="20" cy="18" r="2.5" fill="#fff"/><path d="M18 28Q20 22 24 20Q28 22 30 28" fill="#A8C8E8" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 36L36 36" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M16 36V40M32 36V40" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  muzik:`<svg viewBox="0 0 48 48" fill="none"><circle cx="15" cy="34" r="5" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><circle cx="32" cy="30" r="5" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><path d="M20 34V14L37 10V30" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="20" y1="14" x2="37" y2="10" stroke="#fff" stroke-width="2"/></svg>`,
+  dusunce:`<svg viewBox="0 0 48 48" fill="none"><path d="M24 8C16 8 11 13 11 19C11 24 14 27 18 29V35H30V29C34 27 37 24 37 19C37 13 32 8 24 8Z" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><rect x="18" y="35" width="12" height="4" rx="2" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><line x1="21" y1="22" x2="27" y2="22" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="21" y1="26" x2="27" y2="26" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  sessiz:`<svg viewBox="0 0 48 48" fill="none"><path d="M24 8C18 8 14 13 14 18C14 24 18 28 24 28C30 28 34 24 34 18C34 13 30 8 24 8Z" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><path d="M16 25Q14 32 14 38H34Q34 32 32 25" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M20 38V43M28 38V43" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M17 43H23M25 43H31" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  tasarim:`<svg viewBox="0 0 48 48" fill="none"><path d="M12 36L18 30L14 26L30 10L34 14L20 30L26 34Z" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><rect x="8" y="34" width="12" height="6" rx="2" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><circle cx="33" cy="13" r="3" fill="#fff"/></svg>`,
+  sinema:`<svg viewBox="0 0 48 48" fill="none"><rect x="6" y="14" width="28" height="22" rx="3" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><path d="M34 19L42 15V33L34 29Z" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><rect x="10" y="10" width="4" height="6" rx="1" fill="#fff"/><rect x="18" y="10" width="4" height="6" rx="1" fill="#fff"/><rect x="26" y="10" width="4" height="6" rx="1" fill="#fff"/></svg>`,
+  tarih:`<svg viewBox="0 0 48 48" fill="none"><rect x="8" y="22" width="32" height="18" rx="2" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><path d="M4 22L24 10L44 22" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><rect x="18" y="30" width="12" height="10" rx="1" fill="rgba(255,255,255,.2)" stroke="#fff" stroke-width="2"/><rect x="10" y="26" width="6" height="8" rx="1" fill="rgba(255,255,255,.15)" stroke="#fff" stroke-width="1.8"/><rect x="32" y="26" width="6" height="8" rx="1" fill="rgba(255,255,255,.15)" stroke="#fff" stroke-width="1.8"/></svg>`,
+  acik:`<svg viewBox="0 0 48 48" fill="none"><path d="M6 30Q12 22 18 26Q22 18 28 22Q32 14 38 18L42 30Z" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M6 36Q14 30 22 34Q30 30 42 36" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="32" cy="13" r="5" fill="#A8C8E8" stroke="#fff" stroke-width="2"/></svg>`,
+  sosyal:`<svg viewBox="0 0 48 48" fill="none"><path d="M8 12Q8 8 12 8H28Q32 8 32 12V24Q32 28 28 28H20L14 34V28H12Q8 28 8 24Z" fill="#A8C8E8" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="18" r="2" fill="#fff"/><circle cx="22" cy="18" r="2" fill="#fff"/><circle cx="28" cy="18" r="2" fill="#fff"/></svg>`,
+  manzara:`<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="22" r="14" fill="#A8C8E8" stroke="#fff" stroke-width="2"/><circle cx="24" cy="22" r="4" fill="rgba(255,255,255,.3)" stroke="#fff" stroke-width="2"/><line x1="24" y1="6" x2="24" y2="10" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="24" y1="34" x2="24" y2="38" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="12" y2="22" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="36" y1="22" x2="40" y2="22" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="24" y1="22" x2="32" y2="16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+};
 
-const CATEGORIES = [
-  {
-    id: "okuma", emoji: "📚", name: "Okuma & Araştırma Mekânları", color: "#c9a84c",
-    subs: ["Kütüphaneler","Araştırma merkezleri","Arşiv merkezleri","Sessiz çalışma kafeleri","Sahaflar","Kitap evleri","Bağımsız yayınevi mekânları","Fanzin dükkânları","Akademik çalışma salonları","24 saat açık çalışma alanları"]
-  },
-  {
-    id: "calisma", emoji: "☕", name: "Sessiz & Üretken Çalışma Alanları", color: "#8b6914",
-    subs: ["Paylaşımlı ofisler (coworking)","Freelancer dostu kafeler","Tasarım stüdyoları","Mimarlık ofisleri","Yazı evleri","Podcast stüdyoları","Sessiz avlular","Manzaralı teras çalışma alanları","Kütüphane içi bireysel kabinler"]
-  },
-  {
-    id: "kultur", emoji: "🎭", name: "Kültür & Sanat Mekânları", color: "#8b3a2a",
-    subs: ["Kültür merkezleri","Sanat galerileri","Bağımsız sanat alanları","Atölyeler","Fotoğraf stüdyoları","Film kulübü mekânları","Küçük tiyatro salonları","Performans alanları","Deneysel sanat mekânları","Müzeler"]
-  },
-  {
-    id: "muzik", emoji: "🎶", name: "Müzik & Performans Alanları", color: "#2a6b6e",
-    subs: ["Canlı müzik mekânları","Caz kulüpleri","Plakçılar","Enstrüman atölyeleri","Konservatuvar salonları","Açık hava performans alanları","Sokak müziği yoğun bölgeler"]
-  },
-  {
-    id: "dusunce", emoji: "🧠", name: "Düşünce & Fikir Mekânları", color: "#5a3a8a",
-    subs: ["Felsefe kafeleri","Tartışma kulüpleri","Sivil toplum merkezleri","Enstitüler","Seminer salonları","Meetup mekânları","Girişimcilik merkezleri","Teknoloji kuluçka merkezleri"]
-  },
-  {
-    id: "meditatif", emoji: "🌿", name: "Sessiz & Meditatif Alanlar", color: "#3a7a4a",
-    subs: ["Tarihi avlular","Camilerin iç avluları","Kilise ve sinagog avluları","Sessiz park köşeleri","Manzaralı sahil noktaları","Kitap okuma için uygun bahçeler","Manastır ve tekke yapıları","Meditasyon merkezleri"]
-  },
-  {
-    id: "tasarim", emoji: "🖌", name: "Tasarım & Üretim Alanları", color: "#a06030",
-    subs: ["Maker space'ler","3D baskı atölyeleri","Ahşap atölyeleri","Tasarım kolektifleri","Zanaat çarşıları","Bakırcılar / hattatlar / ebru atölyeleri","Moda tasarım atölyeleri"]
-  },
-  {
-    id: "sinema", emoji: "🎬", name: "Sinema & Görsel Kültür", color: "#6a2a6a",
-    subs: ["Bağımsız sinemalar","Açık hava sinemaları","Film festivali mekânları","Sinema müzeleri","Kısa film gösterim alanları"]
-  },
-  {
-    id: "tarih", emoji: "🏛", name: "Tarih & Mekânsal Hafıza", color: "#7a6030",
-    subs: ["Hanlar","Tarihi pasajlar","Eski okullar","Restorasyonlu yapılar","Endüstriyel miras yapıları","Tersaneler","Tarihi kütüphaneler","Arkeolojik alanlar"]
-  },
-  {
-    id: "acik", emoji: "🌊", name: "İlham Veren Açık Mekânlar", color: "#2a5a8a",
-    subs: ["Boğaz sahil şeritleri","Adalar","Tepeler","Seyir terasları","Tarihi sur dipleri","Mahalle dokuları"]
-  },
-  {
-    id: "sosyal", emoji: "🍵", name: "Sosyal & Yaratıcı Buluşma Mekânları", color: "#7a3a3a",
-    subs: ["Oyun kafeler","Strateji oyunu mekânları","Satranç kulüpleri","Masaüstü oyun alanları","Kitap kulübü buluşma mekânları","Şiir gecesi yapılan yerler"]
-  }
+/* ════════════════ DATA ════════════════ */
+const CATS = [
+  {id:"okuma",   n:"Okuma &\nAraştırma",     c:"#E53935",
+   subs:["Kütüphaneler","Araştırma merkezleri","Arşiv merkezleri","Sessiz çalışma kafeleri","Sahaflar","Kitap evleri","Bağımsız yayınevi mekânları","Fanzin dükkânları","Akademik çalışma salonları"]},
+  {id:"calisma", n:"Sessiz &\nÜretken",       c:"#1565C0",
+   subs:["Paylaşımlı ofisler","Freelancer kafeler","Tasarım stüdyoları","Mimarlık ofisleri","Yazı evleri","Podcast stüdyoları","Sessiz avlular","Teras çalışma alanları","Kütüphane kabinleri"]},
+  {id:"kultur",  n:"Kültür &\nSanat",          c:"#F9A825",
+   subs:["Kültür merkezleri","Sanat galerileri","Bağımsız sanat alanları","Atölyeler","Fotoğraf stüdyoları","Küçük tiyatro salonları","Performans alanları","Müzeler"]},
+  {id:"muzik",   n:"Müzik &\nPerformans",      c:"#1976D2",
+   subs:["Canlı müzik mekânları","Caz kulüpleri","Plakçılar","Enstrüman atölyeleri","Konservatuvar salonları","Açık hava performans alanları"]},
+  {id:"dusunce", n:"Düşünce &\nFikir",         c:"#7B1FA2",
+   subs:["Felsefe kafeleri","Tartışma kulüpleri","Sivil toplum merkezleri","Enstitüler","Seminer salonları","Meetup mekânları","Girişimcilik merkezleri"]},
+  {id:"sessiz",  n:"Meditatif &\nSessiz",       c:"#2E7D32",
+   subs:["Tarihi avlular","Camilerin iç avluları","Sessiz park köşeleri","Bahçeler","Manastır yapıları","Meditasyon merkezleri"]},
+  {id:"tasarim", n:"Tasarım &\nÜretim",         c:"#E65100",
+   subs:["Maker space'ler","3D baskı atölyeleri","Ahşap atölyeleri","Tasarım kolektifleri","Zanaat çarşıları","Moda tasarım atölyeleri"]},
+  {id:"sinema",  n:"Sinema &\nGörsel",          c:"#546E7A",
+   subs:["Bağımsız sinemalar","Açık hava sinemaları","Film festivali mekânları","Sinema müzeleri"]},
+  {id:"tarih",   n:"Tarih &\nHafıza",           c:"#6D4C41",
+   subs:["Hanlar","Tarihi pasajlar","Restorasyonlu yapılar","Endüstriyel miras","Tarihi kütüphaneler","Arkeolojik alanlar"]},
+  {id:"acik",    n:"İlham Veren\nAçık Mekanlar",c:"#0277BD",
+   subs:["Boğaz sahil şeritleri","Adalar","Tepeler","Seyir terasları","Tarihi sur dipleri"]},
+  {id:"sosyal",  n:"Sosyal &\nYaratıcı",        c:"#C62828",
+   subs:["Oyun kafeler","Satranç kulüpleri","Kitap kulübü mekânları","Şiir gecesi mekânları"]},
+  {id:"manzara", n:"Manzara\nNoktaları",         c:"#00838F",
+   subs:["Boğaz seyir terasları","Tepeler","Ada manzaraları","Tarihi surlar","Gün batımı noktaları"]},
 ];
 
-const TAGS = ["Ücretsiz","Wi-Fi","Sessiz","Doğal ışık","Kahve","Çay","Rezervasyon gerekli","Çocuk dostu","Engelli erişim","24 saat","Tarihî yapı","Boğaz manzarası"];
+const TAGS = ["Ücretsiz","Wi-Fi","Sessiz","Doğal ışık","Kahve","Çay","Rezervasyon","Çocuk dostu","24 saat","Tarihî yapı","Boğaz manzarası"];
 
-// Örnek başlangıç mekanları
 let PLACES = [
-  { id:1, name:"Beyazıt Devlet Kütüphanesi", cat:"okuma", sub:"Kütüphaneler", address:"Beyazıt, İstanbul", lat:41.0106, lng:28.9650, desc:"İstanbul'un en köklü kütüphanelerinden biri. Osmanlı dönemi yazmaları dahil geniş bir koleksiyon.", tags:["Ücretsiz","Sessiz","Tarihî yapı"] },
-  { id:2, name:"Karaköy Güldür Güldür Sahaflar", cat:"okuma", sub:"Sahaflar", address:"Karaköy, Beyoğlu", lat:41.0219, lng:28.9745, desc:"İkinci el kitap ve fanzin cenneti. Her cumartesi yoğunlaşır.", tags:["Ücretsiz","Kahve"] },
-  { id:3, name:"Depo İstanbul", cat:"kultur", sub:"Performans alanları", address:"Tophane, İstanbul", lat:41.0250, lng:28.9790, desc:"Eski bir tütün deposundan dönüştürülen deneysel kültür merkezi.", tags:["Tarihî yapı","Ücretsiz"] },
-  { id:4, name:"Arsen Lupe", cat:"calisma", sub:"Freelancer dostu kafeler", address:"Cihangir, Beyoğlu", lat:41.0305, lng:28.9810, desc:"Cihangir'in gürültüsünden uzak, derin koltuklarıyla ideal çalışma kafesi.", tags:["Wi-Fi","Kahve","Sessiz"] },
-  { id:5, name:"İstanbul Modern", cat:"kultur", sub:"Müzeler", address:"Karaköy, İstanbul", lat:41.0233, lng:28.9810, desc:"Çağdaş Türk ve uluslararası sanat eserleri. Boğaz manzaralı kafe bonusu.", tags:["Boğaz manzarası","Doğal ışık"] },
-  { id:6, name:"Nardis Jazz Club", cat:"muzik", sub:"Caz kulüpleri", address:"Kuledibi, Beyoğlu", lat:41.0275, lng:28.9746, desc:"İstanbul'un en sevilen jazz mekanlarından. Galata Kulesi yakını.", tags:["Canlı müzik"] },
-  { id:7, name:"Bilgi Üniversitesi Santral Kampüs", cat:"calisma", sub:"Akademik çalışma salonları", address:"Eyüp, İstanbul", lat:41.0600, lng:28.9295, desc:"Tarihi elektrik santralinden dönüştürülmüş kampüs. Geniş kütüphane ve çalışma alanları.", tags:["Tarihî yapı","Sessiz","Wi-Fi"] },
-  { id:8, name:"Pierre Loti Tepesi", cat:"acik", sub:"Tepeler", address:"Eyüp, İstanbul", lat:41.0572, lng:28.9282, desc:"Haliç manzaralı, eşsiz bir seyir terası. Teleferikle ulaşılabilir.", tags:["Ücretsiz","Boğaz manzarası"] },
-  { id:9, name:"Sahne Beyoğlu", cat:"kultur", sub:"Küçük tiyatro salonları", address:"Taksim, Beyoğlu", lat:41.0390, lng:28.9880, desc:"Bağımsız yapımların sahnesi. Küçük ama güçlü bir tiyatro.", tags:["Rezervasyon gerekli"] },
-  { id:10, name:"Mısır Çarşısı (Eski Han Dokusu)", cat:"tarih", sub:"Hanlar", address:"Eminönü, İstanbul", lat:41.0163, lng:28.9720, desc:"17. yüzyıldan kalma han yapısı. Aromatik atmosferiyle tarihin içinde yürüyüş.", tags:["Ücretsiz","Tarihî yapı"] },
-  { id:11, name:"Çukurcuma Antika Çarşısı", cat:"tarih", sub:"Tarihi pasajlar", address:"Cihangir, Beyoğlu", lat:41.0300, lng:28.9780, desc:"Zamanın durduğu antika dükkânları ve sahaflar.", tags:["Ücretsiz"] },
-  { id:12, name:"Ada Kütüphanesi (Büyükada)", cat:"okuma", sub:"Kütüphaneler", address:"Büyükada, Adalar", lat:40.8757, lng:29.1264, desc:"Büyükada'nın nostaljik kitaplığı. Faytonlarla ulaşılan sessiz bir ada deneyimi.", tags:["Sessiz","Ücretsiz","Doğal ışık"] }
+  {id:1,name:"Beyazıt Devlet Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Beyazıt, İstanbul",lat:41.0106,lng:28.9650,desc:"İstanbul'un en köklü kütüphanelerinden biri.",tags:["Ücretsiz","Sessiz","Tarihî yapı"]},
+  {id:2,name:"Karaköy Sahaflar",cat:"okuma",sub:"Sahaflar",address:"Karaköy, Beyoğlu",lat:41.0219,lng:28.9745,desc:"İkinci el kitap ve fanzin cenneti.",tags:["Ücretsiz"]},
+  {id:3,name:"Depo İstanbul",cat:"kultur",sub:"Performans alanları",address:"Tophane, İstanbul",lat:41.0250,lng:28.9790,desc:"Eski tütün deposundan dönüştürülen kültür merkezi.",tags:["Tarihî yapı"]},
+  {id:4,name:"Arsen Lupe Kafe",cat:"calisma",sub:"Freelancer kafeler",address:"Cihangir, Beyoğlu",lat:41.0305,lng:28.9810,desc:"Derin koltuklarıyla ideal çalışma kafesi.",tags:["Wi-Fi","Kahve","Sessiz"]},
+  {id:5,name:"İstanbul Modern",cat:"kultur",sub:"Müzeler",address:"Karaköy, İstanbul",lat:41.0233,lng:28.9810,desc:"Çağdaş Türk ve uluslararası sanat eserleri.",tags:["Boğaz manzarası"]},
+  {id:6,name:"Nardis Jazz Club",cat:"muzik",sub:"Caz kulüpleri",address:"Kuledibi, Beyoğlu",lat:41.0275,lng:28.9746,desc:"İstanbul'un en sevilen jazz mekanlarından.",tags:[]},
+  {id:7,name:"Santral Kampüs Kütüphanesi",cat:"calisma",sub:"Kütüphane kabinleri",address:"Eyüp, İstanbul",lat:41.0600,lng:28.9295,desc:"Tarihi santralden dönüştürülmüş kampüs.",tags:["Tarihî yapı","Sessiz","Wi-Fi"]},
+  {id:8,name:"Pierre Loti Tepesi",cat:"acik",sub:"Tepeler",address:"Eyüp, İstanbul",lat:41.0572,lng:28.9282,desc:"Haliç manzaralı eşsiz seyir terası.",tags:["Ücretsiz","Boğaz manzarası"]},
+  {id:9,name:"Sahne Beyoğlu",cat:"kultur",sub:"Küçük tiyatro salonları",address:"Taksim, Beyoğlu",lat:41.0390,lng:28.9880,desc:"Bağımsız yapımların sahnesi.",tags:["Rezervasyon"]},
+  {id:10,name:"Mısır Çarşısı",cat:"tarih",sub:"Hanlar",address:"Eminönü, İstanbul",lat:41.0163,lng:28.9720,desc:"17. yüzyıldan kalma han yapısı.",tags:["Ücretsiz","Tarihî yapı"]},
+  {id:11,name:"Çukurcuma Antika Çarşısı",cat:"tarih",sub:"Tarihi pasajlar",address:"Cihangir, Beyoğlu",lat:41.0300,lng:28.9780,desc:"Zamanın durduğu antika dükkânları.",tags:["Ücretsiz"]},
+  {id:12,name:"Ada Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Büyükada, Adalar",lat:40.8757,lng:29.1264,desc:"Büyükada'nın nostaljik kitaplığı.",tags:["Sessiz","Ücretsiz","Doğal ışık"]},
 ];
 
-let nextId = PLACES.length + 1;
-let map, markers = [], activeCategory = null, activeSub = null;
-let isModerator = false;
-let sidebarOpen = true;
-let selectedTags = [];
-let mapReady = false;
+let nid=13, map, bgMap, markers=[], mapReady=false, bgMapReady=false;
+let activeFilter=null, isMod=false, selTags=[];
+const PW='mekanatlasi2025';
+function gc(id){return CATS.find(c=>c.id===id)}
 
-// ════════════════════════════════════════════════
-//  SIDEBAR BUILD
-// ════════════════════════════════════════════════
+/* ════════════════ WHEEL ════════════════ */
+let wheelMode = 'home'; // 'home' | 'sub'
+let activeCat = null;
+const SEG_RADIUS = 130; // px, segment merkezlerin uzaklığı
+const SUB_RADIUS = 130;
 
-function buildSidebar() {
-  const list = document.getElementById('categoryList');
-  list.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const count = PLACES.filter(p => p.cat === cat.id).length;
-    const div = document.createElement('div');
-    div.className = 'cat-item';
-    div.innerHTML = `
-      <div class="cat-header" onclick="toggleCat('${cat.id}', this)" id="cat-hdr-${cat.id}">
-        <span class="cat-emoji">${cat.emoji}</span>
-        <span class="cat-name">${cat.name}</span>
-        <span class="cat-count">${count}</span>
-        <span class="cat-arrow">▶</span>
+function initWheel(){
+  drawWheelConnectors();
+  buildSegments();
+}
+
+function drawWheelConnectors(){
+  const canvas = document.getElementById('wheelCanvas');
+  const wrap   = document.getElementById('wheelWrap');
+  canvas.width  = wrap.offsetWidth;
+  canvas.height = wrap.offsetHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const cx = canvas.width/2;
+  const cy = canvas.height/2;
+  const n  = CATS.length;
+  CATS.forEach((_,i)=>{
+    const angle = -Math.PI/2 + (2*Math.PI*i)/n;
+    const ex = cx + SEG_RADIUS*Math.cos(angle);
+    const ey = cy + SEG_RADIUS*Math.sin(angle);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(ex,ey);
+    ctx.strokeStyle='rgba(255,255,255,0.08)';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  });
+  // Dış halka
+  ctx.beginPath();
+  ctx.arc(cx,cy,SEG_RADIUS+32,0,2*Math.PI);
+  ctx.strokeStyle='rgba(255,255,255,0.06)';
+  ctx.lineWidth=1;
+  ctx.stroke();
+  // İç halka
+  ctx.beginPath();
+  ctx.arc(cx,cy,60,0,2*Math.PI);
+  ctx.strokeStyle='rgba(255,255,255,0.08)';
+  ctx.lineWidth=1;
+  ctx.stroke();
+}
+
+function buildSegments(){
+  const wrap = document.getElementById('wheelWrap');
+  const cont = document.getElementById('segContainer');
+  cont.innerHTML='';
+  const cx = wrap.offsetWidth/2;
+  const cy = wrap.offsetHeight/2;
+  const n  = CATS.length;
+
+  CATS.forEach((cat,i)=>{
+    const angle = -Math.PI/2 + (2*Math.PI*i)/n;
+    const sx = cx + SEG_RADIUS*Math.cos(angle);
+    const sy = cy + SEG_RADIUS*Math.sin(angle);
+
+    const btn = document.createElement('div');
+    btn.className = 'seg-btn';
+    btn.id = 'seg-'+cat.id;
+    btn.style.left = sx+'px';
+    btn.style.top  = sy+'px';
+    btn.innerHTML = `
+      <div class="seg-inner" style="background:${cat.c}cc;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
+        <div class="seg-ico">${ICONS[cat.id]||''}</div>
       </div>
-      <div class="sub-list" id="sub-${cat.id}">
-        ${cat.subs.map(s => {
-          const sc = PLACES.filter(p => p.cat === cat.id && p.sub === s).length;
-          return `<div class="sub-item" onclick="filterBySub('${cat.id}','${s}', this)" data-sub="${s}">
-            <span class="sub-dot"></span>
-            <span class="sub-name">${s}</span>
-            ${sc > 0 ? `<span class="sub-count-badge">${sc}</span>` : ''}
-          </div>`;
-        }).join('')}
+      <div class="seg-lbl">${cat.n.replace('\n',' ').split('&')[0].trim()}</div>`;
+    btn.addEventListener('click', ()=>selectCat(cat));
+    cont.appendChild(btn);
+  });
+}
+
+function selectCat(cat){
+  if(wheelMode==='sub' && activeCat && activeCat.id===cat.id){
+    resetWheel(); return;
+  }
+  wheelMode='sub';
+  activeCat=cat;
+
+  // Merkezi güncelle
+  document.getElementById('centerCityLine').textContent = cat.n.replace('\n',' ').split('&')[0].trim().toUpperCase();
+  document.getElementById('centerTitle').textContent = cat.n.replace('\n',' ');
+  document.getElementById('centerSub').textContent = cat.subs.length+' alt kategori';
+
+  // Segment'leri küçült / öne çıkar
+  CATS.forEach(c=>{
+    const btn = document.getElementById('seg-'+c.id);
+    if(c.id===cat.id){
+      btn.style.transform='translate(-50%,-50%) scale(1.12)';
+      btn.style.opacity='1';
+      btn.style.zIndex='9';
+      btn.querySelector('.seg-inner').style.boxShadow=`0 0 0 3px ${cat.c}, 0 4px 20px rgba(0,0,0,.4)`;
+    } else {
+      btn.style.transform='translate(-50%,-50%) scale(0.7)';
+      btn.style.opacity='0.35';
+      btn.style.zIndex='6';
+      btn.querySelector('.seg-inner').style.boxShadow='';
+    }
+  });
+
+  // Canvas'a renkli çizgi çiz
+  drawSubConnectors(cat);
+
+  // Alt kategorileri yerleştir
+  buildSubNodes(cat);
+}
+
+function drawSubConnectors(cat){
+  const canvas = document.getElementById('wheelCanvas');
+  const wrap   = document.getElementById('wheelWrap');
+  canvas.width  = wrap.offsetWidth;
+  canvas.height = wrap.offsetHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const cx = canvas.width/2;
+  const cy = canvas.height/2;
+
+  // Zayıf segment çizgileri
+  const n = CATS.length;
+  CATS.forEach((_,i)=>{
+    const angle = -Math.PI/2+(2*Math.PI*i)/n;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+SEG_RADIUS*Math.cos(angle), cy+SEG_RADIUS*Math.sin(angle));
+    ctx.strokeStyle='rgba(255,255,255,0.04)';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  });
+
+  // Renkli sub çizgileri
+  const subs = cat.subs;
+  subs.forEach((_, i)=>{
+    const angle = -Math.PI/2+(2*Math.PI*i)/subs.length;
+    const ex = cx+SUB_RADIUS*Math.cos(angle);
+    const ey = cy+SUB_RADIUS*Math.sin(angle);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(ex,ey);
+    ctx.setLineDash([4,3]);
+    ctx.strokeStyle = cat.c+'99';
+    ctx.lineWidth=1.6;
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+}
+
+function buildSubNodes(cat){
+  const wrap = document.getElementById('wheelWrap');
+  const cont = document.getElementById('subContainer');
+  cont.innerHTML='';
+  const cx = wrap.offsetWidth/2;
+  const cy = wrap.offsetHeight/2;
+  const n  = cat.subs.length;
+
+  cat.subs.forEach((sub,i)=>{
+    const angle = -Math.PI/2+(2*Math.PI*i)/n;
+    const sx = cx+SUB_RADIUS*Math.cos(angle);
+    const sy = cy+SUB_RADIUS*Math.sin(angle);
+    const cnt = PLACES.filter(p=>p.cat===cat.id&&p.sub===sub).length;
+    const bgL = cat.c+'22';
+
+    const nd = document.createElement('div');
+    nd.className='sub-node';
+    nd.style.left=sx+'px';
+    nd.style.top =sy+'px';
+    nd.style.setProperty('--c',cat.c);
+    nd.innerHTML=`
+      <div class="sub-inner">
+        <div class="sub-ico" style="background:${bgL}">${ICONS[cat.id]||''}</div>
+        <div class="sub-name">${sub}</div>
+        <div class="sub-cnt">${cnt} mekan</div>
       </div>`;
-    list.appendChild(div);
-  });
-}
-
-function toggleCat(catId, hdr) {
-  const sub = document.getElementById('sub-' + catId);
-  const isOpen = sub.classList.contains('visible');
-  // close all
-  document.querySelectorAll('.sub-list').forEach(s => s.classList.remove('visible'));
-  document.querySelectorAll('.cat-header').forEach(h => h.classList.remove('open'));
-  if (!isOpen) {
-    sub.classList.add('visible');
-    hdr.classList.add('open');
-    filterByCategory(catId);
-  } else {
-    clearFilters();
-  }
-}
-
-function filterByCategory(catId) {
-  activeCategory = catId;
-  activeSub = null;
-  document.querySelectorAll('.sub-item').forEach(el => el.classList.remove('active'));
-  updateMap();
-  const cat = CATEGORIES.find(c => c.id === catId);
-  document.getElementById('activeFilter').textContent = cat ? cat.emoji + ' ' + cat.name.split(' ')[0] : 'Tümü';
-  updateFilterPills();
-}
-
-function filterBySub(catId, sub, el) {
-  activeCategory = catId;
-  activeSub = sub;
-  document.querySelectorAll('.sub-item').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-  updateMap();
-  document.getElementById('activeFilter').textContent = sub;
-  updateFilterPills();
-}
-
-function clearFilters() {
-  activeCategory = null;
-  activeSub = null;
-  document.querySelectorAll('.sub-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.cat-header').forEach(h => h.classList.remove('open'));
-  document.querySelectorAll('.sub-list').forEach(s => s.classList.remove('visible'));
-  document.getElementById('activeFilter').textContent = 'Tümü';
-  updateMap();
-  updateFilterPills();
-}
-
-// ════════════════════════════════════════════════
-//  FILTER PILLS (bottom bar quick filters)
-// ════════════════════════════════════════════════
-function updateFilterPills() {
-  const pills = document.getElementById('filterPills');
-  const activeCats = activeCategory
-    ? [CATEGORIES.find(c => c.id === activeCategory)]
-    : CATEGORIES.slice(0, 5);
-  pills.innerHTML = `<button class="pill ${!activeCategory ? 'active' : ''}" onclick="clearFilters()">Tümü</button>`;
-  CATEGORIES.forEach(cat => {
-    const active = activeCategory === cat.id;
-    pills.innerHTML += `<button class="pill ${active ? 'active' : ''}" onclick="filterByCategory('${cat.id}')">${cat.emoji} ${cat.name.split(' ')[0]}</button>`;
-  });
-}
-
-// ════════════════════════════════════════════════
-//  MAP
-// ════════════════════════════════════════════════
-function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: { lat: 41.0082, lng: 28.9784 },
-    zoom: 13,
-    mapTypeId: 'roadmap',
-    styles: DARK_MAP_STYLE,
-    disableDefaultUI: false,
-    zoomControl: true,
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: false,
-    gestureHandling: 'greedy'
-  });
-
-  // Click to set coords in modal
-  map.addListener('click', (e) => {
-    if (isModerator) {
-      document.getElementById('fLat').value = e.latLng.lat().toFixed(5);
-      document.getElementById('fLng').value = e.latLng.lng().toFixed(5);
-      showNotif('📍 Konum seçildi — formu doldurmaya devam edin');
-      openModal();
-    }
-  });
-
-  mapReady = true;
-  document.getElementById('mapLoading').style.display = 'none';
-  document.getElementById('totalCount').textContent = PLACES.length;
-  updateMap();
-  buildLegend();
-  updateFilterPills();
-}
-
-function getCatColor(catId) {
-  const cat = CATEGORIES.find(c => c.id === catId);
-  return cat ? cat.color : '#c9a84c';
-}
-
-function getCatEmoji(catId) {
-  const cat = CATEGORIES.find(c => c.id === catId);
-  return cat ? cat.emoji : '📍';
-}
-
-function updateMap() {
-  if (!mapReady) return;
-  // Remove existing markers
-  markers.forEach(m => m.setMap(null));
-  markers = [];
-
-  const filtered = PLACES.filter(p => {
-    if (activeCategory && p.cat !== activeCategory) return false;
-    if (activeSub && p.sub !== activeSub) return false;
-    return true;
-  });
-
-  filtered.forEach(place => {
-    const color = getCatColor(place.cat);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
-      <path d="M16 0C7.163 0 0 7.163 0 16c0 10 16 24 16 24s16-14 16-24C32 7.163 24.837 0 16 0z" fill="${color}" opacity="0.9"/>
-      <circle cx="16" cy="16" r="7" fill="#0e0e0e" opacity="0.6"/>
-      <text x="16" y="20" text-anchor="middle" font-size="10" fill="#f5f0e8">${getCatEmoji(place.cat)}</text>
-    </svg>`;
-
-    const icon = {
-      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-      scaledSize: new google.maps.Size(32, 40),
-      anchor: new google.maps.Point(16, 40)
-    };
-
-    const marker = new google.maps.Marker({
-      position: { lat: place.lat, lng: place.lng },
-      map,
-      icon,
-      title: place.name,
-      animation: google.maps.Animation.DROP
+    nd.addEventListener('click',()=>{
+      resetWheel();
+      toMapFilter(cat.id,sub);
     });
-
-    marker.addListener('click', () => showPopup(place));
-    markers.push(marker);
-  });
-
-  document.getElementById('totalCount').textContent = filtered.length;
-}
-
-function showPopup(place) {
-  const cat = CATEGORIES.find(c => c.id === place.cat);
-  document.getElementById('popupCat').textContent = (cat ? cat.emoji + ' ' : '') + (cat ? cat.name : '');
-  document.getElementById('popupName').textContent = place.name;
-  document.getElementById('popupAddress').textContent = '📍 ' + place.address;
-  document.getElementById('popupDesc').textContent = place.desc || '';
-  const tagsDiv = document.getElementById('popupTags');
-  tagsDiv.innerHTML = (place.tags || []).map(t => `<span class="popup-tag">${t}</span>`).join('');
-  document.getElementById('placePopup').classList.add('visible');
-}
-
-function closePopup() {
-  document.getElementById('placePopup').classList.remove('visible');
-}
-
-// ════════════════════════════════════════════════
-//  LEGEND
-// ════════════════════════════════════════════════
-function buildLegend() {
-  const inner = document.getElementById('legendInner');
-  inner.innerHTML = '<div class="legend-title">Kategoriler</div>';
-  CATEGORIES.forEach(cat => {
-    inner.innerHTML += `<div class="legend-item" onclick="filterByCategory('${cat.id}')">
-      <div class="legend-dot" style="background:${cat.color}"></div>
-      <div class="legend-name">${cat.emoji} ${cat.name}</div>
-    </div>`;
+    cont.appendChild(nd);
+    setTimeout(()=>nd.classList.add('show'), 30+i*45);
   });
 }
 
-// ════════════════════════════════════════════════
-//  MODERATİÖR ŞİFRE GİRİŞİ
-// ════════════════════════════════════════════════
-const MODERATOR_PASSWORD = 'mekanatlasi2025'; // Şifreyi buradan değiştirebilirsiniz
-
-function promptModeratorLogin() {
-  if (isModerator) {
-    setMode('viewer');
-    return;
-  }
-  document.getElementById('modPassword').value = '';
-  document.getElementById('loginError').style.display = 'none';
-  document.getElementById('loginBackdrop').classList.add('open');
-  setTimeout(() => document.getElementById('modPassword').focus(), 200);
-}
-
-function checkPassword() {
-  const pw = document.getElementById('modPassword').value;
-  if (pw === MODERATOR_PASSWORD) {
-    closeLogin();
-    setMode('moderator');
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('modPassword').value = '';
-    document.getElementById('modPassword').focus();
-  }
-}
-
-function closeLogin() {
-  document.getElementById('loginBackdrop').classList.remove('open');
-}
-
-// ════════════════════════════════════════════════
-//  MODERATİÖR MODE
-// ════════════════════════════════════════════════
-function setMode(mode) {
-  isModerator = mode === 'moderator';
-  document.getElementById('viewerBtn').classList.toggle('active', !isModerator);
-  document.getElementById('modBtn').classList.toggle('active', isModerator);
-  document.getElementById('modBtn').textContent = isModerator ? 'Çıkış Yap' : 'Moderatör';
-  document.getElementById('addBtn').style.display = isModerator ? 'flex' : 'none';
-  if (isModerator) {
-    showNotif('✏️ Moderatör modu aktif — haritaya tıklayarak konum seçebilirsiniz');
-  } else {
-    showNotif('👁️ Görüntüleme moduna geçildi');
-  }
-}
-
-// ════════════════════════════════════════════════
-//  MODAL
-// ════════════════════════════════════════════════
-function openModal() {
-  // Populate cat select
-  const catSel = document.getElementById('fCat');
-  catSel.innerHTML = '<option value="">Seçin…</option>';
-  CATEGORIES.forEach(c => {
-    catSel.innerHTML += `<option value="${c.id}">${c.emoji} ${c.name}</option>`;
+function resetWheel(){
+  wheelMode='home';
+  activeCat=null;
+  // Merkez sıfırla
+  document.getElementById('centerCityLine').textContent='İSTANBUL';
+  document.getElementById('centerTitle').textContent='Keşfet';
+  document.getElementById('centerSub').textContent='12 kategori';
+  // Segment'leri normale döndür
+  CATS.forEach(c=>{
+    const btn=document.getElementById('seg-'+c.id);
+    btn.style.transform='translate(-50%,-50%) scale(1)';
+    btn.style.opacity='1';
+    btn.style.zIndex='7';
+    btn.querySelector('.seg-inner').style.boxShadow='';
   });
-  // Tags
-  const tagList = document.getElementById('tagList');
-  selectedTags = [];
-  tagList.innerHTML = TAGS.map(t => `<span class="tag" onclick="toggleTag(this, '${t}')">${t}</span>`).join('');
-  document.getElementById('modalBackdrop').classList.add('open');
+  // Sub node'ları kaldır
+  document.querySelectorAll('.sub-node').forEach(n=>{n.classList.remove('show');});
+  setTimeout(()=>{ document.getElementById('subContainer').innerHTML=''; },300);
+  // Canvas'ı normal çiz
+  drawWheelConnectors();
 }
 
-function closeModal() {
-  document.getElementById('modalBackdrop').classList.remove('open');
-  // Clear
-  ['fName','fAddress','fLat','fLng','fDesc'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('fCat').value = '';
-  document.getElementById('fSubCat').innerHTML = '<option value="">Seçin…</option>';
-  selectedTags = [];
+function onCenterClick(){
+  if(wheelMode==='sub') resetWheel();
 }
 
-function updateSubCats() {
-  const catId = document.getElementById('fCat').value;
-  const subSel = document.getElementById('fSubCat');
-  subSel.innerHTML = '<option value="">Seçin…</option>';
-  const cat = CATEGORIES.find(c => c.id === catId);
-  if (cat) {
-    cat.subs.forEach(s => subSel.innerHTML += `<option value="${s}">${s}</option>`);
-  }
-}
+/* ════════════════ MAP SCREEN ════════════════ */
+const MAP_STYLE=[
+  {featureType:"water",elementType:"geometry",stylers:[{color:"#1a3a5c"}]},
+  {featureType:"landscape",elementType:"geometry",stylers:[{color:"#1e2030"}]},
+  {featureType:"road",elementType:"geometry",stylers:[{color:"#2a2e45"}]},
+  {featureType:"road.highway",elementType:"geometry.fill",stylers:[{color:"#2e3550"}]},
+  {featureType:"poi.park",elementType:"geometry",stylers:[{color:"#1a2e20"}]},
+  {featureType:"poi",elementType:"labels",stylers:[{visibility:"off"}]},
+  {elementType:"labels.text.fill",stylers:[{color:"#8a9bb0"}]},
+  {elementType:"labels.text.stroke",stylers:[{color:"#1a1a2e"}]},
+];
 
-function toggleTag(el, tag) {
-  el.classList.toggle('sel');
-  if (el.classList.contains('sel')) {
-    selectedTags.push(tag);
-  } else {
-    selectedTags = selectedTags.filter(t => t !== tag);
-  }
-}
+const BG_MAP_STYLE=[
+  {featureType:"water",elementType:"geometry",stylers:[{color:"#0d2137"}]},
+  {featureType:"landscape",elementType:"geometry",stylers:[{color:"#111525"}]},
+  {featureType:"road",elementType:"geometry",stylers:[{color:"#1a1f32"}]},
+  {featureType:"poi",elementType:"labels",stylers:[{visibility:"off"}]},
+  {featureType:"transit",stylers:[{visibility:"off"}]},
+  {elementType:"labels",stylers:[{visibility:"off"}]},
+];
 
-function submitPlace() {
-  const name = document.getElementById('fName').value.trim();
-  const cat = document.getElementById('fCat').value;
-  const sub = document.getElementById('fSubCat').value;
-  const address = document.getElementById('fAddress').value.trim();
-  const lat = parseFloat(document.getElementById('fLat').value);
-  const lng = parseFloat(document.getElementById('fLng').value);
-  const desc = document.getElementById('fDesc').value.trim();
-
-  if (!name || !cat || !address) {
-    showNotif('⚠️ Lütfen zorunlu alanları doldurun');
-    return;
-  }
-
-  // Geocode if no lat/lng
-  const finalLat = isNaN(lat) ? 41.0082 + (Math.random()-0.5)*0.05 : lat;
-  const finalLng = isNaN(lng) ? 28.9784 + (Math.random()-0.5)*0.1 : lng;
-
-  const place = {
-    id: nextId++,
-    name, cat, sub, address,
-    lat: finalLat, lng: finalLng,
-    desc, tags: [...selectedTags]
-  };
-
-  PLACES.push(place);
-  closeModal();
-  buildSidebar();
-  updateMap();
-  buildLegend();
-  updateFilterPills();
-  showNotif(`✦ "${name}" başarıyla eklendi`);
-  document.getElementById('totalCount').textContent = PLACES.length;
-}
-
-// ════════════════════════════════════════════════
-//  SEARCH
-// ════════════════════════════════════════════════
-function filterPlaces(query) {
-  if (!query.trim()) { clearFilters(); return; }
-  activeCategory = null;
-  activeSub = null;
-  if (!mapReady) return;
-  markers.forEach(m => m.setMap(null));
-  markers = [];
-  const q = query.toLowerCase();
-  const filtered = PLACES.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.address.toLowerCase().includes(q) ||
-    (p.desc||'').toLowerCase().includes(q) ||
-    (p.sub||'').toLowerCase().includes(q)
-  );
-  filtered.forEach(place => {
-    const color = getCatColor(place.cat);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
-      <path d="M16 0C7.163 0 0 7.163 0 16c0 10 16 24 16 24s16-14 16-24C32 7.163 24.837 0 16 0z" fill="${color}" opacity="0.9"/>
-      <circle cx="16" cy="16" r="7" fill="#0e0e0e" opacity="0.6"/>
-      <text x="16" y="20" text-anchor="middle" font-size="10" fill="#f5f0e8">${getCatEmoji(place.cat)}</text>
-    </svg>`;
-    const icon = {
-      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-      scaledSize: new google.maps.Size(32, 40),
-      anchor: new google.maps.Point(16, 40)
-    };
-    const marker = new google.maps.Marker({ position: { lat: place.lat, lng: place.lng }, map, icon, title: place.name });
-    marker.addListener('click', () => showPopup(place));
-    markers.push(marker);
+function initMap(){
+  // Ana harita
+  map=new google.maps.Map(document.getElementById('map'),{
+    center:{lat:41.0082,lng:28.9784},zoom:13,
+    styles:MAP_STYLE,
+    disableDefaultUI:true,gestureHandling:'greedy',zoomControl:true,
   });
-  document.getElementById('totalCount').textContent = filtered.length;
-  document.getElementById('activeFilter').textContent = `"${query}"`;
+  map.addListener('click',()=>closePopup());
+  mapReady=true;
+  document.getElementById('mapLoading').style.display='none';
+
+  // Arka plan haritası (home screen)
+  if(!bgMapReady){
+    bgMap=new google.maps.Map(document.getElementById('bgMap'),{
+      center:{lat:41.0082,lng:28.9784},zoom:12,
+      styles:BG_MAP_STYLE,
+      disableDefaultUI:true,gestureHandling:'none',
+    });
+    bgMapReady=true;
+  }
+  updateMarkers(); buildChips();
 }
 
-// ════════════════════════════════════════════════
-//  SIDEBAR TOGGLE
-// ════════════════════════════════════════════════
-function toggleSidebar() {
-  sidebarOpen = !sidebarOpen;
-  const sb = document.getElementById('sidebar');
-  const btn = document.getElementById('sidebarToggle');
-  const isMobile = window.innerWidth <= 768;
+function makeSVG(color,letter,size){
+  const h=Math.round(size*1.24);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${h}" viewBox="0 0 ${size} ${h}"><path d="M${size/2} 0C${size*.224} 0 0 ${size*.336} 0 ${size*.75}c0 ${size*.537} ${size/2} ${size*.49} ${size/2} ${size*.49}S${size} ${size*1.287} ${size} ${size*.75}C${size} ${size*.336} ${size*.776} 0 ${size/2} 0z" fill="${color}"/><circle cx="${size/2}" cy="${size*.45}" r="${size*.32}" fill="white" opacity=".9"/><text x="${size/2}" y="${size*.6}" text-anchor="middle" font-size="${size*.34}" font-weight="bold" fill="${color}" font-family="Arial">${letter}</text></svg>`;
+}
+const CAT_LETTER={okuma:'K',calisma:'Ç',kultur:'S',muzik:'M',dusunce:'F',sessiz:'M',tasarim:'T',sinema:'S',tarih:'T',acik:'A',sosyal:'B',manzara:'G'};
 
-  if (isMobile) {
-    if (sidebarOpen) {
-      sb.classList.add('open');
-      btn.textContent = '✕';
-      btn.style.left = '260px';
-    } else {
-      sb.classList.remove('open');
-      btn.textContent = '☰';
-      btn.style.left = '0';
-    }
+function updateMarkers(){
+  if(!mapReady) return;
+  markers.forEach(m=>m.setMap(null));markers=[];
+  PLACES.filter(p=>{
+    if(!activeFilter) return true;
+    if(activeFilter.cat&&p.cat!==activeFilter.cat) return false;
+    if(activeFilter.sub&&p.sub!==activeFilter.sub) return false;
+    return true;
+  }).forEach(pl=>{
+    const cat=gc(pl.cat);
+    const col=cat?cat.c:'#333';
+    const svg=makeSVG(col,CAT_LETTER[pl.cat]||'•',34);
+    const mk=new google.maps.Marker({
+      position:{lat:pl.lat,lng:pl.lng},map,
+      icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(34,42),anchor:new google.maps.Point(17,42)},
+      animation:google.maps.Animation.DROP,
+    });
+    mk.addListener('click',()=>showPopup(pl));
+    markers.push(mk);
+  });
+}
+
+function buildChips(){
+  const bar=document.getElementById('mapChips');
+  bar.innerHTML='';
+  const all=document.createElement('button');
+  all.className='chip'+((!activeFilter)?' on':'');
+  all.textContent='Tümü';
+  all.onclick=()=>{activeFilter=null;updateMarkers();buildChips();};
+  bar.appendChild(all);
+  CATS.forEach(cat=>{
+    const b=document.createElement('button');
+    const on=activeFilter&&activeFilter.cat===cat.id&&!activeFilter.sub;
+    b.className='chip'+(on?' on':'');
+    b.textContent=cat.n.replace('\n',' ').split('&')[0].trim();
+    b.onclick=()=>{activeFilter={cat:cat.id};updateMarkers();buildChips();};
+    bar.appendChild(b);
+  });
+}
+
+function showPopup(pl){
+  const cat=gc(pl.cat);
+  const badge=document.getElementById('popBadge');
+  badge.textContent=cat?cat.n.replace('\n',' '):'';
+  badge.style.background=cat?cat.c:'#333';
+  document.getElementById('popName').textContent=pl.name;
+  document.getElementById('popAddr').textContent='📍 '+pl.address;
+  document.getElementById('popDesc').textContent=pl.desc||'';
+  document.getElementById('popTags').innerHTML=(pl.tags||[]).map(t=>`<span class="popup-tag">${t}</span>`).join('');
+  document.getElementById('popup').classList.add('visible');
+}
+function closePopup(){document.getElementById('popup').classList.remove('visible');}
+
+/* ════════════════ LIST ════════════════ */
+function buildList(){
+  const el=document.getElementById('listEl');
+  el.innerHTML='';
+  PLACES.forEach(p=>{
+    const cat=gc(p.cat);
+    const bg=cat?cat.c+'25':'rgba(255,255,255,.1)';
+    const d=document.createElement('div');
+    d.className='list-item';
+    d.onclick=()=>{ toMapFilter(p.cat,p.sub); };
+    d.innerHTML=`
+      <div class="list-item-ico" style="background:${bg}">${ICONS[p.cat]||''}</div>
+      <div>
+        <div class="list-item-name">${p.name}</div>
+        <div class="list-item-sub">${p.sub||''}</div>
+        <div class="list-item-addr">📍 ${p.address}</div>
+      </div>`;
+    el.appendChild(d);
+  });
+}
+
+/* ════════════════ NAV ════════════════ */
+function goTab(id,el){
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sc-'+id).classList.add('active');
+  if(id==='map'){if(!mapReady&&window.google)initMap();updateMarkers();buildChips();}
+  if(id==='list') buildList();
+  if(id==='home'){ resetWheel(); setTimeout(drawWheelConnectors,50); }
+}
+
+function toMapFilter(catId,sub){
+  activeFilter={cat:catId,sub};
+  goTab('map',document.getElementById('tab-map'));
+  if(!mapReady&&window.google)initMap();
+  setTimeout(()=>{updateMarkers();buildChips();},100);
+}
+
+function switchToMap(){
+  goTab('map',document.getElementById('tab-map'));
+}
+
+/* ════════════════ AUTH ════════════════ */
+function promptLogin(){
+  document.getElementById('pwInput').value='';
+  document.getElementById('pwError').style.display='none';
+  document.getElementById('loginSheet').classList.add('open');
+  setTimeout(()=>document.getElementById('pwInput').focus(),200);
+}
+function checkPw(){
+  if(document.getElementById('pwInput').value===PW){
+    document.getElementById('loginSheet').classList.remove('open');
+    isMod=true;
+    document.getElementById('fabBtn').style.display='flex';
+    document.getElementById('profileRole').textContent='Moderatör';
+    document.getElementById('modBtn').style.display='none';
+    document.getElementById('modLogout').style.display='block';
+    showNotif('✏️ Moderatör modu aktif!');
   } else {
-    if (sidebarOpen) {
-      sb.style.width = '280px';
-      btn.textContent = '◀';
-      btn.style.left = '280px';
-    } else {
-      sb.style.width = '0';
-      btn.textContent = '▶';
-      btn.style.left = '0';
-    }
+    document.getElementById('pwError').style.display='block';
+    document.getElementById('pwInput').value='';
   }
 }
+function logoutMod(){
+  isMod=false;
+  document.getElementById('fabBtn').style.display='none';
+  document.getElementById('profileRole').textContent='Ziyaretçi';
+  document.getElementById('modBtn').style.display='block';
+  document.getElementById('modLogout').style.display='none';
+  showNotif('👁️ Görüntüleme moduna geçildi');
+}
 
-// Init sidebar state for mobile
-window.addEventListener('load', () => {
-  if (window.innerWidth <= 768) {
-    sidebarOpen = false;
-    document.getElementById('sidebarToggle').textContent = '☰';
-    document.getElementById('sidebarToggle').style.left = '0';
-    document.getElementById('sidebarToggle').style.top = '10px';
-    document.getElementById('sidebarToggle').style.transform = 'none';
-    document.getElementById('sidebarToggle').style.padding = '8px 12px';
-    document.getElementById('sidebarToggle').style.fontSize = '16px';
-  }
+/* ════════════════ ADD PLACE ════════════════ */
+function openAddSheet(){
+  if(!isMod) return;
+  const cs=document.getElementById('fCat');
+  cs.innerHTML='<option value="">Kategori seçin…</option>';
+  CATS.forEach(c=>cs.innerHTML+=`<option value="${c.id}">${c.n.replace('\n',' ')}</option>`);
+  document.getElementById('fSub').innerHTML='<option value="">Alt kategori…</option>';
+  selTags=[];
+  document.getElementById('fTagsEl').innerHTML=TAGS.map(t=>`<button class="form-tag" onclick="toggleTag(this,'${t}')">${t}</button>`).join('');
+  ['fName','fAddr','fLat','fLng','fDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addSheet').classList.add('open');
+}
+function fillSubs(){
+  const cat=CATS.find(c=>c.id===document.getElementById('fCat').value);
+  const sel=document.getElementById('fSub');
+  sel.innerHTML='<option value="">Alt kategori…</option>';
+  if(cat) cat.subs.forEach(s=>sel.innerHTML+=`<option value="${s}">${s}</option>`);
+}
+function toggleTag(el,tag){
+  el.classList.toggle('on');
+  selTags=el.classList.contains('on')?[...selTags,tag]:selTags.filter(t=>t!==tag);
+}
+function savePlace(){
+  const name=document.getElementById('fName').value.trim();
+  const cat=document.getElementById('fCat').value;
+  const addr=document.getElementById('fAddr').value.trim();
+  if(!name||!cat||!addr){showNotif('⚠️ Zorunlu alanları doldurun');return;}
+  const lat=parseFloat(document.getElementById('fLat').value)||41.0082+(Math.random()-.5)*.05;
+  const lng=parseFloat(document.getElementById('fLng').value)||28.9784+(Math.random()-.5)*.1;
+  PLACES.push({id:nid++,name,cat,sub:document.getElementById('fSub').value,address:addr,lat,lng,
+    desc:document.getElementById('fDesc').value.trim(),tags:[...selTags]});
+  document.getElementById('addSheet').classList.remove('open');
+  buildList();
+  if(mapReady) updateMarkers();
+  showNotif(`✓ "${name}" eklendi`);
+}
+
+/* ════════════════ NOTIF ════════════════ */
+function showNotif(msg){
+  const el=document.getElementById('notif');
+  el.textContent=msg;el.style.display='block';
+  setTimeout(()=>el.style.display='none',2500);
+}
+
+/* ════════════════ SHEETS CLOSE ════════════════ */
+['addSheet','loginSheet'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 });
 
-// ════════════════════════════════════════════════
-//  NOTIFICATION
-// ════════════════════════════════════════════════
-function showNotif(msg) {
-  const el = document.getElementById('notif');
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 3000);
-}
-
-// ════════════════════════════════════════════════
-//  DARK MAP STYLE
-// ════════════════════════════════════════════════
-const DARK_MAP_STYLE = [
-  { elementType: "geometry", stylers: [{ color: "#1a1a2e" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#1a1a2e" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#8d7c6a" }] },
-  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#c9a84c" }] },
-  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#c9a84c" }] },
-  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#1a2e1a" }] },
-  { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#6b9a5a" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#252540" }] },
-  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#1a1a2e" }] },
-  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#7a7090" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#3a3050" }] },
-  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#1a1a2e" }] },
-  { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#c9a84c" }] },
-  { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2a2040" }] },
-  { featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#c9a84c" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0a1628" }] },
-  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#2a5a8a" }] },
-  { featureType: "water", elementType: "labels.text.stroke", stylers: [{ color: "#0a1628" }] }
-];
-
-// Init sidebar immediately
-buildSidebar();
-updateFilterPills();
+/* ════════════════ INIT ════════════════ */
+window.addEventListener('load',()=>{
+  initWheel();
+  buildList();
+});
+window.addEventListener('resize',()=>{
+  if(wheelMode==='home') drawWheelConnectors();
+  else drawSubConnectors(activeCat);
+  buildSegments();
+  if(wheelMode==='sub') buildSubNodes(activeCat);
+});
 </script>
 
-<!-- REPLACE 'YOUR_GOOGLE_MAPS_API_KEY' WITH YOUR ACTUAL KEY -->
 <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&callback=initMap&language=tr&region=TR">
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&callback=initMap">
 </script>
-
 </body>
 </html>
