@@ -10,13 +10,13 @@
     :root {
       --ink: #0e0e0e;
       --parchment: #f5f0e8;
-      --gold: #c9a84c;
-      --gold-light: #e8d08a;
+      --gold: #ffffff;
+      --gold-light: #e8e8e8;
       --rust: #8b3a2a;
       --teal: #2a6b6e;
       --cream: #faf7f0;
       --muted: #6b6257;
-      --border: rgba(201,168,76,0.25);
+      --border: rgba(255,255,255,0.15);
       --sidebar-w: 280px;
     }
 
@@ -34,10 +34,10 @@
 
     /* ── HEADER ── */
     header {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
+      padding: 0 12px;
       height: 60px;
       background: var(--ink);
       border-bottom: 1px solid var(--border);
@@ -48,13 +48,34 @@
 
     .logo {
       display: flex;
-      align-items: baseline;
-      gap: 10px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
     }
 
     .logo-title {
       font-family: 'Playfair Display', serif;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--gold);
       letter-spacing: 0.02em;
@@ -62,9 +83,9 @@
 
     .logo-sub {
       font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.15em;
+      font-size: 9px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.2em;
       text-transform: uppercase;
     }
 
@@ -77,8 +98,10 @@
 
     .header-actions {
       display: flex;
-      align-items: center;
-      gap: 14px;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
     .mode-badge {
@@ -117,10 +140,10 @@
       border: 1px solid var(--border);
       color: var(--parchment);
       font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
-      padding: 6px 14px 6px 34px;
+      font-size: 13px;
+      padding: 4px 8px 4px 24px;
       border-radius: 2px;
-      width: 220px;
+      width: 100px;
       outline: none;
       transition: border-color 0.2s;
     }
@@ -805,18 +828,21 @@
 
 <!-- HEADER -->
 <header>
-  <div class="logo">
-    <span class="logo-ornament">✦</span>
-    <span class="logo-title">Mekan Atlası</span>
-    <span class="logo-sub">İstanbul</span>
-  </div>
-  <div class="header-actions">
+  <div class="header-left">
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
       <input type="text" id="searchInput" placeholder="Mekan ara…" oninput="filterPlaces(this.value)">
     </div>
-    <button class="mode-badge viewer active" id="viewerBtn" onclick="setMode('viewer')">Görüntüle</button>
-    <button class="mode-badge moderator" id="modBtn" onclick="setMode('moderator')">Moderatör</button>
+  </div>
+  <div class="logo">
+    <div class="logo-text">
+      <span class="logo-title">Mekan Atlası</span>
+      <span class="logo-sub">İstanbul</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="mode-badge viewer active" id="viewerBtn" onclick="setMode('viewer')" style="display:none">Görüntüle</button>
+    <button class="mode-badge moderator" id="modBtn" onclick="promptModeratorLogin()">Moderatör</button>
   </div>
 </header>
 
@@ -887,6 +913,33 @@
 
 <!-- NOTIFICATION -->
 <div class="notif" id="notif"></div>
+
+<!-- MODERATÖR GİRİŞ MODALI -->
+<div class="modal-backdrop" id="loginBackdrop">
+  <div class="modal" style="max-width:340px">
+    <div class="modal-header">
+      <div class="modal-title">Moderatör Girişi</div>
+      <button class="modal-close" onclick="closeLogin()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--muted); margin-bottom:18px;">
+        Mekan eklemek için moderatör şifresini girin.
+      </p>
+      <div class="form-row">
+        <label class="form-label">Şifre</label>
+        <input type="password" class="form-input" id="modPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()">
+      </div>
+      <div id="loginError" style="color:#e05050; font-family:'Space Mono',monospace; font-size:10px; margin-top:8px; display:none;">
+        ✕ Hatalı şifre
+      </div>
+      <button class="btn-primary" onclick="checkPassword()" style="margin-top:12px; width:100%">Giriş Yap</button>
+      <p style="font-family:'Cormorant Garamond',serif; font-size:11px; color:var(--muted); margin-top:14px; text-align:center;">
+        Moderatör olmak ister misiniz?<br>
+        <a href="mailto:volkandurak@gmail.com" style="color:var(--gold);">İletişime geçin</a>
+      </p>
+    </div>
+  </div>
+</div>
 
 <!-- ADD PLACE MODAL -->
 <div class="modal-backdrop" id="modalBackdrop">
@@ -1231,12 +1284,45 @@ function buildLegend() {
 }
 
 // ════════════════════════════════════════════════
-//  MODERATOR MODE
+//  MODERATİÖR ŞİFRE GİRİŞİ
+// ════════════════════════════════════════════════
+const MODERATOR_PASSWORD = 'mekanatlasi2025'; // Şifreyi buradan değiştirebilirsiniz
+
+function promptModeratorLogin() {
+  if (isModerator) {
+    setMode('viewer');
+    return;
+  }
+  document.getElementById('modPassword').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginBackdrop').classList.add('open');
+  setTimeout(() => document.getElementById('modPassword').focus(), 200);
+}
+
+function checkPassword() {
+  const pw = document.getElementById('modPassword').value;
+  if (pw === MODERATOR_PASSWORD) {
+    closeLogin();
+    setMode('moderator');
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('modPassword').value = '';
+    document.getElementById('modPassword').focus();
+  }
+}
+
+function closeLogin() {
+  document.getElementById('loginBackdrop').classList.remove('open');
+}
+
+// ════════════════════════════════════════════════
+//  MODERATİÖR MODE
 // ════════════════════════════════════════════════
 function setMode(mode) {
   isModerator = mode === 'moderator';
   document.getElementById('viewerBtn').classList.toggle('active', !isModerator);
   document.getElementById('modBtn').classList.toggle('active', isModerator);
+  document.getElementById('modBtn').textContent = isModerator ? 'Çıkış Yap' : 'Moderatör';
   document.getElementById('addBtn').style.display = isModerator ? 'flex' : 'none';
   if (isModerator) {
     showNotif('✏️ Moderatör modu aktif — haritaya tıklayarak konum seçebilirsiniz');
