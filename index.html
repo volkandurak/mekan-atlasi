@@ -56,13 +56,19 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
 
 /* Alt tab bar */
 .tab-bar{
-  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
   display:flex;
-  background:rgba(15,15,35,.88);
+  background:rgba(15,15,35,.95);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
   border-top:1px solid rgba(255,255,255,.08);
   padding-bottom:env(safe-area-inset-bottom,0px);
+  transition:transform .25s ease, opacity .25s ease;
+}
+.tab-bar.hidden{
+  transform:translateY(100%);
+  opacity:0;
+  pointer-events:none;
 }
 .tab-item{
   flex:1;display:flex;flex-direction:column;align-items:center;
@@ -213,6 +219,97 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
 #map{flex:1}
 #mapLoading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(15,15,35,.8);color:#fff;font-weight:700;font-size:14px;z-index:10}
 
+/* Yakın Mekanlar Paneli */
+#nearbyPanel{
+  position:fixed;bottom:0;left:0;right:0;z-index:490;
+  background:rgba(12,12,30,.97);
+  backdrop-filter:blur(20px);
+  border-radius:22px 22px 0 0;
+  border-top:1px solid rgba(255,255,255,.1);
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.34,1.2,.64,1);
+  max-height:75vh;
+  display:flex;flex-direction:column;
+}
+#nearbyPanel.open{transform:none}
+.nearby-handle{width:36px;height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin:14px auto 0}
+.nearby-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px 10px;flex-shrink:0;
+}
+.nearby-title{font-size:16px;font-weight:900;color:#fff}
+.nearby-sub{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;margin-top:1px}
+.nearby-close{
+  width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:none;color:rgba(255,255,255,.6);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.nearby-list{overflow-y:auto;flex:1;padding:0 12px 100px;}
+.nearby-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 8px;border-bottom:1px solid rgba(255,255,255,.05);
+  cursor:pointer;border-radius:10px;
+  transition:background .15s;
+}
+.nearby-item:active{background:rgba(255,255,255,.06)}
+.nearby-ico{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.nearby-info{flex:1;min-width:0}
+.nearby-name{font-size:13px;font-weight:800;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nearby-meta{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;margin-top:2px}
+.nearby-dist{
+  font-size:12px;font-weight:800;color:#64B5F6;
+  flex-shrink:0;text-align:right;
+}
+.nearby-badge{
+  display:inline-block;padding:2px 7px;border-radius:8px;
+  font-size:9px;font-weight:800;color:#fff;margin-top:3px;
+}
+
+/* Yarıçap seçici */
+.radius-tabs{
+  display:flex;gap:6px;padding:0 18px 10px;flex-shrink:0;
+}
+.radius-tab{
+  padding:5px 12px;border-radius:20px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);
+  transition:all .15s;
+}
+.radius-tab.on{background:#64B5F6;color:#fff;}
+
+/* Harita üstü butonlar */
+#mapFab{
+  position:absolute;bottom:16px;right:16px;z-index:40;
+  display:flex;flex-direction:column;gap:10px;
+}
+.map-fab-btn{
+  width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;box-shadow:0 4px 16px rgba(0,0,0,.4);
+  transition:transform .15s;
+}
+.map-fab-btn:active{transform:scale(.9)}
+#btnMyLocation{background:#fff;color:#333;}
+#btnNearbyTap{background:#64B5F6;color:#fff;font-size:18px;}
+
+/* Konum halkası haritada */
+.location-pulse{
+  width:16px;height:16px;border-radius:50%;
+  background:#4285F4;border:2px solid #fff;
+  box-shadow:0 0 0 0 rgba(66,133,244,.4);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(66,133,244,.5)}
+  70%{box-shadow:0 0 0 12px rgba(66,133,244,0)}
+  100%{box-shadow:0 0 0 0 rgba(66,133,244,0)}
+}
+
 /* Popup */
 .popup{
   position:fixed;bottom:0;left:0;right:0;z-index:500;
@@ -237,14 +334,22 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
 
 /* Popup fotoğraf galerisi */
 .pop-photos{
-  display:flex;gap:8px;overflow-x:auto;margin:0 -18px 14px;padding:0 18px;
-  scrollbar-width:none;
+  display:flex;flex-direction:column;gap:6px;margin-bottom:14px;
 }
-.pop-photos::-webkit-scrollbar{display:none}
-.pop-photo{
-  flex-shrink:0;width:140px;height:100px;border-radius:12px;
+.pop-photos-main{
+  width:100%;height:200px;border-radius:14px;
   object-fit:cover;background:rgba(255,255,255,.06);
 }
+.pop-photos-row{
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+}
+.pop-photos-row::-webkit-scrollbar{display:none}
+.pop-photo{
+  flex-shrink:0;width:110px;height:80px;border-radius:10px;
+  object-fit:cover;background:rgba(255,255,255,.06);cursor:pointer;
+  transition:opacity .15s;
+}
+.pop-photo:active{opacity:.7}
 .pop-photo-placeholder{
   flex-shrink:0;width:140px;height:100px;border-radius:12px;
   background:rgba(255,255,255,.06);display:flex;align-items:center;
@@ -436,6 +541,13 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
   <div style="position:relative;flex:1">
     <div id="map" style="width:100%;height:100%"></div>
     <div id="mapLoading">Harita yükleniyor…</div>
+
+    <!-- Harita FAB butonları -->
+    <div id="mapFab">
+      <button class="map-fab-btn" id="btnMyLocation" onclick="goToMyLocation()" title="Konumuma Git">📍</button>
+      <button class="map-fab-btn" id="btnNearbyTap" onclick="toggleTapMode()" title="Yakın Mekanlar">🔍</button>
+    </div>
+
     <div class="popup" id="popup">
       <div style="padding:0 18px 28px">
         <div class="pop-handle"></div>
@@ -485,6 +597,25 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
       </div>
     </div>
   </div>
+</div>
+
+<!-- ════ NEARBY PANEL ════ -->
+<div id="nearbyPanel">
+  <div class="nearby-handle"></div>
+  <div class="nearby-header">
+    <div>
+      <div class="nearby-title" id="nearbyTitle">Yakın Mekanlar</div>
+      <div class="nearby-sub" id="nearbySub">Konum seçiliyor...</div>
+    </div>
+    <button class="nearby-close" onclick="closeNearby()">✕</button>
+  </div>
+  <div class="radius-tabs" id="radiusTabs">
+    <button class="radius-tab on" onclick="setRadius(100,this)">100m</button>
+    <button class="radius-tab" onclick="setRadius(250,this)">250m</button>
+    <button class="radius-tab" onclick="setRadius(500,this)">500m</button>
+    <button class="radius-tab" onclick="setRadius(1000,this)">1km</button>
+  </div>
+  <div class="nearby-list" id="nearbyList"></div>
 </div>
 
 <!-- ════ LIST ════ -->
@@ -2465,7 +2596,13 @@ function initMap(){
     styles:MAP_STYLE,
     disableDefaultUI:true,gestureHandling:'greedy',zoomControl:true,
   });
-  map.addListener('click',()=>closePopup());
+  map.addListener('click',(e)=>{
+    if(tapModeActive){
+      handleMapTap(e.latLng.lat(), e.latLng.lng(), false);
+    } else {
+      closePopup();
+    }
+  });
   mapReady=true;
   document.getElementById('mapLoading').style.display='none';
 
@@ -2566,6 +2703,8 @@ function showPopup(pl){
 
   document.getElementById('popup').classList.add('visible');
   document.getElementById('popup').scrollTop = 0;
+  // Navbar gizle
+  document.querySelector('.tab-bar') && document.querySelector('.tab-bar').classList.add('hidden');
 
   // Street View her zaman göster
   showStreetView(pl.lat, pl.lng);
@@ -2647,17 +2786,37 @@ function renderPlaceDetails(place){
   if(place.photos && place.photos.length > 0){
     const photosEl = document.getElementById('popPhotos');
     photosEl.innerHTML = '';
-    const count = Math.min(place.photos.length, 6);
-    for(let i = 0; i < count; i++){
-      const url = place.photos[i].getUrl({maxWidth:280, maxHeight:200});
-      const img = document.createElement('img');
-      img.className = 'pop-photo';
-      img.src = url;
-      img.alt = '';
-      img.onerror = () => img.remove();
-      photosEl.appendChild(img);
+    photosEl.style.display = 'block';
+
+    const allPhotos = place.photos;
+    const total = Math.min(allPhotos.length, 9);
+
+    // İlk fotoğraf büyük - tam genişlik
+    const mainUrl = allPhotos[0].getUrl({maxWidth:800, maxHeight:600});
+    const mainImg = document.createElement('img');
+    mainImg.className = 'pop-photos-main';
+    mainImg.src = mainUrl;
+    mainImg.alt = '';
+    mainImg.onerror = () => mainImg.remove();
+    mainImg.onclick = () => window.open(mainUrl, '_blank');
+    photosEl.appendChild(mainImg);
+
+    // Diğerleri yatay scroll satırında
+    if(total > 1){
+      const row = document.createElement('div');
+      row.className = 'pop-photos-row';
+      for(let i = 1; i < total; i++){
+        const url = allPhotos[i].getUrl({maxWidth:400, maxHeight:300});
+        const img = document.createElement('img');
+        img.className = 'pop-photo';
+        img.src = url;
+        img.alt = '';
+        img.onerror = () => img.remove();
+        img.onclick = () => window.open(url, '_blank');
+        row.appendChild(img);
+      }
+      photosEl.appendChild(row);
     }
-    photosEl.style.display = 'flex';
   }
 
   // Rating
@@ -2738,9 +2897,183 @@ function openInGoogle(){
   window.open(`https://www.google.com/search?q=${encodeURIComponent(currentPlace.name+' '+currentPlace.address+' İstanbul')}`, '_blank');
 }
 
+
+/* ════════════════ NEARBY / KONUM ════════════════ */
+let tapModeActive = false;
+let nearbyRadius = 100;
+let userMarker = null;
+let nearbyCircle = null;
+let nearbyPoint = null;
+
+function toggleTapMode(){
+  tapModeActive = !tapModeActive;
+  const btn = document.getElementById('btnNearbyTap');
+  if(tapModeActive){
+    btn.style.background = '#FF6B35';
+    btn.title = 'Yer seçme modu aktif - haritaya tıklayın';
+    btn.style.animation = 'none';
+    map.setOptions({cursor:'crosshair'});
+    showToast('Yakın mekan aramak için haritaya tıklayın 📍');
+  } else {
+    btn.style.background = '#64B5F6';
+    map.setOptions({cursor:''});
+    closeNearby();
+  }
+}
+
+function goToMyLocation(){
+  if(!navigator.geolocation){
+    showToast('Konum desteklenmiyor'); return;
+  }
+  const btn = document.getElementById('btnMyLocation');
+  btn.textContent = '⏳';
+  navigator.geolocation.getCurrentPosition(pos => {
+    btn.textContent = '📍';
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    map.setCenter({lat, lng});
+    map.setZoom(16);
+    // Mavi konum noktası
+    if(userMarker) userMarker.setMap(null);
+    const div = document.createElement('div');
+    div.className = 'location-pulse';
+    userMarker = new google.maps.OverlayView();
+    userMarker.onAdd = function(){
+      this.getPanes().overlayMouseTarget.appendChild(div);
+    };
+    userMarker.draw = function(){
+      const p = this.getProjection().fromLatLngToDivPixel(new google.maps.LatLng(lat,lng));
+      div.style.position = 'absolute';
+      div.style.left = (p.x-8)+'px';
+      div.style.top  = (p.y-8)+'px';
+    };
+    userMarker.onRemove = function(){ div.parentNode && div.parentNode.removeChild(div); };
+    userMarker.setMap(map);
+
+    // Otomatik yakın mekan ara
+    handleMapTap(lat, lng, true);
+  }, () => {
+    btn.textContent = '📍';
+    showToast('Konum alınamadı. Lütfen izin verin.');
+  }, {enableHighAccuracy:true, timeout:8000});
+}
+
+function handleMapTap(lat, lng, fromLocation){
+  nearbyPoint = {lat, lng};
+  tapModeActive = false;
+  document.getElementById('btnNearbyTap').style.background = '#64B5F6';
+  map.setOptions({cursor:''});
+
+  // Çember çiz
+  if(nearbyCircle) nearbyCircle.setMap(null);
+  nearbyCircle = new google.maps.Circle({
+    center:{lat,lng}, radius:nearbyRadius,
+    map: map,
+    fillColor:'#64B5F6', fillOpacity:0.12,
+    strokeColor:'#64B5F6', strokeOpacity:0.6, strokeWeight:2
+  });
+
+  // Haritayı ortala
+  map.setCenter({lat, lng});
+  if(map.getZoom() < 15) map.setZoom(16);
+
+  showNearbyPlaces(lat, lng, fromLocation);
+}
+
+function showNearbyPlaces(lat, lng, fromLocation){
+  const found = [];
+  PLACES.forEach(p => {
+    const d = getDistanceM(lat, lng, p.lat, p.lng);
+    if(d <= nearbyRadius) found.push({...p, _dist: d});
+  });
+  found.sort((a,b) => a._dist - b._dist);
+
+  const panel = document.getElementById('nearbyPanel');
+  const list  = document.getElementById('nearbyList');
+  const title = document.getElementById('nearbyTitle');
+  const sub   = document.getElementById('nearbySub');
+
+  title.textContent = fromLocation ? 'Etrafımdaki Mekanlar' : 'Bu Noktanın Yakını';
+  sub.textContent = found.length > 0
+    ? `${nearbyRadius}m içinde ${found.length} mekan bulundu`
+    : `${nearbyRadius}m içinde mekan bulunamadı`;
+
+  list.innerHTML = '';
+  if(found.length === 0){
+    list.innerHTML = '<div style="text-align:center;padding:32px 16px;color:rgba(255,255,255,.3);font-size:13px;font-weight:700;">Bu yarıçapta mekan yok<br><span style="font-size:11px">Yarıçapı artırmayı deneyin</span></div>';
+  } else {
+    found.forEach(p => {
+      const cat = gc(p.cat);
+      const col = cat ? cat.c : '#666';
+      const item = document.createElement('div');
+      item.className = 'nearby-item';
+      item.innerHTML = `
+        <div class="nearby-ico" style="background:${col}22">
+          ${ICONS[p.cat] || '📍'}
+        </div>
+        <div class="nearby-info">
+          <div class="nearby-name">${p.name}</div>
+          <div class="nearby-meta">${p.address}</div>
+          <span class="nearby-badge" style="background:${col}">${cat ? cat.n.replace('\n',' ') : ''}</span>
+        </div>
+        <div class="nearby-dist">${p._dist < 1000 ? Math.round(p._dist)+'m' : (p._dist/1000).toFixed(1)+'km'}</div>`;
+      item.onclick = () => {
+        closeNearby();
+        showPopup(p);
+        map.setCenter({lat:p.lat, lng:p.lng});
+      };
+      list.appendChild(item);
+    });
+  }
+
+  panel.classList.add('open');
+  document.querySelector('.tab-bar') && document.querySelector('.tab-bar').classList.add('hidden');
+}
+
+function setRadius(r, btn){
+  nearbyRadius = r;
+  document.querySelectorAll('.radius-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  if(nearbyCircle) nearbyCircle.setRadius(r);
+  if(nearbyPoint) showNearbyPlaces(nearbyPoint.lat, nearbyPoint.lng, false);
+}
+
+function closeNearby(){
+  document.getElementById('nearbyPanel').classList.remove('open');
+  if(nearbyCircle){ nearbyCircle.setMap(null); nearbyCircle = null; }
+  document.querySelector('.tab-bar') && document.querySelector('.tab-bar').classList.remove('hidden');
+}
+
+function getDistanceM(lat1, lng1, lat2, lng2){
+  const R = 6371000;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLng = (lng2-lng1) * Math.PI/180;
+  const a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+    Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function showToast(msg){
+  let t = document.getElementById('toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(30,30,60,.95);color:#fff;padding:10px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1)';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 2800);
+}
+
 function closePopup(){
   document.getElementById('popup').classList.remove('visible');
   document.getElementById('popSvFrame').src = '';
+  // Navbar geri göster
+  document.querySelector('.tab-bar') && document.querySelector('.tab-bar').classList.remove('hidden');
 }
 
 /* ════════════════ LIST ════════════════ */
