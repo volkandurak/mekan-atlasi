@@ -17,7 +17,7 @@
       --cream: #faf7f0;
       --muted: #6b6257;
       --border: rgba(201,168,76,0.25);
-      --sidebar-w: 380px;
+      --sidebar-w: 280px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -200,7 +200,7 @@
 
     .cat-name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--parchment);
       flex: 1;
@@ -785,9 +785,19 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      :root { --sidebar-w: 100vw; }
-      .sidebar { position: fixed; left: 0; top: 60px; bottom: 0; z-index: 150; transform: translateX(-100%); transition: transform 0.3s; }
+      :root { --sidebar-w: 260px; }
+      .sidebar { 
+        position: fixed; 
+        left: 0; top: 60px; bottom: 0; 
+        z-index: 150; 
+        transform: translateX(-100%); 
+        transition: transform 0.3s;
+        width: 260px !important;
+      }
       .sidebar.open { transform: translateX(0); }
+      .toggle-sidebar { left: 0 !important; }
+      .toggle-sidebar.sidebar-open { left: 260px !important; }
+      .header-actions .search-wrap input { width: 140px; }
     }
   </style>
 </head>
@@ -849,7 +859,7 @@
     </div>
 
     <!-- Legend -->
-    <div class="legend visible" id="legend">
+    <div class="legend" id="legend">
       <div class="legend-inner" id="legendInner"></div>
     </div>
 
@@ -1215,7 +1225,7 @@ function buildLegend() {
   CATEGORIES.forEach(cat => {
     inner.innerHTML += `<div class="legend-item" onclick="filterByCategory('${cat.id}')">
       <div class="legend-dot" style="background:${cat.color}"></div>
-      <div class="legend-name">${cat.emoji} ${cat.name.split(' ').slice(0,2).join(' ')}</div>
+      <div class="legend-name">${cat.emoji} ${cat.name}</div>
     </div>`;
   });
 }
@@ -1359,16 +1369,43 @@ function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
   const sb = document.getElementById('sidebar');
   const btn = document.getElementById('sidebarToggle');
-  if (sidebarOpen) {
-    sb.style.width = 'var(--sidebar-w)';
-    btn.textContent = '◀';
-    btn.style.left = 'var(--sidebar-w)';
+  const isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    if (sidebarOpen) {
+      sb.classList.add('open');
+      btn.textContent = '✕';
+      btn.style.left = '260px';
+    } else {
+      sb.classList.remove('open');
+      btn.textContent = '☰';
+      btn.style.left = '0';
+    }
   } else {
-    sb.style.width = '0';
-    btn.textContent = '▶';
-    btn.style.left = '0';
+    if (sidebarOpen) {
+      sb.style.width = '280px';
+      btn.textContent = '◀';
+      btn.style.left = '280px';
+    } else {
+      sb.style.width = '0';
+      btn.textContent = '▶';
+      btn.style.left = '0';
+    }
   }
 }
+
+// Init sidebar state for mobile
+window.addEventListener('load', () => {
+  if (window.innerWidth <= 768) {
+    sidebarOpen = false;
+    document.getElementById('sidebarToggle').textContent = '☰';
+    document.getElementById('sidebarToggle').style.left = '0';
+    document.getElementById('sidebarToggle').style.top = '10px';
+    document.getElementById('sidebarToggle').style.transform = 'none';
+    document.getElementById('sidebarToggle').style.padding = '8px 12px';
+    document.getElementById('sidebarToggle').style.fontSize = '16px';
+  }
+});
 
 // ════════════════════════════════════════════════
 //  NOTIFICATION
