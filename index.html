@@ -775,6 +775,24 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:row;max-width:4
     <div class="profile-role" id="profileRole">Ziyaretçi</div>
     <button class="profile-btn" id="modBtn" onclick="promptLogin()">Moderatör Girişi</button>
     <button class="profile-btn danger" id="modLogout" style="display:none" onclick="logoutMod()">Çıkış Yap</button>
+
+    <!-- MOD PANELİ -->
+    <div id="modPanel" style="display:none;width:100%;margin-top:8px;">
+      <div style="font-size:12px;font-weight:600;color:var(--txt-sec);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;">🛠 Moderatör Araçları</div>
+
+      <button class="profile-btn" id="autoFixBtn" onclick="autoFixCoords()" style="background:linear-gradient(135deg,#2e7d32,#43a047);margin-bottom:8px;">
+        🌐 Tüm Koordinatları Otomatik Düzelt
+      </button>
+      <div id="autoFixProgress" style="display:none;font-size:12px;color:var(--txt-sec);background:var(--bg-card);border-radius:10px;padding:10px;margin-bottom:8px;line-height:1.5;word-break:break-word;"></div>
+
+      <button class="profile-btn" onclick="exportPlaces()" style="background:linear-gradient(135deg,#1565c0,#1976d2);margin-bottom:8px;">
+        📤 Mekanları JSON Olarak İndir
+      </button>
+
+      <div style="font-size:12px;color:var(--txt-sec);text-align:center;margin-top:4px;">
+        Toplam <strong id="placeCount">—</strong> mekan kayıtlı
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2218,682 +2236,206 @@ let PLACES = [
   {id:1075,name:"Milli Reasürans Galeri",             cat:"kultur", sub:"Sanat galerileri",       address:"Tepebaşı, Beyoğlu",     lat:41.0292, lng:28.9758, desc:"Sigorta şirketinin desteklediği; kaliteli çağdaş sanat sergilerine ev sahipliği yapan galeri.", tags:["Ücretsiz"]},
   {id:1076,name:"x-ist",                              cat:"kultur", sub:"Sanat galerileri",       address:"Feriye, Beşiktaş",      lat:41.0490, lng:29.0250, desc:"Boğaz kıyısında tarihi Feriye binalarında uluslararası çağdaş sanat galerisi.", tags:["Boğaz manzarası"]},
 
-  /* ══ EK: Sahaflar (+5) ══ */
-  {id:1077,name:"Sahaflar Çarşısı Beyazıt",           cat:"okuma",  sub:"Sahaflar",               address:"Beyazıt, Fatih",        lat:41.0107, lng:28.9645, desc:"İstanbul'un en tarihi sahaf çarşısı; üniversite öğrencilerinin ve bibliyofillerin cennet köşesi.", tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1078,name:"Tünel Sahaf Sokağı",                 cat:"okuma",  sub:"Sahaflar",               address:"Tünel, Beyoğlu",        lat:41.0287, lng:28.9742, desc:"Tünel meydanına inen yokuşta sıralanan sahaf dükkanları; nadir baskı ve antika kitaplar.", tags:["Tarihî yapı"]},
-  {id:1079,name:"Bostancı Sahaf Pazarı",              cat:"okuma",  sub:"Sahaflar",               address:"Bostancı, Kadıköy",     lat:40.9618, lng:29.0943, desc:"Hafta sonu kurulan; ikinci el kitap ve koleksiyon arayanların Anadolu yakası buluşması.", tags:["Ücretsiz"]},
-  {id:1080,name:"Kadıköy Tarihi Pazar İçi Sahaflar",  cat:"okuma",  sub:"Sahaflar",               address:"Kadıköy",               lat:40.9905, lng:29.0275, desc:"Pazar içine sıkışmış nadir sahaf köşeleri; bazen en değerli buluntular burada.", tags:[]},
-  {id:1081,name:"Çukurcuma Sahaf Dükkanları",         cat:"okuma",  sub:"Sahaflar",               address:"Çukurcuma, Beyoğlu",    lat:41.0300, lng:28.9770, desc:"Antika pazarı içinde kitap ve dergi sahafları; koleksiyonluk dergiler ve eski baskılar.", tags:["Tarihî yapı"]},
-
-  /* ══ EK: Müzeler (+5) ══ */
-  {id:1082,name:"Atatürk Müzesi Şişli",               cat:"kultur", sub:"Müzeler",                address:"Şişli",                 lat:41.0568, lng:28.9868, desc:"Atatürk'ün İstanbul'daki evinin müzeye dönüştürülmüş hali; kişisel eşyalar ve belgeler.", tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1083,name:"Yapı Kredi Kültür Müzesi",           cat:"kultur", sub:"Müzeler",                address:"İstiklal Cd., Beyoğlu", lat:41.0318, lng:28.9760, desc:"Türk sanatı ve kültürel mirasına adanmış; kitap sanatı ve grafik tasarım koleksiyonları.", tags:["Ücretsiz"]},
-  {id:1084,name:"Askeri Müze",                        cat:"kultur", sub:"Müzeler",                address:"Harbiye, Şişli",        lat:41.0508, lng:28.994, desc:"Osmanlı'dan Cumhuriyet'e Türk askeri tarihinin kapsamlı koleksiyonu; mehter konserleri.", tags:[]},
-  {id:1085,name:"Dövme Müzesi",                       cat:"kultur", sub:"Müzeler",                address:"Karaköy, Beyoğlu",      lat:41.0230, lng:28.9745, desc:"Türkiye'nin ilk dövme müzesi; beden sanatının tarihini ve kültürünü anlatan özgün koleksiyon.", tags:[]},
-  {id:1086,name:"Gazhane Müzesi",                     cat:"kultur", sub:"Müzeler",                address:"Hasanpaşa, Kadıköy",    lat:40.9915, lng:29.0340, desc:"1891 yapımı tarihi gaz fabrikasında endüstriyel miras ve çağdaş sanat müzesi.", tags:["Tarihî yapı"]},
-
-  /* ══ EK: Freelancer dostu kafeler (+5) ══ */
-  {id:1087,name:"Petra Roastery",                     cat:"calisma", sub:"Freelancer dostu kafeler", address:"Galata, Beyoğlu",     lat:41.0260, lng:28.9740, desc:"Kaliteli single origin kahveleri ve çalışmaya elverişli uzun masalarıyla Galata'nın favori kafe.", tags:["Wi-Fi","Kahve"]},
-  {id:1088,name:"Coffee Department",                  cat:"calisma", sub:"Freelancer dostu kafeler", address:"Nişantaşı, Şişli",    lat:41.0490, lng:28.9928, desc:"Sessiz ve ferah ortamıyla sabahın erken saatlerinden akşama kadar çalışmaya ideal.", tags:["Wi-Fi","Kahve"]},
-  {id:1089,name:"Kronotrop Kadıköy",                  cat:"calisma", sub:"Freelancer dostu kafeler", address:"Kadıköy",             lat:40.9895, lng:29.0272, desc:"Spesiyelti kahve ve geniş masalarıyla freelancer ve uzaktan çalışanların Kadıköy üssü.", tags:["Wi-Fi","Kahve"]},
-  {id:1090,name:"Shot Coffee Beşiktaş",               cat:"calisma", sub:"Freelancer dostu kafeler", address:"Beşiktaş",            lat:41.0435, lng:29.0058, desc:"Çalışma odaklı düzeni ve güçlü Wi-Fi'siyle freelancer buluşma noktası.", tags:["Wi-Fi","Kahve"]},
-  {id:1091,name:"Brew Lab İstanbul",                  cat:"calisma", sub:"Freelancer dostu kafeler", address:"Beyoğlu",             lat:41.0322, lng:28.9775, desc:"Sakin atmosferi ve priz bolluğuyla dizüstü bilgisayarlıların tercihi.", tags:["Wi-Fi","Kahve"]},
-
-  /* ══ EK: Canlı müzik mekânları (+5) ══ */
-  {id:1092,name:"Peyote Kadıköy",                     cat:"muzik", sub:"Canlı müzik mekânları",   address:"Kadıköy",               lat:40.9895, lng:29.0263, desc:"Alternatif rock ve indie müziğin Kadıköy'deki adresi; haftalık canlı konserler.", tags:[]},
-  {id:1093,name:"Roxy",                               cat:"muzik", sub:"Canlı müzik mekânları",   address:"Silahhane Cd., Beşiktaş", lat:41.0572, lng:28.9987, desc:"İstanbul'un ikonik rock kulübü; onlarca yıldır bağımsız müziğin sesi.", tags:["Rezervasyon"]},
-  {id:1094,name:"İKSV Salon Arka Bahçe",              cat:"muzik", sub:"Canlı müzik mekânları",   address:"Şişhane, Beyoğlu",      lat:41.0275, lng:28.9722, desc:"Yaz aylarında açık hava konserleriyle İstanbul'un en seçkin bağımsız müzik mekânı.", tags:["Rezervasyon"]},
-  {id:1095,name:"Mojo",                               cat:"muzik", sub:"Canlı müzik mekânları",   address:"Beyoğlu",               lat:41.0320, lng:28.9780, desc:"Blues, soul ve funk odaklı canlı müzik; hafta içi ve sonu düzenli program.", tags:[]},
-  {id:1096,name:"Kule Rock City",                     cat:"muzik", sub:"Canlı müzik mekânları",   address:"Galata, Beyoğlu",       lat:41.0257, lng:28.9738, desc:"Galata Kulesi'nin gölgesinde rock ve metal konserlere adanmış küçük ama güçlü sahne.", tags:[]},
-
-  /* ══ EK: Plakçılar (+5) ══ */
-  {id:1097,name:"Velvet İndieground",                 cat:"muzik", sub:"Plakçılar",               address:"Galatasaray, Beyoğlu",  lat:41.0325, lng:28.9769, desc:"Indie, alternative ve post-rock plakların İstanbul'daki en iyi adresi.", tags:[]},
-  {id:1098,name:"Black Market Records",               cat:"muzik", sub:"Plakçılar",               address:"Kadıköy",               lat:40.9882, lng:29.026, desc:"Nadir baskı elektronik, techno ve house plaklarının Kadıköy'deki adresi.", tags:[]},
-  {id:1099,name:"Seksek Müzik",                       cat:"muzik", sub:"Plakçılar",               address:"Tünel, Beyoğlu",        lat:41.0285, lng:28.9742, desc:"Türk halk müziği ve arabesk plaklarından dünya müziğine geniş koleksiyon.", tags:[]},
-  {id:1100,name:"Plak Cenneti",                       cat:"muzik", sub:"Plakçılar",               address:"Kadıköy",               lat:40.988, lng:29.02570, desc:"Adına yakışır şekilde; binlerce plağın el altında olduğu koleksiyoncuların cenneti.", tags:[]},
-  {id:1101,name:"Groove İstanbul",                    cat:"muzik", sub:"Plakçılar",               address:"Beyoğlu",               lat:41.0315, lng:28.9765, desc:"Funk, soul ve jazz plaklarında uzmanlaşmış; dinleme kabini olan plakçı.", tags:[]},
-
-  /* ══ EK: Tarihi pasajlar (+5) ══ */
-  {id:1102,name:"Tokatlıyan Oteli Pasajı",            cat:"tarih", sub:"Tarihi pasajlar",         address:"İstiklal Cd., Beyoğlu", lat:41.0332, lng:28.9780, desc:"1895'te açılan efsanevi otelin zemin katındaki tarihi pasaj; Beyoğlu'nun hafızası.", tags:["Tarihî yapı"]},
-  {id:1103,name:"Olivia Pasajı",                      cat:"tarih", sub:"Tarihi pasajlar",         address:"İstiklal Cd., Beyoğlu", lat:41.0319, lng:28.9762, desc:"Avlu içindeki küçük dükkanlar ve sakin atmosferiyle keşfedilmeyi bekleyen pasaj.", tags:["Tarihî yapı"]},
-  {id:1104,name:"İnci Pasajı",                        cat:"tarih", sub:"Tarihi pasajlar",         address:"Beyoğlu",               lat:41.0318, lng:28.9761, desc:"Küçük ve sade pasaj; el sanatı dükkanları ve yerel zanaatkarlara yuva.", tags:["Tarihî yapı"]},
-  {id:1105,name:"Botter Pasajı",                      cat:"tarih", sub:"Tarihi pasajlar",         address:"İstiklal Cd., Beyoğlu", lat:41.0321, lng:28.9766, desc:"1901 tarihli; Art Nouveau detaylarıyla Beyoğlu'nun mimari mücevherlerinden.", tags:["Tarihî yapı"]},
-  {id:1106,name:"Mısır Apartmanı",                    cat:"tarih", sub:"Tarihi pasajlar",         address:"İstiklal Cd., Beyoğlu", lat:41.0323, lng:28.9768, desc:"1910 yapımı; sanatçı atölyeleri ve bağımsız dükkanlarıyla İstiklal'in tarihi pasajı.", tags:["Tarihî yapı"]},
-
-  /* ══ EK: Mahalle dokuları (+5) ══ */
-  {id:1107,name:"Bebek Mahallesi",                    cat:"acik", sub:"Mahalle dokuları",         address:"Bebek, Beşiktaş",       lat:41.0762, lng:29.0425, desc:"Boğaz kıyısında büyükelçilik rezidansları ve tarihi yalılarla İstanbul'un en prestijli mahallesi.", tags:["Boğaz manzarası"]},
-  {id:1108,name:"Karaköy Mahallesi",                  cat:"acik", sub:"Mahalle dokuları",         address:"Karaköy, Beyoğlu",      lat:41.0225, lng:28.9745, desc:"Yeni kafeler ve galericilerin eski liman dokusuyla buluştuğu; İstanbul'un hızla dönüşen mahallesi.", tags:[]},
-  {id:1109,name:"Bomonti Mahallesi",                  cat:"acik", sub:"Mahalle dokuları",         address:"Bomonti, Şişli",        lat:41.0583, lng:28.9798, desc:"Eski bira fabrikasının çevresinde sanatçı atölyeleri ve yaratıcı mekanlarıyla yükselen mahalle.", tags:["Tarihî yapı"]},
-  {id:1110,name:"Hasköy Mahallesi",                   cat:"acik", sub:"Mahalle dokuları",         address:"Hasköy, Beyoğlu",       lat:41.0460, lng:28.9484, desc:"Haliç kıyısında Yahudi, Rum ve Ermeni mirasını taşıyan; dönüşüm sürecindeki tarihi mahalle.", tags:["Tarihî yapı"]},
-  {id:1111,name:"Galata Mahallesi",                   cat:"acik", sub:"Mahalle dokuları",         address:"Galata, Beyoğlu",       lat:41.0258, lng:28.9738, desc:"Ceneviz kulesinin gölgesinde; müzisyenler, sanatçılar ve yeni kafelerin buluştuğu tarihi doku.", tags:["Tarihî yapı"]},
-
-  /* ══ EK: Sessiz park köşeleri (+5) ══ */
-  {id:1112,name:"Bebek Korusu Sakin Alanlar",         cat:"sessiz", sub:"Sessiz park köşeleri",   address:"Bebek, Beşiktaş",       lat:41.0752, lng:29.0412, desc:"Boğaz kıyısındaki küçük korunun çınar altlarında okuma ve düşünme için sakin köşeler.", tags:["Ücretsiz","Sessiz","Doğal ışık"]},
-  {id:1113,name:"Validebağ Korusu",                   cat:"sessiz", sub:"Sessiz park köşeleri",   address:"Altunizade, Üsküdar",   lat:41.0120, lng:29.0500, desc:"İstanbul'un gizli kalmış en büyük doğal korusu; yürüyüş yolları ve derin sessizlik.", tags:["Ücretsiz","Sessiz","Doğal ışık"]},
-  {id:1114,name:"Ihlamur Kasrı Bahçesi",              cat:"sessiz", sub:"Sessiz park köşeleri",   address:"Beşiktaş",              lat:41.0528, lng:29.0048, desc:"Osmanlı padişah kasrının bakımlı bahçesinde şehrin tam ortasında huzurlu bir kaçış.", tags:["Tarihî yapı","Sessiz","Doğal ışık"]},
-  {id:1115,name:"Göztepe Parkı Sakin Köşeler",        cat:"sessiz", sub:"Sessiz park köşeleri",   address:"Göztepe, Kadıköy",      lat:40.9730, lng:29.0590, desc:"Kadıköy'ün en büyük parkında çınar gölgesinde sakin okuma ve dinlenme köşeleri.", tags:["Ücretsiz","Sessiz","Doğal ışık"]},
-  {id:1116,name:"Çamlıca Gülbahçesi",                 cat:"sessiz", sub:"Sessiz park köşeleri",   address:"Çamlıca, Üsküdar",      lat:41.0270, lng:29.0640, desc:"Büyükçamlıca tepesindeki gül bahçesinde Boğaz manzaralı sakin köşeler.", tags:["Ücretsiz","Sessiz","Boğaz manzarası"]},
-
-  /* ══ EK: Kitap kulübü buluşma mekânları (+5) ══ */
-  {id:1117,name:"Tarihi Kıraathane Kitap Kulübü",     cat:"sosyal", sub:"Kitap kulübü buluşma mekânları", address:"Fatih",         lat:41.0199, lng:28.94570, desc:"Geleneksel kıraathane ortamında aylık kitap tartışmaları; Türk edebiyatına odaklı.", tags:["Çay","Ücretsiz"]},
-  {id:1118,name:"Boğaziçi Kitap Kulübü",             cat:"sosyal", sub:"Kitap kulübü buluşma mekânları", address:"Bebek, Beşiktaş", lat:41.0843, lng:29.0467, desc:"Boğaziçi Üniversitesi çevresinde mezunlar ve öğrencilerin yürüttüğü aylık okuma grubu.", tags:["Ücretsiz"]},
-  {id:1119,name:"Yabancı Dil Kitap Kulübü",          cat:"sosyal", sub:"Kitap kulübü buluşma mekânları", address:"Beyoğlu",         lat:41.0325, lng:28.9775, desc:"İngilizce, Fransızca ve Almanca kitapları tartışan çok dilli okuma grubu.", tags:["Kahve","Ücretsiz"]},
-  {id:1120,name:"Tarih Kitapları Okuma Grubu",       cat:"sosyal", sub:"Kitap kulübü buluşma mekânları", address:"Fatih",           lat:41.0100, lng:28.9700, desc:"Tarih ve biyografi ağırlıklı; her ay farklı bir dönem veya kişiyi inceleyen okuma grubu.", tags:["Çay","Ücretsiz"]},
-  {id:1121,name:"Çocuk Kitap Kulübü",               cat:"sosyal", sub:"Kitap kulübü buluşma mekânları", address:"Kadıköy",          lat:40.989, lng:29.0278, desc:"6-12 yaş için; ebeveyn ve çocukların birlikte katıldığı aylık kitap okuma ve etkinlik.", tags:["Çocuk dostu","Ücretsiz"]},
-
-  /* ══ EK: Boğaz sahil şeritleri (+5) ══ */
-  {id:1122,name:"Istinye-Sarıyer Sahil Şeridi",      cat:"acik", sub:"Boğaz sahil şeritleri",    address:"Sarıyer",               lat:41.1580, lng:29.0560, desc:"Boğaz'ın kuzeyine doğru balıkçı köylerini birbirine bağlayan uzun ve sakin sahil yürüyüşü.", tags:["Ücretsiz","Boğaz manzarası"]},
-  {id:1123,name:"Kandilli Sahil Şeridi",             cat:"acik", sub:"Boğaz sahil şeritleri",    address:"Kandilli, Üsküdar",     lat:41.0730, lng:29.0560, desc:"Boğaz'ın Anadolu yakasında Kandilli'den Çengelköy'e uzanan sakin ve romantik sahil.", tags:["Ücretsiz","Boğaz manzarası"]},
-  {id:1124,name:"Kanlıca-Anadolu Hisarı Sahili",    cat:"acik", sub:"Boğaz sahil şeritleri",    address:"Kanlıca, Beykoz",       lat:41.0892, lng:29.0657, desc:"Boğaz'ın en dar noktasına yakın; yoğurtcular ve köy atmosferi eşliğinde sahil yürüyüşü.", tags:["Ücretsiz","Boğaz manzarası","Çay"]},
-  {id:1125,name:"Sarıyer İskele Sahili",             cat:"acik", sub:"Boğaz sahil şeritleri",    address:"Sarıyer",               lat:41.1670, lng:29.0570, desc:"Boğaz'ın son büyük yerleşiminde balıkçı tekneleri arasında sakin sahil yürüyüşü.", tags:["Ücretsiz","Boğaz manzarası"]},
-  {id:1126,name:"Paşabahçe Sahil Şeridi",           cat:"acik", sub:"Boğaz sahil şeritleri",    address:"Paşabahçe, Beykoz",     lat:41.1050, lng:29.0760, desc:"Cam fabrikasının önünden geçen; şehirden uzak ve sessiz Anadolu yakası Boğaz sahili.", tags:["Ücretsiz","Boğaz manzarası"]},
-
-  /* ══ EK: Caz kulüpleri (+5) ══ */
-  {id:1127,name:"Küçük Kulüp",                       cat:"muzik", sub:"Caz kulüpleri",            address:"Beyoğlu",               lat:41.0310, lng:28.9760, desc:"Adını küçüklüğünden alan ama büyük sesi olan; doğaçlama jazz ve swing geceleri.", tags:[]},
-  {id:1128,name:"Bab-ı Jazz",                        cat:"muzik", sub:"Caz kulüpleri",            address:"Balat, Fatih",          lat:41.0285, lng:28.9493, desc:"Tarihi Balat'ta caz, bossa nova ve Latin ritimlerini buluşturan küçük kulüp.", tags:[]},
-  {id:1129,name:"Meşk İstanbul",                     cat:"muzik", sub:"Caz kulüpleri",            address:"Kadıköy",               lat:40.9898, lng:29.0260, desc:"Türk caz müzisyenlerinin birbiriyle doğaçladığı; haftalık jam session mekânı.", tags:[]},
-  {id:1130,name:"Kumbaracı50",                       cat:"muzik", sub:"Caz kulüpleri",            address:"Cihangir, Beyoğlu",     lat:41.0298, lng:28.9800, desc:"Cihangir'in sevilen mekanında caz ve akustik müzik geceleri.", tags:[]},
-  {id:1131,name:"Tünel Müzik Evi",                   cat:"muzik", sub:"Caz kulüpleri",            address:"Tünel, Beyoğlu",        lat:41.0285, lng:28.9745, desc:"Tünel'in Avrupa ruhunu yansıtan; küçük sahnesinde yakın mesafede jazz dinletisi.", tags:[]},
-
-  /* ══ EK DAĞILIM: Kütüphaneler → 15 ══ */
-  {id:1132,name:"Büyükada Kütüphanesi",               cat:"okuma", sub:"Kütüphaneler",             address:"Büyükada, Adalar",      lat:40.8733, lng:29.1270, desc:"Arabasız adanın sakin kütüphanesi; deniz manzaralı okuma köşeleriyle huzurlu çalışma ortamı.", tags:["Sessiz","Ücretsiz"]},
-  {id:1133,name:"Kadıköy Rıfat Ilgaz Kütüphanesi",   cat:"okuma", sub:"Kütüphaneler",             address:"Kadıköy",               lat:40.9888, lng:29.0260, desc:"Ünlü yazarın adını taşıyan mahalle kütüphanesi; çalışma salonları ve çocuk bölümü.", tags:["Sessiz","Ücretsiz"]},
-  {id:1134,name:"Üsküdar İlçe Halk Kütüphanesi",     cat:"okuma", sub:"Kütüphaneler",             address:"Üsküdar",               lat:41.022, lng:29.0155, desc:"Üsküdar'ın merkezi kütüphanesi; geniş koleksiyon ve sessiz çalışma bölümleri.", tags:["Sessiz","Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Sessiz çalışma kafeleri → 15 ══ */
-  {id:1135,name:"Çay Bahçesi Kütüphane Kafe",         cat:"okuma", sub:"Sessiz çalışma kafeleri",  address:"Beşiktaş",              lat:41.0445, lng:29.0062, desc:"Bahçede çalışma masaları ve iç mekânda sessiz köşeleri olan huzurlu kafe.", tags:["Wi-Fi","Çay","Sessiz"]},
-  {id:1136,name:"Nokta Kafe Kadıköy",                 cat:"okuma", sub:"Sessiz çalışma kafeleri",  address:"Moda, Kadıköy",         lat:40.982, lng:29.0225, desc:"Sessiz atmosferi ve gün boyu değişmeyen müşterileriyle çalışanların adresi.", tags:["Wi-Fi","Kahve","Sessiz"]},
-  {id:1137,name:"Minnoş Kafe Cihangir",               cat:"okuma", sub:"Sessiz çalışma kafeleri",  address:"Cihangir, Beyoğlu",     lat:41.0302, lng:28.9800, desc:"Küçük ve sakin; dizüstü bilgisayarıyla saatlerce oturulabilen huzurlu çalışma kafesi.", tags:["Wi-Fi","Kahve","Sessiz"]},
-
-  /* ══ EK DAĞILIM: Paylaşımlı ofisler → 16 ══ */
-  {id:1138,name:"Workinton Nişantaşı",                cat:"calisma", sub:"Paylaşımlı ofisler",     address:"Nişantaşı, Şişli",      lat:41.0488, lng:28.9928, desc:"Nişantaşı'nın prestijli lokasyonunda modern coworking; toplantı odaları ve özel kabinler.", tags:["Wi-Fi","Kahve"]},
-  {id:1139,name:"Atölye Kadıköy",                     cat:"calisma", sub:"Paylaşımlı ofisler",     address:"Kadıköy",               lat:40.9888, lng:29.028, desc:"Anadolu yakasının en yaratıcı paylaşımlı ofisi; tasarımcı ve yaratıcılara özel.", tags:["Wi-Fi","Kahve"]},
-  {id:1140,name:"Work & Co Maslak",                   cat:"calisma", sub:"Paylaşımlı ofisler",     address:"Maslak, Sarıyer",        lat:41.1098, lng:29.0202, desc:"İş merkezi konumunda; kurumsal şirketlere de hizmet veren büyük coworking alanı.", tags:["Wi-Fi","Kahve"]},
-  {id:1141,name:"Hub İstanbul Taksim",                cat:"calisma", sub:"Paylaşımlı ofisler",     address:"Taksim, Beyoğlu",        lat:41.0375, lng:28.9875, desc:"Taksim'in merkezinde esnek çalışma alanları; saatlik ve aylık üyelik seçenekleri.", tags:["Wi-Fi","Kahve"]},
-
-  /* ══ EK DAĞILIM: Yazı evleri → 13 ══ */
-  {id:1142,name:"Beykoz Kundura Yazı Atölyesi",       cat:"calisma", sub:"Yazı evleri",            address:"Beykoz",                lat:41.1290, lng:29.0980, desc:"Tarihi fabrikada sessiz yazı atölyesi; yazar rezidansı ve çalışma programları.", tags:["Sessiz","Tarihî yapı"]},
-
-  /* ══ EK DAĞILIM: Podcast stüdyoları → 15 ══ */
-  {id:1143,name:"Ses Kayıt Stüdyosu Kadıköy",        cat:"calisma", sub:"Podcast stüdyoları",     address:"Kadıköy",               lat:40.9885, lng:29.0265, desc:"Profesyonel ses yalıtımlı kayıt kabinleri; podcast ve sesli kitap üretimi.", tags:["Rezervasyon"]},
-  {id:1144,name:"Mikrofon Stüdyo Şişli",              cat:"calisma", sub:"Podcast stüdyoları",     address:"Şişli",                 lat:41.0608, lng:28.9825, desc:"Uygun fiyatlı podcast kayıt stüdyosu; ekipman dahil kiralama.", tags:["Rezervasyon"]},
-  {id:1145,name:"Radyo Evi Beyoğlu",                  cat:"calisma", sub:"Podcast stüdyoları",     address:"Beyoğlu",               lat:41.0338, lng:28.9776, desc:"Eski radyo stüdyosundan dönüştürülen; nostaljik atmosferli podcast kayıt mekânı.", tags:["Rezervasyon","Tarihî yapı"]},
-
-  /* ══ EK DAĞILIM: Bağımsız sinemalar → 15 ══ */
-  {id:1146,name:"Emek Sineması",                      cat:"sinema", sub:"Bağımsız sinemalar",      address:"İstiklal Cd., Beyoğlu", lat:41.0322, lng:28.9768, desc:"1924'te açılan; restore edilmiş tarihi sinema salonu. İstanbul'un en ikonik sineması.", tags:["Tarihî yapı"]},
-  {id:1147,name:"Sinema 5",                           cat:"sinema", sub:"Bağımsız sinemalar",      address:"Kadıköy",               lat:40.9905, lng:29.0268, desc:"Küçük ama seçici programıyla Kadıköy'ün bağımsız sinema mekânı.", tags:[]},
-  {id:1148,name:"Rexx Sineması",                      cat:"sinema", sub:"Bağımsız sinemalar",      address:"Beyoğlu",               lat:41.0305, lng:28.9755, desc:"Eski Beyoğlu salonlarının ruhunu taşıyan; sanat ve repertuvar film gösterimleri.", tags:["Tarihî yapı"]},
-
-  /* ══ EK DAĞILIM: Fotoğraf stüdyoları → 14 ══ */
-  {id:1149,name:"Ham Stüdyo",                         cat:"kultur", sub:"Fotoğraf stüdyoları",     address:"Karaköy, Beyoğlu",      lat:41.0214, lng:28.9731, desc:"Analog fotoğrafçılığa adanmış; 35mm ve orta format film için karanlık oda atölyesi.", tags:["Rezervasyon"]},
-  {id:1150,name:"Pozitif Stüdyo",                     cat:"kultur", sub:"Fotoğraf stüdyoları",     address:"Şişli",                 lat:41.0598, lng:28.9818, desc:"Ticari ve sanat fotoğrafçılığı için tam donanımlı; kiralanabilir stüdyo alanı.", tags:["Rezervasyon"]},
-
-  /* ══ EK DAĞILIM: Hanlar → 14 ══ */
-  {id:1151,name:"Sandal Bedesteni",                   cat:"tarih", sub:"Hanlar",                   address:"Kapalıçarşı, Fatih",    lat:41.0107, lng:28.9682, desc:"Kapalıçarşı içindeki en eski yapılardan biri; kıymetli kumaş ticaretinin köklü mekânı.", tags:["Tarihî yapı"]},
-  {id:1152,name:"İç Bedesten",                        cat:"tarih", sub:"Hanlar",                   address:"Kapalıçarşı, Fatih",    lat:41.0106, lng:28.9680, desc:"Kapalıçarşı'nın kalbi; mücevher ve antika ticaretinin sürdüğü tarihi bedesten.", tags:["Tarihî yapı"]},
-
-  /* ══ EK DAĞILIM: Arkeolojik alanlar → 14 ══ */
-  {id:1153,name:"Marmaray Üsküdar Arkeoloji",         cat:"tarih", sub:"Arkeolojik alanlar",       address:"Üsküdar",               lat:41.0218, lng:29.0140, desc:"Marmaray inşaatında bulunan Bizans ve Osmanlı kalıntıları; istasyon içinde sergileniyor.", tags:["Tarihî yapı"]},
-  {id:1154,name:"Kadırga Limanı Kalıntıları",         cat:"tarih", sub:"Arkeolojik alanlar",       address:"Kadırga, Fatih",        lat:41.0033, lng:28.9715, desc:"Bizans döneminin önemli limanına ait su altı ve kara arkeoloji alanı.", tags:["Tarihî yapı","Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Maker space'ler → 14 ══ */
-  {id:1155,name:"Tinkerer Lab",                       cat:"tasarim", sub:"Maker space'ler",         address:"Beşiktaş",              lat:41.0442, lng:29.0065, desc:"Elektronik prototip ve Arduino projeleri için ekipman ve topluluk desteği.", tags:["Wi-Fi","Rezervasyon"]},
-  {id:1156,name:"Yaratıcı Atölye Üsküdar",            cat:"tasarim", sub:"Maker space'ler",         address:"Üsküdar",               lat:41.0232, lng:29.0162, desc:"Çocuk ve yetişkinlere maker kültürünü tanıtan; 3D yazıcı ve lazer kesici atölyesi.", tags:["Wi-Fi","Çocuk dostu"]},
-
-  /* ══ EK DAĞILIM: Tarihi sur dipleri → 14 ══ */
-  {id:1157,name:"Topkapı Surları Yürüyüş Yolu",      cat:"acik", sub:"Tarihi sur dipleri",         address:"Topkapı, Fatih",        lat:41.0265, lng:28.9331, desc:"Bizans surlarının Topkapı kapısı çevresinde; tarihi mahalle dokusu içinden geçen yürüyüş.", tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1158,name:"Mevlanakapı Sur Dip Alanı",         cat:"acik", sub:"Tarihi sur dipleri",         address:"Mevlanakapı, Fatih",    lat:41.0155, lng:28.9345, desc:"Surların bu bölümünde bostanlar ve sur dibi yürüyüş yolu; sakin ve tarihi atmosfer.", tags:["Tarihî yapı","Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Enstrüman atölyeleri → 14 ══ */
-  {id:1159,name:"Tambur Yapım Atölyesi",              cat:"muzik", sub:"Enstrüman atölyeleri",     address:"Fatih",                 lat:41.0180, lng:28.9490, desc:"Klasik Türk müziğinin tamburu ve diğer telli çalgılarının yapım atölyesi.", tags:["Rezervasyon"]},
-  {id:1160,name:"Zil ve Vurmalı Çalgı Atölyesi",     cat:"muzik", sub:"Enstrüman atölyeleri",     address:"Beyoğlu",               lat:41.0315, lng:28.9762, desc:"Davul, darbuka ve zil yapımında uzmanlaşmış; gösterim açık atölye.", tags:["Rezervasyon"]},
-
-  /* ══ EK DAĞILIM: Sivil toplum merkezleri → 14 ══ */
-  {id:1161,name:"Kadın Dayanışma Vakfı",              cat:"dusunce", sub:"Sivil toplum merkezleri", address:"Şişli",                lat:41.0592, lng:28.9815, desc:"Kadın hakları ve toplumsal cinsiyet eşitliği alanında köklü sivil toplum kuruluşu.", tags:["Ücretsiz"]},
-  {id:1162,name:"Engelli Hakları Platformu",          cat:"dusunce", sub:"Sivil toplum merkezleri", address:"Kadıköy",              lat:40.9899, lng:29.0243, desc:"Engelli bireylerin haklarını savunan; erişilebilir yaşam için toplantı ve etkinlik mekânı.", tags:["Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Şiir gecesi mekânları → 15 ══ */
-  {id:1163,name:"Hâfıza Şiir Gecesi",                cat:"sosyal", sub:"Şiir gecesi mekânları",   address:"Beyoğlu",               lat:41.0324, lng:28.9736, desc:"Hafıza, kayıp ve şehir temalarında şiir geceleri; çağdaş şairlerle buluşma.", tags:["Ücretsiz"]},
-  {id:1164,name:"Nar Şiir Kulübü",                   cat:"sosyal", sub:"Şiir gecesi mekânları",   address:"Üsküdar",               lat:41.0222, lng:29.0148, desc:"Üsküdar'ın sakin atmosferinde divan ve halk şiirini buluşturan aylık şiir kulübü.", tags:["Çay","Ücretsiz"]},
-  {id:1165,name:"Müzikli Şiir Akşamları",            cat:"sosyal", sub:"Şiir gecesi mekânları",   address:"Kadıköy",               lat:40.9895, lng:29.0268, desc:"Şiir ve canlı müziği buluşturan; her ay farklı temada şiir ve performans gecesi.", tags:["Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Tasarım kolektifleri → 15 ══ */
-  {id:1166,name:"Mimari Kolektif İstanbul",           cat:"tasarim", sub:"Tasarım kolektifleri",   address:"Beyoğlu",               lat:41.033, lng:28.9775, desc:"Genç mimarların bir araya geldiği; kentsel dönüşüm projeleri üzerine bağımsız kolektif.", tags:["Wi-Fi"]},
-  {id:1167,name:"Ambalaj Tasarım Kolektifi",          cat:"tasarim", sub:"Tasarım kolektifleri",   address:"Şişli",                 lat:41.0614, lng:28.9813, desc:"Sürdürülebilir ve yenilikçi ambalaj tasarımı üzerine çalışan bağımsız kolektif.", tags:["Wi-Fi"]},
-  {id:1168,name:"Kullanıcı Deneyimi Kolektifi",       cat:"tasarim", sub:"Tasarım kolektifleri",   address:"Levent, Beşiktaş",      lat:41.0800, lng:29.0090, desc:"UX/UI tasarımcılarının bir araya geldiği; aylık buluşmalar ve proje incelemeleri.", tags:["Wi-Fi"]},
-
-  /* ══ EK DAĞILIM: Zanaat çarşıları → 14 ══ */
-  {id:1169,name:"Eminönü Mısır Çarşısı Çevresi",     cat:"tasarim", sub:"Zanaat çarşıları",       address:"Eminönü, Fatih",        lat:41.0172, lng:28.9698, desc:"Mısır Çarşısı çevresindeki sokaklarda baharat, kuruyemiş ve zanaat ürünleri.", tags:["Tarihî yapı"]},
-  {id:1170,name:"Üsküdar El Sanatları Çarşısı",      cat:"tasarim", sub:"Zanaat çarşıları",       address:"Üsküdar",               lat:41.0215, lng:29.014, desc:"Geleneksel el sanatı ürünleri ve yerel zanaat ustalarının tezgahlarına ev sahipliği yapar.", tags:[]},
-
-  /* ══ EK DAĞILIM: Sokak müziği bölgeleri → 15 ══ */
-  {id:1171,name:"Moda Çarşı Sokakları",               cat:"muzik", sub:"Sokak müziği bölgeleri",   address:"Moda, Kadıköy",         lat:40.9835, lng:29.0262, desc:"Moda'nın sakin sokaklarında genç müzisyenlerin akustik ve folk performansları.", tags:["Ücretsiz"]},
-  {id:1172,name:"Bağdat Caddesi Sokak Müziği",        cat:"muzik", sub:"Sokak müziği bölgeleri",   address:"Suadiye, Kadıköy",      lat:40.951, lng:29.084, desc:"İstanbul'un en uzun caddesinde kafe önlerinde spontane müzik performansları.", tags:["Ücretsiz"]},
-  {id:1173,name:"Eminönü Rıhtım Müzisyenleri",        cat:"muzik", sub:"Sokak müziği bölgeleri",   address:"Eminönü, Fatih",        lat:41.0162, lng:28.9702, desc:"Köprü altında ve rıhtımda balık ekmek kokan ortamda saz ve türkü sesleri.", tags:["Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Meditasyon merkezleri → 14 ══ */
-  {id:1174,name:"Vipassana Meditasyon Grubu",         cat:"sessiz", sub:"Meditasyon merkezleri",   address:"Beşiktaş",              lat:41.0438, lng:29.0058, desc:"Sessiz Vipassana geleneğine dayalı; haftalık ücretsiz oturma meditasyonları.", tags:["Ücretsiz","Sessiz"]},
-  {id:1175,name:"Nefes ve Ses Meditasyonu",           cat:"sessiz", sub:"Meditasyon merkezleri",   address:"Kadıköy",               lat:40.9888, lng:29.0270, desc:"Ses kaselerini ve nefes tekniklerini kullanan; akşam meditasyon seansları.", tags:["Rezervasyon"]},
-
-  /* ══ EK DAĞILIM: Girişimcilik merkezleri → 14 ══ */
-  {id:1176,name:"Tübitak Teknokent",                  cat:"dusunce", sub:"Girişimcilik merkezleri", address:"Gebze",                lat:40.8000, lng:29.4300, desc:"Teknoloji odaklı girişimlere Ar-Ge desteği ve kuluçka ortamı sunan merkez.", tags:["Wi-Fi"]},
-  {id:1177,name:"Zorlu Holding Girişim Platformu",    cat:"dusunce", sub:"Girişimcilik merkezleri", address:"Levent, Beşiktaş",     lat:41.0815, lng:29.0098, desc:"Kurumsal girişimcilik ve inovasyon ekosistemi buluşmaları.", tags:["Wi-Fi"]},
-
-  /* ══ EK DAĞILIM: Manastır ve tekke yapıları → 14 ══ */
-  {id:1178,name:"Üç Horan Ermeni Kilisesi Bahçesi",   cat:"sessiz", sub:"Manastır ve tekke yapıları", address:"Kumkapı, Fatih",    lat:41.0042, lng:28.9596, desc:"Tarihi Ermeni kilisesinin bakımlı bahçesinde sessiz ve manevi bir köşe.", tags:["Tarihî yapı","Sessiz","Ücretsiz"]},
-  {id:1179,name:"Hristos Kilisesi Avlusu Galata",     cat:"sessiz", sub:"Manastır ve tekke yapıları", address:"Galata, Beyoğlu",   lat:41.0255, lng:28.9738, desc:"Ceneviz döneminden kalma kilise avlusunda derin bir Galata sessizliği.", tags:["Tarihî yapı","Sessiz","Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Film kulübü mekânları → 14 ══ */
-  {id:1180,name:"Belgesel Film Kulübü",               cat:"kultur", sub:"Film kulübü mekânları",   address:"Beyoğlu",               lat:41.0312, lng:28.9778, desc:"Her ay farklı bir belgesel filmci ve tartışma; sosyal meseleler odaklı film kulübü.", tags:["Ücretsiz"]},
-  {id:1181,name:"Türk Sineması Film Kulübü",          cat:"kultur", sub:"Film kulübü mekânları",   address:"Kadıköy",               lat:40.9892, lng:29.0255, desc:"Yeşilçam klasiklerinden günümüz bağımsız Türk sinemasına haftalık gösterimler.", tags:["Ücretsiz","Çay"]},
-
-  /* ══ EK DAĞILIM: Deneysel sanat mekânları → 14 ══ */
-  {id:1182,name:"Boş Alan Projesi",                   cat:"kultur", sub:"Deneysel sanat mekânları", address:"Beyoğlu",              lat:41.0326, lng:28.9776, desc:"Boş dükkan ve binalarda pop-up deneysel sanat müdahaleleri.", tags:["Ücretsiz"]},
-  {id:1183,name:"Site Spesifik Sanat Alanı",          cat:"kultur", sub:"Deneysel sanat mekânları", address:"Kadıköy",              lat:40.9902, lng:29.0262, desc:"Yere özgü sanat projeleri; her sergi mekânı dönüştüren geçici enstalasyonlar.", tags:["Ücretsiz"]},
-
-  /* ══ EK DAĞILIM: Gün batımı noktaları → 15 ══ */
-  {id:1184,name:"Kınalıada Batı Kıyısı Gün Batımı",  cat:"manzara", sub:"Gün batımı noktaları",   address:"Kınalıada, Adalar",     lat:40.9035, lng:29.0540, desc:"İstanbul'a en yakın adanın batı kıyısında İstanbul siluetine karşı gün batımı.", tags:["Ücretsiz","Doğal ışık"]},
-  {id:1185,name:"Üsküdar Sahil Gün Batımı",           cat:"manzara", sub:"Gün batımı noktaları",   address:"Üsküdar",               lat:41.0237, lng:29.01730, desc:"Üsküdar rıhtımından tarihi yarımada silueti ve Kız Kulesi'ne karşı gün batımı.", tags:["Ücretsiz","Boğaz manzarası"]},
-  {id:1186,name:"Büyükçamlıca Gün Batımı",            cat:"manzara", sub:"Gün batımı noktaları",   address:"Çamlıca, Üsküdar",      lat:41.0241, lng:29.06270, desc:"İstanbul'un en yüksek tepesinden tüm Boğaz'a yayılan gün batımı manzarası.", tags:["Ücretsiz","Boğaz manzarası"]},
+/* ══════════════════════════════════════════
+     OKUMA & ARAŞTIRMA — Kütüphaneler (12→40)
+  ══════════════════════════════════════════ */
+  {id:1077,name:"Beyazıt Devlet Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Beyazıt Meydanı, Fatih",lat:41.0108,lng:28.9660,desc:"1884'te kurulan; Osmanlıca ve Türkçe koleksiyonuyla İstanbul'un en eski halka açık kütüphanesi.",tags:["Sessiz","Ücretsiz","Tarihî yapı"]},
+  {id:1078,name:"İstanbul Üniversitesi Merkez Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Beyazıt, Fatih",lat:41.0103,lng:28.9636,desc:"Kapalıçarşı'ya yakın üniversite kütüphanesi; 1,5 milyon ciltlik koleksiyon ve yazma eserler.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1079,name:"Boğaziçi Üniversitesi Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Bebek, Beşiktaş",lat:41.0847,lng:29.0479,desc:"Boğaz manzaralı kampüste; İngilizce akademik yayınlar ve açık erişim arşivleriyle donanımlı.",tags:["Sessiz","Akademik","Wi-Fi","Boğaz manzarası"]},
+  {id:1080,name:"İTÜ Mustafa İnan Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Maslak, Sarıyer",lat:41.1053,lng:29.0219,desc:"Teknik ağırlıklı koleksiyon; mühendislik ve fen bilimleri için vazgeçilmez akademik kaynak.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1081,name:"Marmara Üniversitesi Merkez Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Göztepe, Kadıköy",lat:40.9766,lng:29.0652,desc:"Hukuk, iktisat ve eğitim alanlarında kapsamlı koleksiyon; öğrenci çalışma kabinleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1082,name:"Yıldız Teknik Üniversitesi Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Beşiktaş",lat:41.0272,lng:29.0160,desc:"Yıldız sarayı parkı içindeki tarihi kampüste; mühendislik odaklı araştırma kütüphanesi.",tags:["Sessiz","Akademik","Tarihî yapı"]},
+  {id:1083,name:"Galatasaray Üniversitesi Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Çırağan Cd., Beşiktaş",lat:41.0507,lng:29.0265,desc:"Fransız yükseköğretim geleneğinden gelen; hukuk ve sosyal bilimler ağırlıklı kütüphane.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1084,name:"Sabancı Üniversitesi Bilgi Merkezi",cat:"okuma",sub:"Kütüphaneler",address:"Orhantepe, Tuzla",lat:40.8902,lng:29.3786,desc:"Modern mimarisiyle; 7/24 açık çalışma alanları ve kapsamlı dijital kaynak erişimi.",tags:["Sessiz","Akademik","Wi-Fi","24 saat"]},
+  {id:1085,name:"Koç Üniversitesi Suna Kıraç Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Rumelifeneri Yolu, Sarıyer",lat:41.2050,lng:29.0764,desc:"Rumeli Feneri yakınında kampüs kütüphanesi; uluslararası yayınlar ve veri tabanı abonelikleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1086,name:"Kadir Has Üniversitesi Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Cibali, Fatih",lat:41.0254,lng:28.9583,desc:"Tarihi Cibali Tütün Fabrikası'ndan dönüştürülen kampüste; geniş okuma salonları.",tags:["Sessiz","Akademik","Wi-Fi","Tarihî yapı"]},
+  {id:1087,name:"Bahçeşehir Üniversitesi Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Çırağan Cd., Beşiktaş",lat:41.0432,lng:29.0048,desc:"Boğaz kıyısında; tasarım, iletişim ve hukuk alanlarında geniş kaynak yelpazesi.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1088,name:"SALT Galata Araştırma Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Bankalar Cd., Karaköy",lat:41.0241,lng:28.9737,desc:"Osmanlı bankasından dönüştürülen; modern sanat, mimarlık ve tasarım arşivleriyle herkese açık.",tags:["Sessiz","Ücretsiz","Sanat","Wi-Fi"]},
+  {id:1089,name:"Atatürk Kitaplığı",cat:"okuma",sub:"Kütüphaneler",address:"Mete Cd., Taksim",lat:41.0372,lng:28.9865,desc:"İBB'nin kamusal kütüphanesi; İstanbul tarihi ve Türk edebiyatına dair zengin koleksiyon.",tags:["Sessiz","Ücretsiz","Wi-Fi"]},
+  {id:1090,name:"Şişli İlçe Halk Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Halaskargazi Cd., Şişli",lat:41.0608,lng:28.9872,desc:"Güncel yayınlar ve süreli yayınlara erişimin kolay olduğu sessiz çalışma salonları.",tags:["Sessiz","Ücretsiz"]},
+  {id:1091,name:"Kadıköy İlçe Halk Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Söğütlüçeşme Cd., Kadıköy",lat:40.9908,lng:29.0305,desc:"Anadolu yakasının merkezi ilçe kütüphanesi; geniş okuma salonu ve çocuk bölümü.",tags:["Sessiz","Ücretsiz","Çocuk dostu"]},
+  {id:1092,name:"Beşiktaş İlçe Halk Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Barbaros Bulvarı, Beşiktaş",lat:41.0430,lng:29.0072,desc:"Boğaz'a yakın konumuyla; araştırmacı ve öğrencilere yönelik kapsamlı referans bölümü.",tags:["Sessiz","Ücretsiz"]},
+  {id:1093,name:"Fatih İlçe Halk Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Fatih",lat:41.0186,lng:28.9396,desc:"Tarihi yarımadanın kalbinde; geniş Osmanlıca ve Türkçe koleksiyon.",tags:["Sessiz","Ücretsiz"]},
+  {id:1094,name:"Üsküdar İlçe Halk Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Üsküdar Meydanı",lat:41.0228,lng:29.0152,desc:"Tarihi ilçenin merkez kütüphanesi; yerel tarih ve Osmanlı dönemine ait koleksiyon.",tags:["Sessiz","Ücretsiz"]},
+  {id:1095,name:"Bakırköy İlçe Halk Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Bakırköy",lat:40.9820,lng:28.8690,desc:"Sahil ilçesinin merkezi kütüphanesi; çocuk okuma odası ve görsel sanatlar koleksiyonu.",tags:["Sessiz","Ücretsiz","Çocuk dostu"]},
+  {id:1096,name:"Maltepe İlçe Halk Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Maltepe",lat:40.9342,lng:29.1305,desc:"Anadolu yakasının geniş ilçe kütüphanesi; denize yakın, bol doğal ışıklı okuma salonları.",tags:["Sessiz","Ücretsiz"]},
+  {id:1097,name:"Goethe Institut Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Yeniçarşı Cd., Beyoğlu",lat:41.0338,lng:28.9790,desc:"Almanca yayınlar ve Alman-Türk kültürel mirası üzerine kapsamlı koleksiyon; herkese açık.",tags:["Sessiz","Wi-Fi","Ücretsiz"]},
+  {id:1098,name:"Fransız Kültür Merkezi Médiathèque",cat:"okuma",sub:"Kütüphaneler",address:"İstiklal Cd., Beyoğlu",lat:41.0330,lng:28.9775,desc:"Fransızca yayınlar, film arşivi ve dil kurslarıyla bütünleşik; çok dilli çalışma ortamı.",tags:["Sessiz","Wi-Fi"]},
+  {id:1099,name:"İSAM Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Güzeltepe, Eyüpsultan",lat:41.0622,lng:28.9276,desc:"İslam araştırmaları alanında Türkiye'nin en kapsamlı kütüphanesi; yazma eser ve dijital arşiv.",tags:["Sessiz","Akademik","Ücretsiz"]},
+  {id:1100,name:"Süleymaniye Yazma Eserler Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Süleymaniye, Fatih",lat:41.0162,lng:28.9638,desc:"90.000'i aşkın yazma eseriyle Türkiye'nin en büyük yazma koleksiyonu; Osmanlı ilim geleneğinin hazinesi.",tags:["Sessiz","Akademik","Tarihî yapı","Ücretsiz"]},
+  {id:1101,name:"Yapı Kredi Kültür Sanat Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"İstiklal Cd., Beyoğlu",lat:41.0320,lng:28.9770,desc:"Türk edebiyatı, sanat ve kültür tarihine odaklanan; İstiklal Caddesi'ndeki kapsamlı kütüphane.",tags:["Sessiz","Ücretsiz","Sanat"]},
+  {id:1102,name:"Bilgi Üniversitesi Kütüphanesi Santral",cat:"okuma",sub:"Kütüphaneler",address:"Kazım Karabekir Cd., Eyüpsultan",lat:41.0668,lng:28.9457,desc:"Eski enerji santralinde modern kütüphane; sosyal bilimler ve hukuk odaklı koleksiyon.",tags:["Sessiz","Akademik","Wi-Fi","Tarihî yapı"]},
+  {id:1103,name:"Özyeğin Üniversitesi Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Çekmeköy",lat:41.0280,lng:29.1870,desc:"Orman içi kampüste sakin çalışma ortamı; İngilizce ağırlıklı modern koleksiyon.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1104,name:"Robert Kolej Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Arnavutköy, Beşiktaş",lat:41.0825,lng:29.0481,desc:"1863'ten bu yana süregelen eğitim geleneğiyle; nadir kitaplar ve Amerikan arşivleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
 
   /* ══════════════════════════════════════════
-     KATEGORİ: OKUMA & ARAŞTIRMA
-     ALT BAŞLIK: Kütüphaneler  (15 → 50)
+     Sahaflar (12→35)
   ══════════════════════════════════════════ */
-
-  /* — DEVLET / İL HALK KÜTÜPHANELERİ — */
-  {id:1187,name:"İstanbul Büyükşehir Belediyesi Şehir Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Taksim, Beyoğlu",lat:41.0369,lng:28.9850,desc:"Atatürk Kültür Merkezi'nin yenilenen mekânında; 60.000 ciltlik koleksiyon, bireysel çalışma kabinleri ve dijital arşiv erişimi.",tags:["Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1188,name:"Beyoğlu İlçe Halk Kütüphanesi",               cat:"okuma",sub:"Kütüphaneler",address:"Pera, Beyoğlu",          lat:41.0332,lng:28.9760,desc:"Pera'nın tarihi bir binasında; Türkçe ve yabancı dil koleksiyonuyla sakin çalışma ortamı.",tags:["Sessiz","Ücretsiz"]},
-  {id:1189,name:"Fatih İlçe Halk Kütüphanesi",                  cat:"okuma",sub:"Kütüphaneler",address:"Fatih",                  lat:41.0186,lng:28.9400,desc:"Tarihi yarımadanın kalbinde; geniş Osmanlıca ve Türkçe koleksiyon, okul sonrası çalışma alanları.",tags:["Sessiz","Ücretsiz"]},
-  {id:1190,name:"Şişli İlçe Halk Kütüphanesi",                  cat:"okuma",sub:"Kütüphaneler",address:"Şişli",                  lat:41.0608,lng:28.9868,desc:"Güncel yayınlar ve süreli yayınlara erişimin kolay olduğu; sessiz ve düzenli çalışma salonları.",tags:["Sessiz","Ücretsiz"]},
-  {id:1191,name:"Beşiktaş İlçe Halk Kütüphanesi",               cat:"okuma",sub:"Kütüphaneler",address:"Beşiktaş",               lat:41.0430,lng:29.0070,desc:"Boğaz'a yakın konumuyla; araştırmacı ve öğrencilere yönelik kapsamlı referans bölümü.",tags:["Sessiz","Ücretsiz"]},
-  {id:1192,name:"Maltepe Kütüphanesi",                           cat:"okuma",sub:"Kütüphaneler",address:"Maltepe",                lat:40.9340,lng:29.1310,desc:"Anadolu yakasının geniş ilçe kütüphanesi; denize yakın, bol doğal ışıklı okuma salonları.",tags:["Sessiz","Ücretsiz"]},
-  {id:1193,name:"Pendik İlçe Halk Kütüphanesi",                  cat:"okuma",sub:"Kütüphaneler",address:"Pendik",                 lat:40.8768,lng:29.2322,desc:"Büyük okuma salonları ve çocuk bölümüyle; her yaş için kitap ve kaynak erişimi.",tags:["Sessiz","Ücretsiz","Çocuk dostu"]},
-  {id:1194,name:"Sarıyer İlçe Halk Kütüphanesi",                 cat:"okuma",sub:"Kütüphaneler",address:"Sarıyer",                lat:41.1672,lng:29.0488,desc:"Boğaz'ın kuzeyinde sakin mahalle kütüphanesi; yerel tarih ve deniz arşivi ile dikkat çeker.",tags:["Sessiz","Ücretsiz"]},
-  {id:1195,name:"Bakırköy İlçe Halk Kütüphanesi",                cat:"okuma",sub:"Kütüphaneler",address:"Bakırköy",               lat:40.9828,lng:28.8692,desc:"Sahil ilçesinin merkezi kütüphanesi; çocuk okuma odası ve görsel sanatlar koleksiyonu.",tags:["Sessiz","Ücretsiz","Çocuk dostu"]},
-  {id:1196,name:"Gaziosmanpaşa Halk Kütüphanesi",                cat:"okuma",sub:"Kütüphaneler",address:"Gaziosmanpaşa",          lat:41.0665,lng:28.9103,desc:"Kalabalık semtte sessiz bir liman; sınav hazırlık döneminde yoğun ilgi gören çalışma salonları.",tags:["Sessiz","Ücretsiz"]},
-  {id:1197,name:"Esenler Halk Kütüphanesi",                      cat:"okuma",sub:"Kütüphaneler",address:"Esenler",                lat:41.0448,lng:28.8760,desc:"Büyük çalışma kapasitesiyle öğrencilerin tercihi; e-kaynak ve ücretsiz internet erişimi.",tags:["Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1198,name:"Sultanbeyli Halk Kütüphanesi",                   cat:"okuma",sub:"Kütüphaneler",address:"Sultanbeyli",            lat:40.9620,lng:29.2680,desc:"Anadolu yakasının doğusunda; sınav odaklı gençlere yönelik sessiz çalışma kabinleri.",tags:["Sessiz","Ücretsiz"]},
-
-  /* — ÜNİVERSİTE KÜTÜPHANELERİ — */
-  {id:1199,name:"İstanbul Üniversitesi Merkez Kütüphanesi",       cat:"okuma",sub:"Kütüphaneler",address:"Beyazıt, Fatih",         lat:41.0108,lng:28.9641,desc:"1924'te kurulan; Osmanlı dönemi yazmaları ve nadir eserler dahil 1,5 milyonu aşkın ciltlik koleksiyon.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1200,name:"Boğaziçi Üniversitesi Kütüphanesi",              cat:"okuma",sub:"Kütüphaneler",address:"Bebek, Beşiktaş",        lat:41.0845,lng:29.0479,desc:"Boğaz manzaralı kampüste; İngilizce akademik yayınlar ve açık erişim arşivleriyle donanımlı.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1201,name:"İTÜ Mustafa İnan Kütüphanesi",                   cat:"okuma",sub:"Kütüphaneler",address:"Maslak, Sarıyer",         lat:41.1050,lng:29.0224,desc:"Teknik ağırlıklı koleksiyon; mühendislik ve fen bilimleri için vazgeçilmez akademik kaynak.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1202,name:"ODTÜ Kuzey Kıbrıs Yerleşkesi değil — MSGSÜ Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Fındıklı, Beyoğlu",lat:41.0286,lng:28.9820,desc:"Mimar Sinan Güzel Sanatlar Üniversitesi kütüphanesi; sanat, tasarım ve mimarlık alanında eşsiz görsel koleksiyon.",tags:["Sessiz","Akademik","Sanat"]},
-  {id:1203,name:"Marmara Üniversitesi Kütüphanesi",               cat:"okuma",sub:"Kütüphaneler",address:"Kadıköy",                lat:40.9908,lng:29.0502,desc:"Hukuk, iktisat ve eğitim alanlarında kapsamlı koleksiyon; öğrenci çalışma kabinleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1204,name:"Yıldız Teknik Üniversitesi Kütüphanesi",         cat:"okuma",sub:"Kütüphaneler",address:"Beşiktaş",               lat:41.0270,lng:29.0155,desc:"Yıldız sarayı parkı içindeki tarihi kampüste; mühendislik ve fen bilimleri odaklı araştırma kütüphanesi.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1205,name:"Sabancı Üniversitesi Bilgi Merkezi",              cat:"okuma",sub:"Kütüphaneler",address:"Tuzla",                  lat:40.8906,lng:29.3785,desc:"Modern mimariyle inşa edilmiş; 7/24 açık çalışma alanları ve kapsamlı dijital kaynak erişimi.",tags:["Sessiz","Akademik","Wi-Fi","24 saat"]},
-  {id:1206,name:"Koç Üniversitesi Suna Kıraç Kütüphanesi",        cat:"okuma",sub:"Kütüphaneler",address:"Sarıyer",                lat:41.2048,lng:29.0765,desc:"Rumeli Feneri yakınında kampüs kütüphanesi; uluslararası yayınlar ve veri tabanı abonelikleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1207,name:"Bilgi Üniversitesi Kütüphanesi Dolapdere",        cat:"okuma",sub:"Kütüphaneler",address:"Dolapdere, Beyoğlu",     lat:41.0522,lng:28.9695,desc:"Endüstriyel dönüşüm binaların içinde modern kütüphane; sosyal bilimler ve hukuk odaklı.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1208,name:"İstanbul Medipol Üniversitesi Kütüphanesi",       cat:"okuma",sub:"Kütüphaneler",address:"Bağcılar",               lat:41.0438,lng:28.8362,desc:"Sağlık bilimleri ağırlıklı koleksiyon; tıp öğrencileri için geniş çalışma salonları.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1209,name:"Bahçeşehir Üniversitesi Kütüphanesi",             cat:"okuma",sub:"Kütüphaneler",address:"Beşiktaş",               lat:41.0410,lng:29.0068,desc:"Çift dilli koleksiyon; tasarım, iletişim ve hukuk alanlarında geniş kaynak yelpazesi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1210,name:"Özyeğin Üniversitesi Kütüphanesi",                cat:"okuma",sub:"Kütüphaneler",address:"Çekmeköy",               lat:41.0278,lng:29.1868,desc:"Orman içi kampüste sakin çalışma ortamı; İngilizce ağırlıklı modern koleksiyon.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1211,name:"Galatasaray Üniversitesi Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Ortaköy, Beşiktaş",lat:41.0508,lng:29.0262,desc:"Fransız yükseköğretim geleneğinden gelen kütüphane; hukuk, sosyal bilimler ve Fransızca yayınlar.",tags:["Sessiz","Akademik","Wi-Fi"]},
-
-  /* — ÖZEL / VAKIF / KURUMSAL KÜTÜPHANELER — */
-  {id:1212,name:"SALT Araştırma Kütüphanesi",                     cat:"okuma",sub:"Kütüphaneler",address:"Karaköy, Beyoğlu",       lat:41.0232,lng:28.975,desc:"Modern sanat, mimarlık ve tasarım arşivleriyle öne çıkan; herkese açık araştırma kütüphanesi.",tags:["Sessiz","Ücretsiz","Sanat","Wi-Fi"]},
-  {id:1213,name:"Yapı Kredi Kültür Sanat Kütüphanesi",            cat:"okuma",sub:"Kütüphaneler",address:"İstiklal Cd., Beyoğlu",  lat:41.0309,lng:28.9784,desc:"Türk edebiyatı, sanat ve kültür tarihine odaklanan; İstiklal Caddesi'ndeki görsel açıdan zengin kütüphane.",tags:["Sessiz","Ücretsiz","Sanat"]},
-  {id:1214,name:"Türkiye Ekonomik ve Toplumsal Tarih Vakfı Kütüphanesi",cat:"okuma",sub:"Kütüphaneler",address:"Eminönü, Fatih",  lat:41.0172,lng:28.9700,desc:"Sosyal tarih, fotoğraf arşivi ve sözlü tarih koleksiyonuyla; araştırmacılara özel başvuru kütüphanesi.",tags:["Sessiz","Akademik"]},
-  {id:1215,name:"İSAM Kütüphanesi",                               cat:"okuma",sub:"Kütüphaneler",address:"Bağcılar",               lat:41.0388,lng:28.8322,desc:"İslam araştırmaları alanında Türkiye'nin en kapsamlı kütüphanesi; yazma eser ve dijital arşiv.",tags:["Sessiz","Akademik","Ücretsiz"]},
-  {id:1216,name:"Fransız Kültür Merkezi Kütüphanesi",             cat:"okuma",sub:"Kütüphaneler",address:"Taksim, Beyoğlu",       lat:41.0355,lng:28.9840,desc:"Fransızca yayınlar, film arşivi ve dil kurslarıyla bütünleşik; çok dilli çalışma ortamı.",tags:["Sessiz","Wi-Fi"]},
-  {id:1217,name:"Alman Kültür Merkezi Kütüphanesi (Goethe Institut)",cat:"okuma",sub:"Kütüphaneler",address:"Nişantaşı, Şişli",  lat:41.0490,lng:28.9935,desc:"Almanca yayınlar ve Alman-Türk kültürel mirası üzerine kapsamlı koleksiyon; herkese açık.",tags:["Sessiz","Wi-Fi","Ücretsiz"]},
-  {id:1218,name:"Cervantes Enstitüsü Kütüphanesi",                cat:"okuma",sub:"Kütüphaneler",address:"Taksim, Beyoğlu",       lat:41.0360,lng:28.9838,desc:"İspanyolca ve Latin Amerika edebiyatı ağırlıklı; ücretsiz üyelikle erişilebilen kültür kütüphanesi.",tags:["Sessiz","Wi-Fi","Ücretsiz"]},
-  {id:1219,name:"Divan Edebiyatı Müzesi Kütüphanesi",             cat:"okuma",sub:"Kütüphaneler",address:"Galata, Beyoğlu",       lat:41.0248,lng:28.9738,desc:"Mevlevi kültürü ve divan şiiri üzerine nadir el yazmaları; araştırmacı randevusuyla erişim.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1220,name:"Robert Koleji Kütüphanesi",                      cat:"okuma",sub:"Kütüphaneler",address:"Bebek, Beşiktaş",       lat:41.0825,lng:29.0481,desc:"1863'ten bu yana süregelen eğitim geleneğiyle; nadir kitaplar ve Amerikan arşivleri barındıran tarihi kütüphane.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1221,name:"Türk-Alman Üniversitesi Kütüphanesi",            cat:"okuma",sub:"Kütüphaneler",address:"Beykoz",                lat:41.1080,lng:29.0855,desc:"İkidilli eğitim anlayışıyla; Almanca ve Türkçe akademik kaynakların bir arada sunulduğu modern kütüphane.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1105,name:"Sahaflar Çarşısı Beyazıt",cat:"okuma",sub:"Sahaflar",address:"Sahaflar Çarşısı Sk., Beyazıt",lat:41.0103,lng:28.9662,desc:"İstanbul'un en tarihi sahaf çarşısı; üniversite öğrencilerinin ve bibliyofillerin cennet köşesi.",tags:["Tarihî yapı","Ücretsiz"]},
+  {id:1106,name:"Tünel Sahaf Sokağı",cat:"okuma",sub:"Sahaflar",address:"Galip Dede Cd., Beyoğlu",lat:41.0278,lng:28.9742,desc:"Tünel meydanına inen yokuşta sıralanan sahaf dükkanları; nadir baskı ve antika kitaplar.",tags:["Tarihî yapı","Ücretsiz"]},
+  {id:1107,name:"Librairie de Péra",cat:"okuma",sub:"Sahaflar",address:"Galip Dede Cd., Beyoğlu",lat:41.0280,lng:28.9745,desc:"Pera'nın en köklü yabancı dil sahaf dükkânı; Osmanlı-Levant tarihi ve sanat kitapları.",tags:["Nadir kitap","Ücretsiz","Tarihî yapı"]},
+  {id:1108,name:"Babıali Sahaf Sokağı",cat:"okuma",sub:"Sahaflar",address:"Ankara Cd., Cağaloğlu",lat:41.0110,lng:28.9730,desc:"Türk basın tarihinin kalbi Babıali'de eski gazeteler, nadir yayınlar ve Osmanlıca kitaplar.",tags:["Ücretsiz","Tarihî yapı"]},
+  {id:1109,name:"Çukurcuma Sahaf Dükkânları",cat:"okuma",sub:"Sahaflar",address:"Çukurcuma Cd., Beyoğlu",lat:41.0305,lng:28.9778,desc:"Antika kitap, eski plak ve koleksiyon parçalarının iç içe geçtiği Çukurcuma sahaf sokağı.",tags:["Ücretsiz","Tarihî yapı"]},
+  {id:1110,name:"Balat Kitap Dükkânı",cat:"okuma",sub:"Sahaflar",address:"Vodina Cd., Balat",lat:41.0285,lng:28.9490,desc:"Renkli Balat sokaklarında gizlenmiş sakin sahaf; yerel tarih kitaplarında uzmanlaşmış.",tags:["Ücretsiz","Tarihî yapı"]},
+  {id:1111,name:"Kadıköy Sahaflar Çarşısı",cat:"okuma",sub:"Sahaflar",address:"Altıyol, Kadıköy",lat:40.9902,lng:29.0278,desc:"Kadıköy'ün kalabalık tarihi sahaf çarşısı; edebiyat, tarih ve koleksiyon kitapları.",tags:["Ücretsiz"]},
+  {id:1112,name:"Arnavutköy Sahafları",cat:"okuma",sub:"Sahaflar",address:"Arnavutköy Cd., Beşiktaş",lat:41.0618,lng:29.0368,desc:"Boğaz'ın en şirin köyünde saklı sahaf köşeleri; yabancı dil kitaplarda zengin seçki.",tags:["Ücretsiz","Boğaz manzarası"]},
+  {id:1113,name:"Moda Sahaf Dükkânları",cat:"okuma",sub:"Sahaflar",address:"Moda Cd., Kadıköy",lat:40.9820,lng:29.0288,desc:"Moda sokaklarına yayılmış bağımsız sahaf dükkânları; şiir ve edebiyat ağırlıklı.",tags:["Ücretsiz"]},
+  {id:1114,name:"Üsküdar Sahaflar Çarşısı",cat:"okuma",sub:"Sahaflar",address:"Hakimiyet-i Milliye Cd., Üsküdar",lat:41.0232,lng:29.0148,desc:"Tarihi Üsküdar çarşısı içinde dini ve klasik Türk edebiyatına odaklı sahaflar.",tags:["Ücretsiz","Tarihî yapı"]},
+  {id:1115,name:"Bostancı Sahaf Pazarı",cat:"okuma",sub:"Sahaflar",address:"Bostancı, Kadıköy",lat:40.9618,lng:29.0943,desc:"Hafta sonu kurulan; ikinci el kitap ve koleksiyon arayanların Anadolu yakası buluşması.",tags:["Ücretsiz"]},
+  {id:1116,name:"Feriköy Antika ve Sahaf Pazarı",cat:"okuma",sub:"Sahaflar",address:"Feriköy, Şişli",lat:41.0568,lng:28.9860,desc:"Her pazar günü kurulan antika pazarında nadir kitaplar ve illüstrasyonlu yayınlar.",tags:["Ücretsiz","Koleksiyon"]},
+  {id:1117,name:"Eyüpsultan Dini Kitap Sahafları",cat:"okuma",sub:"Sahaflar",address:"Eyüpsultan",lat:41.0478,lng:28.9348,desc:"Tarihi caminin yakınında; dini yayınlar, Kuran baskıları ve İslami ilimler sahafları.",tags:["Tarihî yapı","Ücretsiz"]},
+  {id:1118,name:"Harita ve Coğrafya Sahafı Beyazıt",cat:"okuma",sub:"Sahaflar",address:"Sahaflar Çarşısı, Beyazıt",lat:41.0101,lng:28.9660,desc:"Osmanlı dönemi haritaları, seyahatname baskıları ve eski coğrafya atlaslarında uzman.",tags:["Tarihî yapı","Ücretsiz","Nadir kitap"]},
+  {id:1119,name:"Galata Kitap",cat:"okuma",sub:"Sahaflar",address:"Galata Kulesi Sk., Beyoğlu",lat:41.0258,lng:28.9738,desc:"Galata kulesine inen sokakta; mimarlık, tasarım ve sanat kitapları üzerine uzmanlaşmış sahaf.",tags:["Ücretsiz","Sanat"]},
+  {id:1120,name:"Nişantaşı Antika Kitap",cat:"okuma",sub:"Sahaflar",address:"Teşvikiye Cd., Şişli",lat:41.0488,lng:28.9925,desc:"Butik semtte; İngilizce ve Fransızca eski baskılar, sanat kataloğu ve koleksiyon yayınları.",tags:["Ücretsiz","Nadir kitap"]},
+  {id:1121,name:"Dil Kitabevi Sahaf Bölümü",cat:"okuma",sub:"Sahaflar",address:"Ankara Cd., Cağaloğlu",lat:41.0118,lng:28.9740,desc:"Dilbilim, sözlükler ve yabancı dil öğrenimi üzerine uzmanlaşmış; nadir gramer kitapları.",tags:["Tarihî yapı","Ücretsiz","Akademik"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Araştırma merkezleri (12 → 50)
+     Kitap evleri (12→30)
   ══════════════════════════════════════════ */
-
-  /* — ULUSLARARASI ARAŞTIRMA ENSTİTÜLERİ — */
-  {id:1222,name:"Hollanda Araştırma Enstitüsü (NIT)",             cat:"okuma",sub:"Araştırma merkezleri",address:"Istiklal Cd., Beyoğlu",lat:41.0335,lng:28.9778,desc:"Türk-Hollanda ilişkileri ve Ortadoğu araştırmalarına adanmış; özel kütüphane ve seminer salonuyla.",tags:["Sessiz","Akademik"]},
-  {id:1223,name:"Avusturya Kültür Forumu Kütüphanesi",            cat:"okuma",sub:"Araştırma merkezleri",address:"Nişantaşı, Şişli",  lat:41.0495,lng:28.9940,desc:"Avusturya ve Orta Avrupa kültürüne odaklı koleksiyon; Almanca ve Türkçe kaynak zenginliği.",tags:["Sessiz","Wi-Fi"]},
-  {id:1224,name:"İtalyan Kültür Merkezi Araştırma Birimi",        cat:"okuma",sub:"Araştırma merkezleri",address:"Taksim, Beyoğlu",   lat:41.0362,lng:28.9843,desc:"İtalyan dili, sanatı ve arkeolojisi üzerine özel koleksiyon; araştırmacıya açık referans kütüphanesi.",tags:["Sessiz","Akademik"]},
-  {id:1225,name:"Amerikan Araştırma Enstitüsü (ARIT)",            cat:"okuma",sub:"Araştırma merkezleri",address:"Arnavutköy, Beşiktaş",lat:41.0618,lng:29.0368,desc:"Türkiye ve Yakın Doğu üzerine Amerikalı akademisyenlere destek veren burs ve araştırma merkezi.",tags:["Sessiz","Akademik"]},
-  {id:1226,name:"Japon Kültür Merkezi Araştırma Odası",           cat:"okuma",sub:"Araştırma merkezleri",address:"Levent, Beşiktaş",  lat:41.0812,lng:29.0118,desc:"Japonca kaynaklar ve Doğu Asya araştırmalarına yönelik özel okuma odası.",tags:["Sessiz","Wi-Fi"]},
-  {id:1227,name:"Rus Kültür Merkezi Kütüphanesi",                 cat:"okuma",sub:"Araştırma merkezleri",address:"Taksim, Beyoğlu",   lat:41.0378,lng:28.9862,desc:"Rus edebiyatı, sanatı ve tarihi üzerine Türkçe ve Rusça geniş koleksiyon.",tags:["Sessiz","Ücretsiz"]},
-
-  /* — TARİH & ŞEHİR ARAŞTIRMA MERKEZLERİ — */
-  {id:1228,name:"İstanbul Şehir Üniversitesi Araştırma Merkezi",  cat:"okuma",sub:"Araştırma merkezleri",address:"Altunizade, Üsküdar",lat:41.0268,lng:29.0412,desc:"Şehir tarihi, sosyoloji ve mimarlık odaklı; disiplinlerarası araştırma programları ve kütüphane.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1229,name:"Boğaziçi Üniversitesi Nüfusbilim Araştırma Merkezi",cat:"okuma",sub:"Araştırma merkezleri",address:"Bebek, Beşiktaş",lat:41.0848,lng:29.0481,desc:"Demografik araştırmalar ve göç çalışmaları; kapsamlı veri tabanı ve istatistik arşivleri.",tags:["Sessiz","Akademik"]},
-  {id:1230,name:"TÜRKSAM Araştırma Merkezi",                      cat:"okuma",sub:"Araştırma merkezleri",address:"Şişli",             lat:41.0610,lng:28.9825,desc:"Türk dış politikası ve stratejik araştırmalar; düşünce kuruluşu kütüphanesi ve yayın arşivi.",tags:["Sessiz","Akademik"]},
-  {id:1231,name:"İstanbul Politikalar Merkezi",                   cat:"okuma",sub:"Araştırma merkezleri",address:"Beşiktaş",          lat:41.0440,lng:29.0068,desc:"Sabancı Üniversitesi bünyesinde; kamu politikası, Avrupa çalışmaları ve sivil toplum araştırmaları.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1232,name:"Osmanlı Araştırmaları Vakfı Kütüphanesi",        cat:"okuma",sub:"Araştırma merkezleri",address:"Cağaloğlu, Fatih",  lat:41.0119,lng:28.9742,desc:"Osmanlı tarihi, hukuku ve kültürü üzerine nadir süreli yayınlar ve arşiv belgeleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1233,name:"Türk Tarih Kurumu İstanbul Şubesi",              cat:"okuma",sub:"Araştırma merkezleri",address:"Gülhane, Fatih",    lat:41.0135,lng:28.9800,desc:"Millî tarih araştırmalarına adanmış; arşiv belgeleri, haritalar ve süreli yayın koleksiyonu.",tags:["Sessiz","Akademik","Ücretsiz"]},
-  {id:1234,name:"İstanbul Büyükşehir Belediyesi Kent Arşivi",     cat:"okuma",sub:"Araştırma merkezleri",address:"Saraçhane, Fatih",  lat:41.0163,lng:28.9516,desc:"Şehir planları, mimari belgeler ve kentsel dönüşüm arşivine araştırmacı erişimi.",tags:["Sessiz","Ücretsiz","Akademik"]},
-
-  /* — SOSYAL BİLİMLER ARAŞTIRMA MERKEZLERİ — */
-  {id:1235,name:"Kadir Has Üniversitesi İstanbul Araştırmaları Merkezi",cat:"okuma",sub:"Araştırma merkezleri",address:"Cibali, Fatih",lat:41.0252,lng:28.9589,desc:"İstanbul'un toplumsal, kültürel ve mekânsal dönüşümü üzerine disiplinlerarası araştırma merkezi.",tags:["Sessiz","Akademik","Wi-Fi","Tarihî yapı"]},
-  {id:1236,name:"Bilgi Üniversitesi Göç Araştırmaları Merkezi",   cat:"okuma",sub:"Araştırma merkezleri",address:"Dolapdere, Beyoğlu",lat:41.0518,lng:28.97,desc:"İç ve uluslararası göç, mültecilik ve entegrasyon konularında Türkiye'nin önde gelen araştırma birimi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1237,name:"TESEV Araştırma Kütüphanesi",                    cat:"okuma",sub:"Araştırma merkezleri",address:"Nişantaşı, Şişli",  lat:41.0490,lng:28.9925,desc:"Türkiye Ekonomik ve Sosyal Etüdler Vakfı; demokrasi, yönetişim ve kamu politikası yayın arşivi.",tags:["Sessiz","Akademik"]},
-  {id:1238,name:"Deloitte Araştırma ve Düşünce Merkezi",          cat:"okuma",sub:"Araştırma merkezleri",address:"Maslak, Sarıyer",   lat:41.1090,lng:29.0205,desc:"Ekonomi, teknoloji ve iş dünyası araştırmaları; kurumsal raporlar ve endüstri analizleri arşivi.",tags:["Sessiz","Wi-Fi"]},
-
-  /* — BİLİM & TEKNOLOJİ ARAŞTIRMA MERKEZLERİ — */
-  {id:1239,name:"TÜBİTAK Marmara Araştırma Merkezi Kütüphanesi",  cat:"okuma",sub:"Araştırma merkezleri",address:"Gebze, Kocaeli",   lat:41.1068,lng:29.0228,desc:"Fen ve mühendislik alanlarında Türkiye'nin en büyük uygulamalı araştırma merkezi kütüphanesi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1240,name:"İTÜ Uzay Bilimleri Araştırma Merkezi",           cat:"okuma",sub:"Araştırma merkezleri",address:"Maslak, Sarıyer",   lat:41.1055,lng:29.0228,desc:"Uzay mühendisliği, uydu teknolojisi ve astronomi araştırmaları; özel teknik kütüphane.",tags:["Sessiz","Akademik"]},
-  {id:1241,name:"Boğaziçi Üniversitesi Deprem Araştırma Merkezi", cat:"okuma",sub:"Araştırma merkezleri",address:"Kandilli, Üsküdar", lat:41.0655,lng:29.0578,desc:"Türkiye'nin deprem izleme merkezi; sismoloji ve doğal afet araştırmalarına açık arşiv.",tags:["Sessiz","Akademik"]},
-  {id:1242,name:"İTÜ Enerji Enstitüsü Kütüphanesi",               cat:"okuma",sub:"Araştırma merkezleri",address:"Ayazağa, Sarıyer",  lat:41.1068,lng:29.0228,desc:"Yenilenebilir enerji, enerji verimliliği ve iklim araştırmaları; teknik rapor ve tez arşivi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-
-  /* — KÜLTÜR & SANAT ARAŞTIRMA MERKEZLERİ — */
-  {id:1243,name:"AICA Türkiye Sanat Eleştirmenleri Arşivi",       cat:"okuma",sub:"Araştırma merkezleri",address:"Beyoğlu",           lat:41.0318,lng:28.9765,desc:"Türkiye sanat eleştirisi, sergi katalogları ve sanatçı monografilerine adanmış özel arşiv.",tags:["Sessiz","Akademik","Sanat"]},
-  {id:1244,name:"Türkiye Sinema ve Audiovisüel Kültür Vakfı (TÜRSAK)",cat:"okuma",sub:"Araştırma merkezleri",address:"Beyoğlu",       lat:41.0308,lng:28.9760,desc:"Türk sinema tarihi, senaryo arşivi ve film araştırmalarına yönelik özel kütüphane.",tags:["Sessiz","Akademik"]},
-  {id:1245,name:"Atatürk Kitaplığı Harita Koleksiyonu",            cat:"okuma",sub:"Araştırma merkezleri",address:"Taksim, Beyoğlu",   lat:41.0369,lng:28.9866,desc:"Osmanlı dönemi haritaları ve coğrafi belgelerden oluşan eşsiz koleksiyon; araştırmacı erişimiyle.",tags:["Sessiz","Akademik","Tarihî yapı","Ücretsiz"]},
-  {id:1246,name:"İstanbul Müzik Araştırmaları Merkezi",            cat:"okuma",sub:"Araştırma merkezleri",address:"Taksim, Beyoğlu",   lat:41.0375,lng:28.9855,desc:"Türk halk müziği ve klasik Türk müziği nota arşivi; ses kayıtları ve etnomüzikoloji kaynakları.",tags:["Sessiz","Akademik"]},
-
-  /* — HUKUK & EKONOMİ ARAŞTIRMA MERKEZLERİ — */
-  {id:1247,name:"İstanbul Arabuluculuk Merkezi Kütüphanesi",       cat:"okuma",sub:"Araştırma merkezleri",address:"Levent, Beşiktaş",  lat:41.0805,lng:29.0108,desc:"Hukuk, arabuluculuk ve uyuşmazlık çözümü alanında güncel yayın ve içtihat arşivi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1248,name:"IICEC Enerji ve İklim Araştırmaları Merkezi",     cat:"okuma",sub:"Araştırma merkezleri",address:"Altunizade, Üsküdar",lat:41.0296,lng:29.0443,desc:"Sabancı Üniversitesi'nde iklim politikası ve enerji dönüşümü araştırmaları; açık erişim yayınlar.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1249,name:"Türkiye İş Dünyası ve Sürdürülebilirlik Araştırma Merkezi",cat:"okuma",sub:"Araştırma merkezleri",address:"Maslak, Sarıyer",lat:41.1092,lng:29.0198,desc:"ESG, kurumsal yönetişim ve sürdürülebilir kalkınma odaklı; raporlar ve sektör analizleri arşivi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-
-  /* — SAĞLIK & SOSYAL ARAŞTIRMA — */
-  {id:1250,name:"Koç Üniversitesi Hemşirelik ve Sağlık Araştırmaları Merkezi",cat:"okuma",sub:"Araştırma merkezleri",address:"Sarıyer",lat:41.2033,lng:29.0753,desc:"Sağlık bilimleri ve klinik araştırmalar; güncel tıp literatürüne kapsamlı erişim.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1251,name:"İstanbul Tıp Tarihi ve Deontoloji Arşivi",        cat:"okuma",sub:"Araştırma merkezleri",address:"Çapa, Fatih",      lat:41.0168,lng:28.9368,desc:"Osmanlı dönemi tıp belgelerinden modern tıp tarihine; sağlık tarihi araştırmacılarına özel arşiv.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1252,name:"Marmara Üniversitesi Avrupa Araştırmaları Merkezi",cat:"okuma",sub:"Araştırma merkezleri",address:"Kadıköy",          lat:41.0008,lng:29.0502,desc:"AB politikaları, Avrupa hukuku ve Türkiye-AB ilişkileri; düzenli yayın ve konferans programı.",tags:["Sessiz","Akademik","Wi-Fi"]},
-
-  /* — EDEBİYAT & DİL ARAŞTIRMA — */
-  {id:1253,name:"Türk Dil Kurumu İstanbul Temsilciliği",           cat:"okuma",sub:"Araştırma merkezleri",address:"Cağaloğlu, Fatih",  lat:41.0130,lng:28.9750,desc:"Türk dili araştırmaları; sözlük çalışmaları, terminoloji ve dil tarihi kaynakları arşivi.",tags:["Sessiz","Akademik","Ücretsiz"]},
-  {id:1254,name:"Orta Doğu Araştırmaları Merkezi (ORSAM İstanbul)",cat:"okuma",sub:"Araştırma merkezleri",address:"Beşiktaş",          lat:41.0445,lng:29.0068,desc:"Orta Doğu ve Kafkasya siyaseti üzerine yayınlar, veri tabanları ve analist raporları.",tags:["Sessiz","Akademik"]},
-  {id:1255,name:"Bilim ve Sanat Vakfı Araştırma Kütüphanesi",      cat:"okuma",sub:"Araştırma merkezleri",address:"Üsküdar",           lat:41.0196,lng:29.01070,desc:"İslam medeniyeti, felsefe ve sanat tarihi araştırmalarına adanmış; geniş koleksiyon ve yayın programı.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1256,name:"Küresel Araştırma ve Analiz Merkezi (Global SA)", cat:"okuma",sub:"Araştırma merkezleri",address:"Levent, Beşiktaş",  lat:41.0823,lng:29.0059,desc:"Jeopilitik, güvenlik ve uluslararası ilişkiler analizleri; uzman raporlar ve politika belgeleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1257,name:"İstanbul Eğitim Araştırmaları Derneği Kütüphanesi",cat:"okuma",sub:"Araştırma merkezleri",address:"Kadıköy",          lat:40.9887,lng:29.0264,desc:"Eğitim politikası, pedagoji ve öğretmen yetiştirme üzerine Türkiye ve uluslararası karşılaştırmalı araştırmalar.",tags:["Sessiz","Akademik"]},
-  {id:1258,name:"Ekonomi Araştırmaları Vakfı (ERG) Kütüphanesi",   cat:"okuma",sub:"Araştırma merkezleri",address:"Şişli",             lat:41.0600,lng:28.9820,desc:"Makroekonomi, kalkınma ve eşitsizlik araştırmaları; ücretsiz erişimli politika raporları.",tags:["Sessiz","Akademik","Ücretsiz"]},
-  {id:1259,name:"Tarih Vakfı Araştırma Kütüphanesi",               cat:"okuma",sub:"Araştırma merkezleri",address:"Eminönü, Fatih",    lat:41.0165,lng:28.9705,desc:"Türkiye sosyal tarihi, yerel tarih ve sözlü tarih projelerine adanmış; fotoğraf ve belge arşivi.",tags:["Sessiz","Akademik","Ücretsiz","Tarihî yapı"]},
+  {id:1122,name:"Remzi Kitabevi İstiklal",cat:"okuma",sub:"Kitap evleri",address:"İstiklal Cd. No:34, Beyoğlu",lat:41.0328,lng:28.9775,desc:"1927'den bu yana Türkiye'nin en köklü kitabevlerinden; geniş katalog ve imza günleri.",tags:["Kitap","Tarihî yapı"]},
+  {id:1123,name:"Homer Kitabevi",cat:"okuma",sub:"Kitap evleri",address:"Yeniçarşı Cd., Beyoğlu",lat:41.0338,lng:28.9788,desc:"İngilizce ve Türkçe geniş koleksiyon; yabancı dil yayınlarında Beyoğlu'nun en iyisi.",tags:["Kitap","Wi-Fi"]},
+  {id:1124,name:"Robinson Crusoe 389",cat:"okuma",sub:"Kitap evleri",address:"İstiklal Cd. No:389, Beyoğlu",lat:41.0322,lng:28.9772,desc:"İngilizce kitaplar ve uluslararası yayınlarda uzman; sakin atmosferiyle çalışmaya elverişli.",tags:["Kitap","Wi-Fi","Sessiz"]},
+  {id:1125,name:"Pandora Kitabevi",cat:"okuma",sub:"Kitap evleri",address:"Büyükparmakkapı Sk., Beyoğlu",lat:41.0322,lng:28.9768,desc:"Bağımsız ruhlu kitabevi; edebiyat, felsefe ve sosyal bilimler ağırlıklı özenli koleksiyon.",tags:["Kitap"]},
+  {id:1126,name:"Minoa Kitabevi Kadıköy",cat:"okuma",sub:"Kitap evleri",address:"Söğütlüçeşme Cd., Kadıköy",lat:40.9905,lng:29.0270,desc:"Kadıköy'ün en sevilen bağımsız kitabevi; edebiyat etkinlikleri ve imza günleriyle canlı.",tags:["Kitap","Etkinlik"]},
+  {id:1127,name:"Hayy Kitap Beşiktaş",cat:"okuma",sub:"Kitap evleri",address:"Beşiktaş",lat:41.0432,lng:29.0048,desc:"Mahallenin sevilen bağımsız kitabevi; çocuk kitapları ve yerel yazar etkinliklerine önem veren.",tags:["Kitap","Çocuk dostu","Etkinlik"]},
+  {id:1128,name:"İthaki Yayınları Kitabevi",cat:"okuma",sub:"Kitap evleri",address:"Galata, Beyoğlu",lat:41.0260,lng:28.9740,desc:"Fantastik, bilim kurgu ve polisiye çevirilerinde uzman; türün Türkiye'deki merkezi.",tags:["Kitap","Etkinlik"]},
+  {id:1129,name:"Literatur Kitabevi",cat:"okuma",sub:"Kitap evleri",address:"Şişli",lat:41.0605,lng:28.9870,desc:"Akademik ve mesleki yayınlar; tıp, hukuk ve mühendislik kitaplarında güçlü stok.",tags:["Kitap","Akademik"]},
+  {id:1130,name:"Metis Kitabevi Tünel",cat:"okuma",sub:"Kitap evleri",address:"Sofyalı Sk., Tünel",lat:41.0293,lng:28.9752,desc:"Feminist edebiyat, çevre ve sol düşünce yayınlarıyla öne çıkan yayınevi mağazası.",tags:["Kitap","Etkinlik"]},
+  {id:1131,name:"Can Yayınları Kitabevi",cat:"okuma",sub:"Kitap evleri",address:"Ankara Cd., Cağaloğlu",lat:41.0115,lng:28.9740,desc:"Türk ve dünya edebiyatının seçkin yayınevinin mağazası; çeviri edebiyatta güçlü katalog.",tags:["Kitap","Tarihî yapı"]},
+  {id:1132,name:"Büke Kitabevi",cat:"okuma",sub:"Kitap evleri",address:"Cihangir, Beyoğlu",lat:41.0298,lng:28.9808,desc:"Cihangir'de edebiyat ve sanat kitaplarında seçici koleksiyonuyla küçük ama etkili kitabevi.",tags:["Kitap","Sanat"]},
+  {id:1133,name:"Türkiye İş Bankası Kültür Yayınları Mağazası",cat:"okuma",sub:"Kitap evleri",address:"İstiklal Cd., Beyoğlu",lat:41.0322,lng:28.9770,desc:"Türk edebiyatının klasiklerini yeniden basan köklü yayınevinin mağazası.",tags:["Kitap","Tarihî yapı"]},
+  {id:1134,name:"Dost Kitabevi Kadıköy",cat:"okuma",sub:"Kitap evleri",address:"Kadıköy",lat:41.0005,lng:29.0260,desc:"Anadolu yakasının sevilen bağımsız kitabevi; edebiyat etkinlikleri ile canlı atmosfer.",tags:["Kitap","Etkinlik"]},
+  {id:1135,name:"Sel Yayıncılık Kitabevi",cat:"okuma",sub:"Kitap evleri",address:"Beyoğlu",lat:41.0315,lng:28.9758,desc:"Bağımsız siyasi edebiyat ve çeviri yayıncılığında öncü; eleştirel düşünce söyleşileri.",tags:["Kitap","Etkinlik"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Arşiv merkezleri  (12 → ~66)
+     Sessiz çalışma kafeleri (12→35)
   ══════════════════════════════════════════ */
-
-  /* — DEVLET ARŞİVLERİ — */
-  {id:1260,name:"Başbakanlık Osmanlı Arşivi",                     cat:"okuma",sub:"Arşiv merkezleri",address:"Cağaloğlu, Fatih",    lat:41.0123,lng:28.9748,desc:"70 milyonu aşkın belgeyle dünyanın en büyük Osmanlı arşivi; araştırmacı kimlik kartıyla erişim.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1261,name:"Vakıflar Genel Müdürlüğü İstanbul Arşivi",       cat:"okuma",sub:"Arşiv merkezleri",address:"Fatih",               lat:41.0185,lng:28.9420,desc:"Osmanlı vakıf belgeleri, mülkiyet kayıtları ve vakfiye koleksiyonu; araştırmacıya randevuyla açık.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1262,name:"Tapu ve Kadastro Bölge Müdürlüğü Arşivi",        cat:"okuma",sub:"Arşiv merkezleri",address:"Fatih",               lat:41.0160,lng:28.9490,desc:"Tarihi tapu sicilleri ve kadastro haritaları; mülkiyet araştırması yapanlar için birincil kaynak.",tags:["Sessiz","Akademik"]},
-  {id:1263,name:"İstanbul Üniversitesi Nadir Eserler Kütüphanesi", cat:"okuma",sub:"Arşiv merkezleri",address:"Beyazıt, Fatih",      lat:41.0116,lng:28.962,desc:"70.000'i aşkın yazma ve nadir basma eser; Arap, Türkçe ve Farsça el yazmalarından oluşan koleksiyon.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1264,name:"Süleymaniye Yazma Eserler Kütüphanesi",           cat:"okuma",sub:"Arşiv merkezleri",address:"Süleymaniye, Fatih",  lat:41.0160,lng:28.9640,desc:"90.000'i aşkın yazma eseriyle Türkiye'nin en büyük yazma koleksiyonu; Osmanlı ilim geleneğinin hazinesi.",tags:["Sessiz","Akademik","Tarihî yapı","Ücretsiz"]},
-  {id:1265,name:"Vakıflar Arşivi Bölge Müdürlüğü",                cat:"okuma",sub:"Arşiv merkezleri",address:"Fatih",               lat:41.0180,lng:28.9415,desc:"Osmanlı hayır kurumlarına ait vakfiyeler ve mülk belgeleri; tarihçi ve hukuk araştırmacıları için.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-
-  /* — BELEDİYE & KENTSEL ARŞİVLER — */
-  {id:1266,name:"İBB Şehir Haritaları Arşivi",                    cat:"okuma",sub:"Arşiv merkezleri",address:"Saraçhane, Fatih",    lat:41.0164,lng:28.9519,desc:"16. yüzyıldan günümüze İstanbul haritaları; şehrin coğrafi ve kentsel dönüşümünü belgeleyen koleksiyon.",tags:["Sessiz","Akademik","Ücretsiz"]},
-  {id:1267,name:"Beyoğlu Belediyesi Tarihi Arşivi",               cat:"okuma",sub:"Arşiv merkezleri",address:"Beyoğlu",             lat:41.0330,lng:28.9770,desc:"Pera ve Galata'nın 19-20. yüzyıl yapılaşma belgeleri, ruhsat kayıtları ve imar planları.",tags:["Sessiz","Akademik"]},
-  {id:1268,name:"Kadıköy Belediyesi Kent Belleği Arşivi",         cat:"okuma",sub:"Arşiv merkezleri",address:"Kadıköy",             lat:41.0008,lng:29.0260,desc:"Moda, Bağdat Caddesi ve Kadıköy'ün tarihi fotoğraf, harita ve mimari belge koleksiyonu.",tags:["Sessiz","Ücretsiz"]},
-  {id:1269,name:"Üsküdar Belediyesi Arşivi",                      cat:"okuma",sub:"Arşiv merkezleri",address:"Üsküdar",             lat:41.0228,lng:29.0135,desc:"Üsküdar'ın tarihi yapı kayıtları, mahallelerin demografik belgeleri ve yerel tarih arşivi.",tags:["Sessiz","Ücretsiz"]},
-  {id:1270,name:"Fatih Belediyesi Tarihi Yarımada Arşivi",        cat:"okuma",sub:"Arşiv merkezleri",address:"Fatih",               lat:41.0185,lng:28.9400,desc:"Tarihi yarımadanın imar belgeleri, mahalle kayıtları ve kültürel miras envanterleri.",tags:["Sessiz","Akademik"]},
-
-  /* — BASIN & GÖRSEL ARŞİVLER — */
-  {id:1271,name:"TRT İstanbul Radyosu Ses Arşivi",                cat:"okuma",sub:"Arşiv merkezleri",address:"Harbiye, Şişli",      lat:41.049,lng:28.99490,desc:"1927'den bu yana radyo yayınları; Türk müziği kayıtları ve kültürel miras ses arşivi.",tags:["Sessiz","Akademik"]},
-  {id:1272,name:"Türk Sinematek Derneği Film Arşivi",             cat:"okuma",sub:"Arşiv merkezleri",address:"Beyoğlu",             lat:41.0305,lng:28.9753,desc:"Türk sinemasının ilk dönemlerinden günümüze film kopyaları, afişler ve senaryo arşivi.",tags:["Sessiz","Akademik"]},
-  {id:1273,name:"Hürriyet Gazetecilik Arşivi",                    cat:"okuma",sub:"Arşiv merkezleri",address:"Bağcılar",             lat:41.0445,lng:28.8362,desc:"Türk basın tarihinin önemli koleksiyonu; gazete arşivleri, fotoğraflar ve haber belgeleri.",tags:["Sessiz","Akademik"]},
-  {id:1274,name:"Cumhuriyet Gazetesi Arşivi",                     cat:"okuma",sub:"Arşiv merkezleri",address:"Şişli",               lat:41.0608,lng:28.9828,desc:"1924'ten bu yana yayımlanan gazetenin tam koleksiyonu; dijital ve fiziksel arşiv erişimi.",tags:["Sessiz","Akademik"]},
-  {id:1275,name:"Atatürk Kitaplığı Fotoğraf Koleksiyonu",         cat:"okuma",sub:"Arşiv merkezleri",address:"Taksim, Beyoğlu",     lat:41.0377,lng:28.989,desc:"İstanbul'un 19-20. yüzyıl fotoğraf belleği; Sébah & Joaillier ve Abdullah Biraderler gibi koleksiyonlar.",tags:["Sessiz","Ücretsiz","Akademik"]},
-  {id:1276,name:"SALT Araştırma Görsel Arşivi",                   cat:"okuma",sub:"Arşiv merkezleri",address:"Karaköy, Beyoğlu",    lat:41.0228,lng:28.9746,desc:"Erken Cumhuriyet dönemi mimarlık fotoğrafları, kolektif bellek ve sanat belgeleri; çevrimiçi erişim.",tags:["Sessiz","Ücretsiz","Akademik","Wi-Fi"]},
-  {id:1277,name:"Şehir Fotoğrafçıları Derneği Arşivi",            cat:"okuma",sub:"Arşiv merkezleri",address:"Kadıköy",             lat:40.9895,lng:29.0265,desc:"İstanbul'un sokak ve mahalle belleğini oluşturan bağımsız fotoğrafçı koleksiyonu.",tags:["Sessiz","Ücretsiz"]},
-  {id:1278,name:"Boğaziçi Üniversitesi Türk Müziği Arşivi",       cat:"okuma",sub:"Arşiv merkezleri",address:"Bebek, Beşiktaş",     lat:41.0875,lng:29.0475,desc:"Geleneksel Türk müziği notaları, ses kayıtları ve makam teorisi belgeleri.",tags:["Sessiz","Akademik"]},
-
-  /* — DİNİ & TOPLULUK ARŞİVLERİ — */
-  {id:1279,name:"Ermeni Patrikhanesi Arşivi",                     cat:"okuma",sub:"Arşiv merkezleri",address:"Kumkapı, Fatih",      lat:41.0033,lng:28.9574,desc:"İstanbul Ermeni topluluğunun yüzyıllık belgeleri; kilise kayıtları, nüfus defterleri ve vakıf belgeleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1280,name:"Rum Ortodoks Cemaat Vakfı Arşivi",               cat:"okuma",sub:"Arşiv merkezleri",address:"Heybeliada, Adalar",  lat:40.8735,lng:29.0945,desc:"Adalar ve İstanbul Rum cemaatine ait belgeleri, okul kayıtları ve kilise arşivleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1281,name:"Yahudi Cemaati Arşivi (500. Yıl Vakfı)",         cat:"okuma",sub:"Arşiv merkezleri",address:"Galata, Beyoğlu",    lat:41.0248,lng:28.9745,desc:"Sefardik Yahudi geleneği ve İstanbul Yahudi topluluğunun 500 yıllık tarihi; belge ve fotoğraf.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1282,name:"Süryani Kadim Kilisesi Arşivi",                  cat:"okuma",sub:"Arşiv merkezleri",address:"Tarlabası, Beyoğlu",  lat:41.0348,lng:28.9710,desc:"Anadolu Süryani Hristiyan geleneğine ait el yazmaları ve cemaat belgeleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1283,name:"Galata Mevlevihanesi Yazma Arşivi",              cat:"okuma",sub:"Arşiv merkezleri",address:"Tünel, Beyoğlu",      lat:41.0307,lng:28.9764,desc:"Mevlevi kültürüne ait el yazmaları, müzik notaları ve tekke belgelerinin korunduğu arşiv.",tags:["Tarihî yapı","Sessiz","Akademik"]},
-
-  /* — MİMARLIK & SANAT ARŞİVLERİ — */
-  {id:1284,name:"MSGSÜ Mimarlık Fakültesi Tarihi Çizimler Arşivi", cat:"okuma",sub:"Arşiv merkezleri",address:"Fındıklı, Beyoğlu",  lat:41.0301,lng:28.97840,desc:"Türkiye'nin ilk mimarlık okulundan gelen yüzyıllık proje çizimleri ve tarihi yapı belgeleri.",tags:["Sessiz","Akademik"]},
-  {id:1285,name:"Pera Müzesi Araştırma Arşivi",                   cat:"okuma",sub:"Arşiv merkezleri",address:"Tepebaşı, Beyoğlu",   lat:41.0330,lng:28.9756,desc:"Oryantalist resimler, Kütahya çinileri ve Anadolu ağırlıkları üzerine araştırmacı arşivi.",tags:["Sessiz","Akademik"]},
-  {id:1286,name:"İstanbul Arkeoloji Müzeleri Arşivi",             cat:"okuma",sub:"Arşiv merkezleri",address:"Gülhane, Fatih",      lat:41.0158,lng:28.976500,desc:"Anadolu arkeolojik kazı belgeleri, eser envanteri ve yayın koleksiyonuna araştırmacı erişimi.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1287,name:"Yapı Kredi Fotoğraf ve El Yazmaları Arşivi",     cat:"okuma",sub:"Arşiv merkezleri",address:"İstiklal Cd., Beyoğlu",lat:41.032,lng:28.9765,desc:"Türk edebiyatının önemli isimlerine ait el yazmaları, mektuplar ve kişisel belge koleksiyonu.",tags:["Sessiz","Akademik"]},
-  {id:1288,name:"Nuri Abaç Arşivi ve Atölyesi",                   cat:"okuma",sub:"Arşiv merkezleri",address:"Cihangir, Beyoğlu",   lat:41.0294,lng:28.976300,desc:"Türk grafik sanatının öncü ismine ait özgün eserler, baskı tasarımları ve illüstrasyon arşivi.",tags:["Sessiz","Sanat"]},
-
-  /* — DENİZCİLİK & COĞRAFYA ARŞİVLERİ — */
-  {id:1289,name:"İstanbul Deniz Müzesi Tarihi Arşivi",            cat:"okuma",sub:"Arşiv merkezleri",address:"Beşiktaş",             lat:41.0432,lng:29.0048,desc:"Osmanlı ve Türk deniz tarihi; savaş haritaları, gemi çizimleri ve denizcilik belgeleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1290,name:"İstanbul Limanı Tarihi Arşivi",                  cat:"okuma",sub:"Arşiv merkezleri",address:"Karaköy, Beyoğlu",    lat:41.0232,lng:28.9742,desc:"Liman işletme kayıtları, gemi geliş-gidiş defterleri ve Boğaz geçiş belgeleri.",tags:["Sessiz","Akademik"]},
-  {id:1291,name:"Kandilli Rasathanesi Gözlem Arşivi",             cat:"okuma",sub:"Arşiv merkezleri",address:"Kandilli, Üsküdar",    lat:41.0636,lng:29.0615,desc:"1868'den bu yana tutulan deprem ve meteoroloji gözlem kayıtları; bilimsel araştırmaya açık.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-
-  /* — EĞİTİM TARİHİ ARŞİVLERİ — */
-  {id:1292,name:"Robert Kolej Tarihi Arşivi",                     cat:"okuma",sub:"Arşiv merkezleri",address:"Bebek, Beşiktaş",     lat:41.0819,lng:29.052,desc:"1863'ten bu yana mezun kayıtları, fotoğraflar ve kurumsal belgeler; Türk eğitim tarihinin kaynağı.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1293,name:"Galatasaray Lisesi Tarihi Arşivi",               cat:"okuma",sub:"Arşiv merkezleri",address:"İstiklal Cd., Beyoğlu",lat:41.0360,lng:28.9788,desc:"1481'den bu yana öğrenci kayıtları, mezun belgeleri ve eğitim tarihi koleksiyonu.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1294,name:"İstanbul Erkek Lisesi Tarihi Arşivi",            cat:"okuma",sub:"Arşiv merkezleri",address:"Cağaloğlu, Fatih",    lat:41.0123,lng:28.9742,desc:"Osmanlı'dan bu yana süregelen okulun kayıt defterleri ve tarihi eğitim belgeleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-
-  /* — SAĞLIK & BİLİM TARİHİ ARŞİVLERİ — */
-  {id:1295,name:"Cerrahpaşa Tıp Fakültesi Tarihi Arşivi",         cat:"okuma",sub:"Arşiv merkezleri",address:"Cerrahpaşa, Fatih",   lat:41.0075,lng:28.9390,desc:"Osmanlı ve erken Cumhuriyet dönemi tıp eğitimi belgeleri; hasta kayıtları ve klinik arşiv.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1296,name:"Haydarpaşa Garı Tarihi Arşivi",                  cat:"okuma",sub:"Arşiv merkezleri",address:"Haydarpaşa, Kadıköy", lat:40.9995,lng:29.0213,desc:"1908'de açılan tarihi garın inşaat çizimleri, demiryolu işletme kayıtları ve fotoğraf koleksiyonu.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1297,name:"İstanbul Sağlık Müzesi Arşivi",                  cat:"okuma",sub:"Arşiv merkezleri",address:"Fatih",               lat:41.0150,lng:28.9400,desc:"Osmanlı-Türk tıp tarihi, eczacılık ve halk sağlığı belgeleri; araştırmacıya randevuyla açık.",tags:["Sessiz","Akademik"]},
-
-  /* — ULUSLARARASI ARŞİVLER — */
-  {id:1298,name:"Alman Arkeoloji Enstitüsü Kütüphane Arşivi",     cat:"okuma",sub:"Arşiv merkezleri",address:"Ayazpaşa, Beyoğlu",   lat:41.0368,lng:28.9944,desc:"Antik Yunan ve Roma dönemi Anadolu araştırmalarına odaklı nadir yayın ve kazı arşivi.",tags:["Sessiz","Akademik"]},
-  {id:1299,name:"Fransız Anadolu Araştırmaları Enstitüsü Arşivi", cat:"okuma",sub:"Arşiv merkezleri",address:"Nur-u Ziya Sk., Beyoğlu",lat:41.0355,lng:28.9820,desc:"Anadolu arkeolojisi ve tarihi üzerine Fransız araştırmacıların belge ve yayın koleksiyonu.",tags:["Sessiz","Akademik"]},
-  {id:1300,name:"İsveç Araştırma Enstitüsü Özel Arşivi",          cat:"okuma",sub:"Arşiv merkezleri",address:"Boğazkesen Cd., Beyoğlu",lat:41.0308,lng:28.9786,desc:"İskandinav çalışmaları ve Ortadoğu tarihi üzerine özel yayın ve belge koleksiyonu.",tags:["Sessiz","Akademik"]},
-  {id:1301,name:"ÇEKÜL Vakfı Kentsel Bellek Arşivi",              cat:"okuma",sub:"Arşiv merkezleri",address:"Şişhane, Beyoğlu",    lat:41.0290,lng:28.9752,desc:"Tarihi çevre ve kentsel koruma projeleri; Türkiye'nin farklı şehirlerine ait belge ve fotoğraf.",tags:["Sessiz","Akademik","Ücretsiz"]},
-  {id:1302,name:"Tarih Vakfı Fotoğraf ve Belge Arşivi",           cat:"okuma",sub:"Arşiv merkezleri",address:"Eminönü, Fatih",      lat:41.0168,lng:28.97,desc:"Sözlü tarih projeleri, topluluk fotoğrafları ve yerel tarih belgeleri; ücretsiz erişim.",tags:["Sessiz","Akademik","Ücretsiz","Tarihî yapı"]},
+  {id:1136,name:"Norm Coffee Cihangir",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Akarsu Yokuşu, Cihangir",lat:41.0302,lng:28.9802,desc:"Sakin Cihangir sokaklarında minimal dekor, specialty coffee ve sessiz çalışma ortamı.",tags:["Wi-Fi","Kahve","Sessiz","Doğal ışık"]},
+  {id:1137,name:"Petra Roasting Co.",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Asmalımescit Sk., Beyoğlu",lat:41.0298,lng:28.9752,desc:"Küçük batch kavurma atölyesi; gürültüden uzak, konsantrasyona elverişli kafe.",tags:["Wi-Fi","Kahve","Sessiz"]},
+  {id:1138,name:"Lot Coffee Karaköy",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Kemeraltı Cd., Karaköy",lat:41.0225,lng:28.9742,desc:"Endüstriyel dekor ve iyi kahvenin buluştuğu; sabah erken saatlerden akşama laptop dostu.",tags:["Wi-Fi","Kahve","Sessiz"]},
+  {id:1139,name:"MOC Coffee Şişli",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Halaskargazi Cd., Şişli",lat:41.0590,lng:28.9812,desc:"Minimalist Japon estetiğinde huzurlu kafe; laptop kullanımına uygun geniş masalar.",tags:["Wi-Fi","Kahve","Sessiz"]},
+  {id:1140,name:"The Grind Nişantaşı",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Vali Konağı Cd., Şişli",lat:41.0490,lng:28.9935,desc:"Nişantaşı'nın en sessiz specialty coffee noktası; laptop dostu geniş masalar.",tags:["Wi-Fi","Kahve","Sessiz"]},
+  {id:1141,name:"Bohem Kitap Kafe Balat",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Vodina Cd., Balat",lat:41.0288,lng:28.9493,desc:"Tarihi Balat'ta kitap ve kahveyi buluşturan sakin mahalle kafesi.",tags:["Kahve","Çay","Sessiz","Tarihî yapı"]},
+  {id:1142,name:"Velvet Café Moda",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Moda Cd., Kadıköy",lat:40.9810,lng:29.0300,desc:"Moda'nın sakin sokaklarında huzurlu çalışma ortamı, doğal ışık.",tags:["Wi-Fi","Kahve","Sessiz","Doğal ışık"]},
+  {id:1143,name:"Fahriye Café Moda",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Moda Cd., Kadıköy",lat:40.9852,lng:29.0243,desc:"Nostaljik Moda sokaklarında kitap koleksiyonlu sakin mahalle kafesi.",tags:["Kahve","Çay","Sessiz"]},
+  {id:1144,name:"Kuzguncuk Bahçe Kafe",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"İcadiye Cd., Kuzguncuk",lat:41.0368,lng:29.0368,desc:"Boğaz kıyısının en sakin semtinde; bahçeli, kedi dostları ve laptop çalışanların mekânı.",tags:["Wi-Fi","Çay","Sessiz","Doğal ışık"]},
+  {id:1145,name:"Çengelköy Çay Bahçesi",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Çengelköy, Üsküdar",lat:41.0638,lng:29.0582,desc:"Boğaz sahilinde ağaç gölgesi altında hafta içi sabah saatlerinde sessiz çalışma.",tags:["Çay","Sessiz","Boğaz manzarası","Doğal ışık"]},
+  {id:1146,name:"Karaköy Güllüoğlu Üst Kat",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Rıhtım Cd., Karaköy",lat:41.0218,lng:28.9738,desc:"Baklava durakları arasında sakin üst kat; çay eşliğinde sessiz çalışma için gizli nokta.",tags:["Çay","Sessiz"]},
+  {id:1147,name:"Büyükada Çınar Altı Kafe",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Büyükada, Adalar",lat:40.8733,lng:29.1270,desc:"Arabasız Büyükada'da çınar gölgesinde sakin çalışma ve okuma köşesi.",tags:["Kahve","Çay","Sessiz","Doğal ışık"]},
+  {id:1148,name:"Pierre Loti Tepesi Kahvesi",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Gümüşsuyu Cd., Eyüpsultan",lat:41.0508,lng:28.9318,desc:"Haliç manzaralı tepe kafesi; hafta içi sakin saatlerde teleferikle ulaşılan huzurlu çalışma.",tags:["Çay","Sessiz","Manzara"]},
+  {id:1149,name:"Rumelihisarı Kafe",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Yahya Kemal Cd., Sarıyer",lat:41.0876,lng:29.0528,desc:"Tarihi hisarın dibinde Boğaz manzaralı; hafta içi sakin, uzun süreli çalışmaya elverişli.",tags:["Kahve","Sessiz","Boğaz manzarası","Tarihî yapı"]},
+  {id:1150,name:"Tamirane Kafe Balat",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Balat, Fatih",lat:41.0278,lng:28.9490,desc:"Eski tamirhaneden dönüştürülen; Balat'ın büyüleyici sokaklarında laptop çalışmasına uygun.",tags:["Wi-Fi","Kahve","Sessiz","Tarihî yapı"]},
+  {id:1151,name:"Espressolab Santralistanbul",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Kazım Karabekir Cd., Eyüpsultan",lat:41.0668,lng:28.9457,desc:"Eski enerji santralinde specialty coffee; geniş açık alanlar ve sessiz köşeler.",tags:["Wi-Fi","Kahve","Tarihî yapı"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Sessiz çalışma kafeleri (15 → ~72)
+     Araştırma merkezleri (12→28)
   ══════════════════════════════════════════ */
-
-  /* — SPECIALTY COFFEE & LAPTOP DOSTU — */
-  {id:1303,name:"Coffee Department Nişantaşı",     cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Nişantaşı, Şişli",      lat:41.0488,lng:28.9932,desc:"Sade dekor, yüksek tavan ve sessiz atmosferiyle Nişantaşı'nın en çalışma dostu specialty kafesi.",tags:["Wi-Fi","Kahve","Sessiz","Doğal ışık"]},
-  {id:1304,name:"Lot Coffee Karaköy",              cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Karaköy, Beyoğlu",       lat:41.0228,lng:28.9740,desc:"Endüstriyel dekor ve iyi kahvenin buluştuğu; sabah erken saatlerden akşama kadar laptop dostu ortam.",tags:["Wi-Fi","Kahve","Sessiz"]},
-  {id:1305,name:"Anza Coffee Bebek",               cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Bebek, Beşiktaş",        lat:41.0778,lng:29.0448,desc:"Bebek sahiline bakan, sessiz iç mekanıyla manzaralı çalışma köşeleri ve kaliteli filtre kahve.",tags:["Wi-Fi","Kahve","Sessiz","Boğaz manzarası"]},
-  {id:1306,name:"Kronotrop Fatih",                 cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Fatih",                  lat:41.0180,lng:28.9380,desc:"Tarihi yarımadada specialty coffee geleneği; sakin mahalle dokusu içinde konsantrasyon ortamı.",tags:["Wi-Fi","Kahve","Sessiz"]},
-  {id:1307,name:"Brew Lab Kadıköy",                cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Moda, Kadıköy",          lat:40.9825,lng:29.0268,desc:"Demleme yöntemlerine önem veren kafe; gürültüden uzak Moda sokaklarında huzurlu çalışma ortamı.",tags:["Wi-Fi","Kahve","Sessiz","Doğal ışık"]},
-  {id:1308,name:"Çifte Havuzlar Kafe Boğaziçi",   cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Bebek, Beşiktaş",        lat:41.0845,lng:29.0460,desc:"Boğaziçi Üniversitesi kampüsünde tarihi havuzlar çevresinde; öğrenci ve akademisyenlerin sessiz çalışma rotası.",tags:["Wi-Fi","Kahve","Sessiz","Tarihî yapı"]},
-  {id:1309,name:"Spresso Arnavutköy",              cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Arnavutköy, Beşiktaş",   lat:41.0633,lng:29.0355,desc:"Ahşap yalı evlerin arasında küçük ve sakin specialty kafe; sabah erken çalışma için ideal.",tags:["Wi-Fi","Kahve","Sessiz","Tarihî yapı"]},
-  {id:1310,name:"Monk Coffee Moda",                cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Moda, Kadıköy",          lat:40.9840,lng:29.0285,desc:"Minimalist konseptiyle sessiz çalışma ortamı sunan; filtre kahve odaklı butik kafe.",tags:["Wi-Fi","Kahve","Sessiz"]},
-  {id:1311,name:"Coffeemania Etiler",              cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Etiler, Beşiktaş",       lat:41.0788,lng:29.0292,desc:"Geniş çalışma alanları ve güçlü Wi-Fi ile uzun oturumlar için uygun; sakin saatlerde tam verim.",tags:["Wi-Fi","Kahve","Sessiz"]},
-  {id:1312,name:"Starbucks Ortaköy Sahil",         cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Ortaköy, Beşiktaş",      lat:41.0490,lng:29.0270,desc:"Boğaz manzaralı, sabah erken saatlerde sessizleşen; laptop çalışması için yeterli masa ve priz.",tags:["Wi-Fi","Kahve","Boğaz manzarası"]},
-  {id:1313,name:"Ritual Coffee Cihangir",          cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Cihangir, Beyoğlu",      lat:41.0295,lng:28.9808,desc:"Cihangir'in en sakin kafelerinden; ahşap raflar, kitaplar ve konsantrasyona elverişli köşe masaları.",tags:["Wi-Fi","Kahve","Sessiz","Doğal ışık"]},
-  {id:1314,name:"Paper & Cup Galata",              cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Galata, Beyoğlu",         lat:41.0255,lng:28.9742,desc:"Kitap ve kahveyi birleştiren konsept; Galata'nın dar sokaklarında sakin çalışma köşeleri.",tags:["Wi-Fi","Kahve","Sessiz"]},
-
-  /* — ÇAY & TÜRK KAHVESİ GELENEĞİ — */
-  {id:1315,name:"Çamlıca Çay Bahçesi Çalışma Köşesi", cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Çamlıca, Üsküdar",   lat:41.0260,lng:29.0638,desc:"Şehrin en yüksek noktasında geniş çay bahçesi; sabah erken saatlerde tamamen sessiz çalışma ortamı.",tags:["Çay","Sessiz","Doğal ışık","Boğaz manzarası"]},
-  {id:1316,name:"Eyüp Sultan Çay Bahçeleri",       cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Eyüpsultan",              lat:41.0478,lng:28.9348,desc:"Tarihi cami avlusu yakınında; sakin semtin çay bahçelerinde gürültüden uzak okuma ve çalışma.",tags:["Çay","Sessiz","Tarihî yapı","Ücretsiz"]},
-  {id:1317,name:"Pierre Loti Tepesi Kafe",         cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Eyüpsultan",              lat:41.0508,lng:28.9318,desc:"Haliç manzaralı tepe kafesi; hafta içi sakin saatlerde teleferikle ulaşılan huzurlu çalışma noktası.",tags:["Çay","Sessiz","Manzara","Tarihî yapı"]},
-  {id:1318,name:"Tamirane Kafe Balat",             cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Balat, Fatih",            lat:41.0278,lng:28.9490,desc:"Eski tamirhaneden dönüştürülen; Balat'ın büyüleyici sokaklarında laptop çalışmasına uygun sakin kafe.",tags:["Wi-Fi","Kahve","Sessiz","Tarihî yapı"]},
-  {id:1319,name:"Kuzguncuk Bahçe Kafe",            cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Kuzguncuk, Üsküdar",      lat:41.0368,lng:29.0368,desc:"Boğaz kıyısının en sakin semtinde; bahçeli, kedi dostları ve laptop çalışanların buluştuğu huzurlu kafe.",tags:["Wi-Fi","Çay","Sessiz","Doğal ışık"]},
-  {id:1320,name:"Çengelköy Çay Bahçesi",           cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Çengelköy, Üsküdar",      lat:41.0638,lng:29.0582,desc:"Boğaz sahilinde ağaç gölgesi altında; hafta içi sabah saatlerinde sessiz çalışma ve okuma ortamı.",tags:["Çay","Sessiz","Boğaz manzarası","Doğal ışık"]},
-
-  /* — KİTAP KAFELERİ — */
-  {id:1321,name:"Robinson Crusoe 389 Kafe",        cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"İstiklal Cd., Beyoğlu",   lat:41.0320,lng:28.9772,desc:"İstiklal'in gürültüsünden kaçıp kitaplı kafe köşesinde sessiz çalışma; haftanın her günü açık.",tags:["Wi-Fi","Kahve","Sessiz","Kitap"]},
-  {id:1322,name:"Homer Kitabevi Kafe",             cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Yeniçarşı Cd., Beyoğlu",  lat:41.0338,lng:28.9788,desc:"Büyük kitaplık rafları arasında sakin kafe köşesi; uzun süreli çalışmaya elverişli ortam.",tags:["Wi-Fi","Kahve","Sessiz","Kitap"]},
-  {id:1323,name:"Pandora Kitabevi Kafe",           cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Büyükparmakkapı Sk., Beyoğlu",lat:41.0322,lng:28.9770,desc:"Bağımsız kitabevinin arka köşesinde sakin çalışma ve okuma ortamı; yoğun kitap dokusu.",tags:["Kahve","Sessiz","Kitap"]},
-  {id:1324,name:"Metis Kitap Kafe Tünel",          cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Tünel, Beyoğlu",           lat:41.0293,lng:28.9752,desc:"Yayınevinin kafe bölümünde yeni yayınlara eşlik eden sessiz çalışma ortamı.",tags:["Kahve","Sessiz","Kitap","Wi-Fi"]},
-  {id:1325,name:"Denizler Kitabevi Kafe",          cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"İstiklal Cd., Beyoğlu",    lat:41.0335,lng:28.9806,desc:"Tarihi pasaj içindeki antika kitabevinde; eski koku ve sessizliğin iç içe geçtiği çalışma köşesi.",tags:["Kahve","Sessiz","Kitap","Tarihî yapı"]},
-
-  /* — ÜNİVERSİTE KAMPÜSLERİ — */
-  {id:1326,name:"Boğaziçi Üniversitesi Kuzey Kafe",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Bebek, Beşiktaş",         lat:41.0843,lng:29.0498,desc:"Kampüsün en sakin cafeteria köşesi; Boğaz manzarası eşliğinde yoğun çalışma ortamı.",tags:["Wi-Fi","Kahve","Sessiz","Boğaz manzarası"]},
-  {id:1327,name:"İTÜ Taşkışla Kafe",               cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Taksim, Beyoğlu",          lat:41.0415,lng:28.9918,desc:"1800'lerde inşa edilen tarihi askeri bina içinde; mimarlık öğrencilerinin sessiz çalışma mekânı.",tags:["Wi-Fi","Kahve","Sessiz","Tarihî yapı"]},
-  {id:1328,name:"Marmara Üniversitesi Güzel Sanatlar Kafe",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Fındıklı, Beyoğlu",lat:41.0285,lng:28.9818,desc:"Boğaz manzaralı sanat fakültesi kafesi; sakin ortamı ve doğal ışığıyla çalışmaya elverişli.",tags:["Wi-Fi","Kahve","Sessiz","Boğaz manzarası"]},
-  {id:1329,name:"Kadir Has Üniversitesi Kafe",     cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Cibali, Fatih",            lat:41.0231,lng:28.9601,desc:"Tarihi tütün fabrikasından dönüştürülen kampüste; yüksek tavanlı, sessiz çalışma kafesi.",tags:["Wi-Fi","Kahve","Sessiz","Tarihî yapı"]},
-  {id:1330,name:"Sabancı Üniversitesi Kafeteryası",cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Tuzla",                    lat:40.8884,lng:29.376,desc:"Orman kampüsünde huzurlu, gün boyu açık; 7/24 çalışmaya alışkın öğrencilerin uğrak yeri.",tags:["Wi-Fi","Kahve","Sessiz","24 saat"]},
-
-  /* — ALTERNATIF SEMTLER — */
-  {id:1331,name:"Moda Kafe Yolu Üzeri",            cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Moda, Kadıköy",            lat:40.9818,lng:29.0295,desc:"Moda sahil yoluna bakan; sabah erken saat ortamıyla sessiz çalışma için ideal mahalle kafesi.",tags:["Wi-Fi","Kahve","Sessiz","Deniz manzarası"]},
-  {id:1332,name:"Bostancı Sahil Kafe",             cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Bostancı, Kadıköy",        lat:40.9618,lng:29.0908,desc:"Marmara kıyısında sahil yolu kafesi; hafta içi sabah saatlerinde deniz sesi eşliğinde sessiz çalışma.",tags:["Wi-Fi","Kahve","Sessiz","Deniz manzarası"]},
-  {id:1333,name:"Polonezköy Kır Kafesi",           cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Polonezköy, Beykoz",       lat:41.1418,lng:29.1375,desc:"Orman içi köyde şehirden tamamen kopararak çalışma; doğal sessizlik ve temiz hava.",tags:["Kahve","Sessiz","Doğal ışık","Doğa"]},
-  {id:1334,name:"Adalar Bisiklet Durağı Kafe",     cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Heybeliada, Adalar",       lat:40.8710,lng:29.1092,desc:"Motorlu araç olmayan Heybeliada'da; saf sessizlik içinde çalışmak isteyenler için mahalle kafesi.",tags:["Kahve","Çay","Sessiz","Doğal ışık"]},
-  {id:1335,name:"Yeldeğirmeni Kafe Kadıköy",       cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Yeldeğirmeni, Kadıköy",    lat:40.9948,lng:29.0368,desc:"Kadıköy'ün hızla dönüşen yaratıcı semtinde; duvarlara sanatın baskısı altında sessiz çalışma kafesi.",tags:["Wi-Fi","Kahve","Sessiz","Sanat"]},
-  {id:1336,name:"Fener Rum Mahallesi Kafe",        cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Fener, Fatih",             lat:41.0318,lng:28.9490,desc:"Tarihi Fener semtinde Haliç kıyısına yakın; turist olmayan, mahalle sakinlerinin sessiz kafe köşesi.",tags:["Çay","Sessiz","Tarihî yapı"]},
-  {id:1337,name:"Ortaköy Arka Sokak Kafe",         cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Ortaköy, Beşiktaş",        lat:41.0488,lng:29.0282,desc:"Kalabalık Ortaköy sahilinin arkasındaki sakin sokakta; turistlerden uzak yerel çalışma kafesi.",tags:["Wi-Fi","Kahve","Sessiz"]},
-  {id:1338,name:"Mısır Çarşısı Üst Kat Çay Evi",  cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Eminönü, Fatih",           lat:41.016,lng:28.973100,desc:"Çarşının üst katındaki çay evi; alt kattaki kalabalığa rağmen şaşırtıcı biçimde sessiz çalışma köşeleri.",tags:["Çay","Sessiz","Tarihî yapı"]},
-  {id:1339,name:"Kuruçeşme Bahçe Kafe",            cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Kuruçeşme, Beşiktaş",      lat:41.0598,lng:29.0352,desc:"Boğaz kıyısına yakın, ağaçlı bahçesiyle sabah saatlerinde tam sessizlik sunan küçük mahalle kafesi.",tags:["Kahve","Çay","Sessiz","Doğal ışık"]},
-  {id:1340,name:"Rumelihisarı Kafe",               cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Rumelihisarı, Sarıyer",     lat:41.0876,lng:29.0528,desc:"Tarihi hisarın dibinde Boğaz manzaralı; hafta içi sakin, uzun süreli çalışmaya elverişli kafe.",tags:["Kahve","Sessiz","Boğaz manzarası","Tarihî yapı"]},
-  {id:1341,name:"Çubuklu Sahil Kafesi",            cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Çubuklu, Beykoz",           lat:41.0878,lng:29.0862,desc:"Anadolu Boğazı kıyısında; İstanbul gürültüsünden kopuk, deniz sesi eşliğinde sakin çalışma ortamı.",tags:["Kahve","Çay","Sessiz","Boğaz manzarası"]},
-  {id:1342,name:"Büyükada Splendid Kafe",          cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Büyükada, Adalar",          lat:40.8740,lng:29.1260,desc:"Arabasız adanın tarihi otelinin kafesi; sakin bahçede çalışmak için eşsiz bir İstanbul deneyimi.",tags:["Kahve","Sessiz","Tarihî yapı","Doğal ışık"]},
-
-  /* — 24 SAAT & GECE ÇALIŞMA — */
-  {id:1343,name:"Gece Kafesi Taksim",              cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Taksim, Beyoğlu",           lat:41.0368,lng:28.9858,desc:"Gece yarısından sonra da açık; gece çalışanlar için güçlü Wi-Fi ve sürekli sıcak içecek servisi.",tags:["Wi-Fi","Kahve","24 saat","Gece"]},
-  {id:1344,name:"Aftermidnight Coffee Kadıköy",    cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Kadıköy",                   lat:40.9912,lng:29.0295,desc:"Gece ekonomisinin canlı olduğu Kadıköy'de; gece çalışanların tercih ettiği sakin specialty kafe.",tags:["Wi-Fi","Kahve","Gece","Sessiz"]},
-  {id:1345,name:"Bomonti Atölye Kafe",             cat:"okuma",sub:"Sessiz çalışma kafeleri",address:"Bomonti, Şişli",            lat:41.0582,lng:28.9802,desc:"Bomonti'nin dönüşen sanayi bölgesinde; yaratıcı çalışanların gün boyu vakit geçirdiği sessiz atölye kafe.",tags:["Wi-Fi","Kahve","Sessiz","Sanat"]},
+  {id:1152,name:"SALT Araştırma Merkezi",cat:"okuma",sub:"Araştırma merkezleri",address:"Bankalar Cd., Karaköy",lat:41.0241,lng:28.9737,desc:"Modern sanat, mimarlık ve tasarım arşivleriyle; herkese açık araştırma kütüphanesi ve okuma salonu.",tags:["Sessiz","Ücretsiz","Sanat","Wi-Fi"]},
+  {id:1153,name:"İstanbul Araştırmaları Enstitüsü",cat:"okuma",sub:"Araştırma merkezleri",address:"Divanyolu Cd., Fatih",lat:41.0110,lng:28.9740,desc:"İstanbul şehir tarihi, fotoğraf ve harita koleksiyonlarına adanmış araştırma merkezi.",tags:["Sessiz","Akademik","Tarihî yapı"]},
+  {id:1154,name:"Alman Arkeoloji Enstitüsü İstanbul",cat:"okuma",sub:"Araştırma merkezleri",address:"Ayazpaşa, Beyoğlu",lat:41.0368,lng:28.9944,desc:"Antik Yunan ve Roma dönemi Anadolu araştırmalarına odaklı uzmanlık kütüphanesi.",tags:["Sessiz","Akademik"]},
+  {id:1155,name:"Fransız Anadolu Araştırmaları Enstitüsü (IFEA)",cat:"okuma",sub:"Araştırma merkezleri",address:"Nur-u Ziya Sk., Beyoğlu",lat:41.0348,lng:28.9818,desc:"Anadolu arkeolojisi ve Fransız kültür mirasına adanmış araştırma merkezi.",tags:["Sessiz","Akademik"]},
+  {id:1156,name:"Amerikan Araştırma Enstitüsü (ARIT)",cat:"okuma",sub:"Araştırma merkezleri",address:"Arnavutköy, Beşiktaş",lat:41.0620,lng:29.0372,desc:"Türkiye ve Yakın Doğu üzerine Amerikalı akademisyenlere destek veren araştırma merkezi.",tags:["Sessiz","Akademik"]},
+  {id:1157,name:"Tarih Vakfı",cat:"okuma",sub:"Araştırma merkezleri",address:"İpek Sk., Beyoğlu",lat:41.0162,lng:28.9702,desc:"Türkiye sosyal tarihi ve yerel tarih araştırmaları; fotoğraf ve sözlü tarih arşivleri.",tags:["Sessiz","Akademik","Ücretsiz"]},
+  {id:1158,name:"Boğaziçi Üniversitesi Kandilli Rasathanesi",cat:"okuma",sub:"Araştırma merkezleri",address:"Kandilli, Üsküdar",lat:41.0636,lng:29.0615,desc:"1868'den bu yana deprem ve meteoroloji araştırmaları; bilim tarihinin önemli kurumu.",tags:["Sessiz","Akademik","Tarihî yapı"]},
+  {id:1159,name:"İstanbul Politikalar Merkezi",cat:"okuma",sub:"Araştırma merkezleri",address:"Bankalar Cd., Karaköy",lat:41.0228,lng:28.9742,desc:"Sabancı Üniversitesi bünyesinde; kamu politikası ve Avrupa çalışmaları araştırma merkezi.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1160,name:"TESEV",cat:"okuma",sub:"Araştırma merkezleri",address:"Büyükdere Cd., Şişli",lat:41.0605,lng:28.9870,desc:"Türkiye Ekonomik ve Sosyal Etüdler Vakfı; demokrasi ve kamu politikası araştırmaları.",tags:["Sessiz","Akademik"]},
+  {id:1161,name:"İsveç Araştırma Enstitüsü",cat:"okuma",sub:"Araştırma merkezleri",address:"Boğazkesen Cd., Beyoğlu",lat:41.0305,lng:28.9786,desc:"İskandinav çalışmaları ve Ortadoğu tarihi üzerine özel koleksiyon ve araştırma programı.",tags:["Sessiz","Akademik"]},
+  {id:1162,name:"Koç Üniversitesi VEKAM",cat:"okuma",sub:"Araştırma merkezleri",address:"Emirgan, Sarıyer",lat:41.0977,lng:29.0537,desc:"Osmanlı hat sanatı ve koleksiyon araştırmalarına adanmış; Boğaz manzaralı araştırma merkezi.",tags:["Sessiz","Akademik","Boğaz manzarası"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Sahaflar  (17 → doğal sayı)
+     Arşiv merkezleri (12→25)
   ══════════════════════════════════════════ */
-
-  /* — BEYAZıT & TARİHİ YARIMAADA — */
-  {id:1346,name:"Kitapçı Recep Efendi — Sahaflar Çarşısı",cat:"okuma",sub:"Sahaflar",address:"Sahaflar Çarşısı, Beyazıt",lat:41.0102,lng:28.9661,desc:"Çarşının en köklü dükkanlarından; Osmanlıca ve Arapça eserler ile nadir ilk baskılarda uzman sahaf.",tags:["Tarihî yapı","Ücretsiz","Nadir kitap"]},
-  {id:1347,name:"Kitap Kurtları Sahafı",               cat:"okuma",sub:"Sahaflar",address:"Sahaflar Çarşısı, Beyazıt",   lat:41.0103,lng:28.9660,desc:"Üniversite öğrencilerinin ders kitabı aradığı, akademisyenlerin nadir yayın taradığı klasik sahaf.",tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1348,name:"Antika Kitap Beyazıt",                cat:"okuma",sub:"Sahaflar",address:"Sahaflar Çarşısı, Beyazıt",   lat:41.0101,lng:28.9662,desc:"1960'lı yılların gazete koleksiyonları, illüstrasyonlu dergiler ve eski haritalarıyla özgün bir koleksiyon.",tags:["Tarihî yapı","Ücretsiz","Koleksiyon"]},
-  {id:1349,name:"Cağaloğlu Sahaf Pasajı",              cat:"okuma",sub:"Sahaflar",address:"Cağaloğlu, Fatih",             lat:41.0112,lng:28.9738,desc:"Babıali'nin hemen yakınında; eski hukuk kitapları, Osmanlıca belgeler ve nadir gazete koleksiyonları.",tags:["Tarihî yapı","Ücretsiz","Akademik"]},
-  {id:1350,name:"Mahmutpaşa Kitap Pazarı",             cat:"okuma",sub:"Sahaflar",address:"Mahmutpaşa, Fatih",            lat:41.0128,lng:28.9692,desc:"Kapalıçarşı yakınında; ders kitapları, dini yayınlar ve Osmanlı dönemi el sanatları kitapları.",tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1351,name:"Eski Kitap Dünyası Eminönü",          cat:"okuma",sub:"Sahaflar",address:"Eminönü, Fatih",               lat:41.0170,lng:28.9705,desc:"Mısır Çarşısı çevresinde küçük sahaf köşeleri; seyahat edenlerin rastlantısal keşifleri için.",tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1352,name:"Kapalıçarşı Kitap Hanı",              cat:"okuma",sub:"Sahaflar",address:"Kapalıçarşı, Fatih",           lat:41.0108,lng:28.9680,desc:"Çarşı içinde az bilinen kitap hanı; antika ciltler, koleksiyon fotoğraf kartları ve eski haritalar.",tags:["Tarihî yapı","Ücretsiz","Koleksiyon"]},
-
-  /* — BEYOĞLU, GALATA, TÜNEL — */
-  {id:1353,name:"Librairie de Péra",                   cat:"okuma",sub:"Sahaflar",address:"Galip Dede Cd., Beyoğlu",     lat:41.0278,lng:28.9748,desc:"Pera'nın en köklü Fransızca sahaf dükkânı; Osmanlı-Fransız ilişkileri, Levant tarihi ve sanat kitapları.",tags:["Nadir kitap","Ücretsiz","Tarihî yapı"]},
-  {id:1354,name:"Galata Kitap",                        cat:"okuma",sub:"Sahaflar",address:"Galata, Beyoğlu",              lat:41.0258,lng:28.9740,desc:"Kulede aşağı inen sokakta; mimarlık, tasarım ve sanat kitapları üzerine uzmanlaşmış sahaf.",tags:["Ücretsiz","Sanat"]},
-  {id:1355,name:"Tünel Kitap",                         cat:"okuma",sub:"Sahaflar",address:"Tünel, Beyoğlu",               lat:41.0292,lng:28.9750,desc:"Tünel meydanına yakın; çok dilli koleksiyon ve İstanbul tarihi üzerine özel raf.",tags:["Ücretsiz"]},
-  {id:1356,name:"Araf Kitap Cihangir",                 cat:"okuma",sub:"Sahaflar",address:"Cihangir, Beyoğlu",            lat:41.0298,lng:28.9808,desc:"Cihangir'in yaratıcı enerjisine uygun; edebiyat, felsefe ve sinema kitapları ağırlıklı sahaf.",tags:["Ücretsiz","Wi-Fi"]},
-  {id:1357,name:"Hünkar Sahaf Asmalımescit",           cat:"okuma",sub:"Sahaflar",address:"Asmalımescit, Beyoğlu",        lat:41.0308,lng:28.9758,desc:"Meyhane sokaklarının arasında saklı; Türk edebiyatı ilk baskıları ve sosyal bilimler kitapları.",tags:["Ücretsiz"]},
-  {id:1358,name:"Pasaj Sahafları Beyoğlu",             cat:"okuma",sub:"Sahaflar",address:"İstiklal Cd., Beyoğlu",        lat:41.0337,lng:28.9743,desc:"Çiçek Pasajı ve Atlas Pasajı çevresindeki köşelerde; nadir dergi, kitap ve illüstrasyon koleksiyonları.",tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1359,name:"İnkılap Kitabevi Sahaf Bölümü",       cat:"okuma",sub:"Sahaflar",address:"Cağaloğlu, Fatih",             lat:41.0115,lng:28.9740,desc:"Yüzyıllık kitabevinin sahaf bölümünde; Cumhuriyet dönemi ilk baskıları ve nadir Türk klasikleri.",tags:["Tarihî yapı","Ücretsiz","Nadir kitap"]},
-
-  /* — KADIKÖY & ANADOLU YAKASI — */
-  {id:1360,name:"Postercilik ve Sahaf Kadıköy",        cat:"okuma",sub:"Sahaflar",address:"Altıyol, Kadıköy",             lat:41.0002,lng:29.0278,desc:"Sinema afişleri, müzik posterler ve eski dergiler eşliğinde sahaf; görsel kültür meraklıları için.",tags:["Ücretsiz","Sanat"]},
-  {id:1361,name:"Rıfat Sahaf Kadıköy",                 cat:"okuma",sub:"Sahaflar",address:"Moda Cd., Kadıköy",            lat:40.9828,lng:29.0278,desc:"Kadıköy'ün en eski sahaflarından; çocuk kitapları ve Cumhuriyet dönemi popüler edebiyatı.",tags:["Ücretsiz"]},
-  {id:1362,name:"Dost Kitap Sahaf Moda",               cat:"okuma",sub:"Sahaflar",address:"Moda, Kadıköy",                lat:40.9815,lng:29.0290,desc:"Moda sokaklarında sakin sahaf; şiir, tiyatro ve feminist edebiyat ağırlıklı koleksiyon.",tags:["Ücretsiz"]},
-  {id:1363,name:"Boğaziçi Sahaf Kadıköy",              cat:"okuma",sub:"Sahaflar",address:"Kadıköy Çarşısı",              lat:40.9910,lng:29.0268,desc:"Üniversite sınavı kitaplarından kültür dergilerine; öğrencilerin cüzdanı dostu fiyatlar.",tags:["Ücretsiz"]},
-  {id:1364,name:"Maltepe Sahaf Pazarı",                cat:"okuma",sub:"Sahaflar",address:"Maltepe",                      lat:40.9340,lng:29.1302,desc:"Hafta sonu pazar yeri kurulan; ikinci el kitap ve dergi arayanların Anadolu yakası alternatifi.",tags:["Ücretsiz"]},
-  {id:1365,name:"Bağdat Caddesi Sahaf Köşesi",         cat:"okuma",sub:"Sahaflar",address:"Bağdat Cd., Kadıköy",          lat:40.9618,lng:29.0838,desc:"Caddenin ara sokaklarında gizlenmiş; yabancı dil ve sanat kitaplarına odaklanan küçük sahaf.",tags:["Ücretsiz"]},
-  {id:1366,name:"Ümraniye Sahaf Çarşısı",              cat:"okuma",sub:"Sahaflar",address:"Ümraniye",                     lat:41.0188,lng:29.1178,desc:"Anadolu yakasının doğusunda büyüyen sahaf çarşısı; dini ve eğitim kitaplarında geniş yelpaze.",tags:["Ücretsiz"]},
-  {id:1367,name:"Üsküdar Kuzguncuk Sahafı",            cat:"okuma",sub:"Sahaflar",address:"Kuzguncuk, Üsküdar",           lat:41.0368,lng:29.0352,desc:"Boğaz'ın en güzel semtinde köy dokusu içinde; yerel tarih ve İstanbul kitaplarına özel ilgi.",tags:["Ücretsiz","Tarihî yapı"]},
-  {id:1368,name:"Haydarpaşa Sahaf Sokağı",             cat:"okuma",sub:"Sahaflar",address:"Haydarpaşa, Kadıköy",          lat:40.9998,lng:29.0220,desc:"Tarihi garın yakınında; demiryolu tarihi, seyahat edebiyatı ve eski haritalar üzerine uzman sahaf.",tags:["Tarihî yapı","Ücretsiz","Nadir kitap"]},
-
-  /* — AVRUPA YAKASI DİĞER SEMTLER — */
-  {id:1369,name:"Beşiktaş Pazar Sahafları",            cat:"okuma",sub:"Sahaflar",address:"Beşiktaş Çarşısı",             lat:41.0435,lng:29.0048,desc:"Salı pazarının içine karışmış sahaf köşeleri; fırsatçılar için sürpriz baskılar ve koleksiyon dergiler.",tags:["Ücretsiz"]},
-  {id:1370,name:"Ortaköy Sahaf Köşesi",                cat:"okuma",sub:"Sahaflar",address:"Ortaköy, Beşiktaş",            lat:41.0488,lng:29.0268,desc:"Pazar günleri kurulan; sanat kitapları, fotoğraf albümleri ve İstanbul kartpostalları üzerine uzman.",tags:["Ücretsiz","Sanat"]},
-  {id:1371,name:"Nişantaşı Antika Kitap",              cat:"okuma",sub:"Sahaflar",address:"Nişantaşı, Şişli",             lat:41.0492,lng:28.9932,desc:"Butik semtte; İngilizce ve Fransızca eski baskılar, sanat kataloğu ve koleksiyon yayınları.",tags:["Ücretsiz","Nadir kitap"]},
-  {id:1372,name:"Şişli Sahaf Pasajı",                  cat:"okuma",sub:"Sahaflar",address:"Şişli",                        lat:41.0598,lng:28.988,desc:"İşlek Şişli'nin arka sokaklarında; teknik kitaplar, ders notları ve edebiyat karmaşık biçimde yan yana.",tags:["Ücretsiz"]},
-  {id:1373,name:"Feriköy Antika ve Sahaf Pazarı",      cat:"okuma",sub:"Sahaflar",address:"Feriköy, Şişli",               lat:41.0568,lng:28.9862,desc:"Her pazar günü kurulan; antika eşya arasına karışmış nadir kitaplar ve illüstrasyonlu yayınlar.",tags:["Ücretsiz","Koleksiyon"]},
-  {id:1374,name:"Balat Sahaf ve Antika Dükkânı",       cat:"okuma",sub:"Sahaflar",address:"Balat, Fatih",                 lat:41.0285,lng:28.9495,desc:"Renkli Balat'ın antikacıları arasında; Rum ve Ermeni topluluklarına ait eski yayınlar, dini metinler.",tags:["Tarihî yapı","Ücretsiz","Nadir kitap"]},
-  {id:1375,name:"Eyüpsultan Dini Kitap Sahafları",     cat:"okuma",sub:"Sahaflar",address:"Eyüpsultan",                   lat:41.0468,lng:28.933,desc:"Tarihi caminin yakınında; dini yayınlar, Kuran baskıları ve İslami ilimler sahafları.",tags:["Tarihî yapı","Ücretsiz"]},
-  {id:1376,name:"Sarıyer Sahaf Köşesi",                cat:"okuma",sub:"Sahaflar",address:"Sarıyer",                      lat:41.1665,lng:29.0492,desc:"Boğazın kuzeyinde mahalle sahafı; doğa, denizcilik ve Karadeniz tarihi kitaplarında sürpriz buluntular.",tags:["Ücretsiz"]},
-  {id:1377,name:"Bakırköy Sahaf Çarşısı",              cat:"okuma",sub:"Sahaflar",address:"Bakırköy",                     lat:40.982,lng:28.8685,desc:"Sahil ilçesinde kurulan; aile kitapları, çocuk masalları ve eski ansiklopediler ağırlıklı.",tags:["Ücretsiz","Çocuk dostu"]},
-  {id:1378,name:"Kadıköy Hafta Sonu Sahaf Fuarı",      cat:"okuma",sub:"Sahaflar",address:"Kadıköy Meydanı",              lat:40.9912,lng:29.0242,desc:"Her hafta sonu meydanda kurulan geçici pazar; en çok ziyaret edilen açık hava sahaf etkinliği.",tags:["Ücretsiz"]},
-
-  /* — ÖZEL / UZMANLAŞMIŞ SAHAFLAR — */
-  {id:1379,name:"Dil Kitabevi Sahaf Bölümü",           cat:"okuma",sub:"Sahaflar",address:"Cağaloğlu, Fatih",             lat:41.0118,lng:28.9740,desc:"Dilbilim, sözlükler ve yabancı dil öğrenimi üzerine uzmanlaşmış; nadir gramer kitapları ve sözlükler.",tags:["Tarihî yapı","Ücretsiz","Akademik"]},
-  {id:1380,name:"Elif Sahaf — Tıp Kitapları",          cat:"okuma",sub:"Sahaflar",address:"Çapa, Fatih",                  lat:41.0165,lng:28.9368,desc:"Tıp fakültesi yakınında; eski tıp atlasları, klinik kitaplar ve nadir sağlık yayınları.",tags:["Ücretsiz","Akademik"]},
-  {id:1381,name:"Arşiv Kitap — Fotoğraf ve Sinema",    cat:"okuma",sub:"Sahaflar",address:"Beyoğlu",                      lat:41.0334,lng:28.9783,desc:"Fotoğraf kitapları, sinema dergileri ve yönetmen monografilerinde uzman; görsel sanatlar koleksiyoncuları için.",tags:["Ücretsiz","Sanat"]},
-  {id:1382,name:"Müzik Sahafı Galata",                 cat:"okuma",sub:"Sahaflar",address:"Galata, Beyoğlu",               lat:41.0262,lng:28.9738,desc:"Nota defterleri, müzik teorisi kitapları ve nadir plak katalogları; müzisyenler için vazgeçilmez.",tags:["Ücretsiz","Müzik"]},
-  {id:1383,name:"Çocuk Kitapları Sahafı Şişli",        cat:"okuma",sub:"Sahaflar",address:"Şişli",                        lat:41.0608,lng:28.9862,desc:"Yalnızca çocuk ve gençlik kitaplarında uzman; nostaljik çizgi romanlar ve illüstrasyonlu klasikler.",tags:["Ücretsiz","Çocuk dostu"]},
-  {id:1384,name:"Harita ve Coğrafya Sahafı Beyazıt",   cat:"okuma",sub:"Sahaflar",address:"Beyazıt, Fatih",               lat:41.0105,lng:28.9658,desc:"Osmanlı dönemi haritaları, seyahatname baskıları ve eski coğrafya atlaslarında uzman; koleksiyoncular için.",tags:["Tarihî yapı","Ücretsiz","Nadir kitap","Koleksiyon"]},
-  {id:1385,name:"Mimarlık Kitapları Sahafı MSGSÜ Çevresi",cat:"okuma",sub:"Sahaflar",address:"Fındıklı, Beyoğlu",         lat:41.0288,lng:28.9820,desc:"Mimarlık ve tasarım kitaplarında uzman; proje dergileri, yapı katalogları ve sanat kitapları.",tags:["Ücretsiz","Sanat","Akademik"]},
-  {id:1386,name:"Hukuk Sahafı Cağaloğlu",              cat:"okuma",sub:"Sahaflar",address:"Cağaloğlu, Fatih",             lat:41.0122,lng:28.9745,desc:"Eski kanun kitapları, Osmanlı hukuk metinleri ve hukuk tarihi yayınlarında uzman sahaf.",tags:["Tarihî yapı","Ücretsiz","Akademik"]},
+  {id:1163,name:"Devlet Arşivleri Başkanlığı İstanbul Şubesi",cat:"okuma",sub:"Arşiv merkezleri",address:"Yedikule, Fatih",lat:41.0007,lng:28.9281,desc:"Osmanlı ve Cumhuriyet dönemine ait resmi devlet belgelerinin ana arşivi.",tags:["Sessiz","Tarihî yapı"]},
+  {id:1164,name:"Topkapı Sarayı Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Sultanahmet, Fatih",lat:41.0115,lng:28.9833,desc:"Osmanlı saray belgelerini barındıran dünyanın en önemli arşivlerinden biri.",tags:["Tarihî yapı","Sessiz"]},
+  {id:1165,name:"İBB Atatürk Kitaplığı Arşiv Birimi",cat:"okuma",sub:"Arşiv merkezleri",address:"Mete Cd., Taksim",lat:41.0369,lng:28.9866,desc:"İstanbul'a ait tarihi fotoğraf, harita ve belge koleksiyonu.",tags:["Ücretsiz","Sessiz"]},
+  {id:1166,name:"Ara Güler Vakfı Fotoğraf Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Bomontiada, Şişli",lat:41.0583,lng:28.9804,desc:"Efsanevi fotoğrafçı Ara Güler'in İstanbul ve dünya fotoğraflarından oluşan arşiv.",tags:["Ücretsiz","Tarihî yapı"]},
+  {id:1167,name:"SALT Araştırma Görsel Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Bankalar Cd., Karaköy",lat:41.0243,lng:28.9737,desc:"Erken Cumhuriyet dönemi mimarlık fotoğrafları ve kolektif bellek arşivi; çevrimiçi erişim.",tags:["Sessiz","Ücretsiz","Akademik","Wi-Fi"]},
+  {id:1168,name:"Galata Mevlevihanesi Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Galipdede Cd., Beyoğlu",lat:41.0285,lng:28.9742,desc:"Mevlevi kültürüne ait el yazmaları ve müzik notalarının korunduğu arşiv.",tags:["Tarihî yapı","Sessiz"]},
+  {id:1169,name:"Ekümenik Patrikane Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Fener, Fatih",lat:41.0313,lng:28.9490,desc:"Rum Ortodoks kilisesinin yüzyıllık belge ve el yazmalarını barındıran dini arşiv.",tags:["Tarihî yapı","Sessiz"]},
+  {id:1170,name:"İstanbul Deniz Müzesi Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Beşiktaş",lat:41.0432,lng:29.0048,desc:"Osmanlı deniz kuvvetleri ve denizcilik tarihine ait nadir belge ve harita koleksiyonu.",tags:["Tarihî yapı","Sessiz"]},
+  {id:1171,name:"Ermeni Patrikhanesi Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Kumkapı, Fatih",lat:41.0042,lng:28.9596,desc:"İstanbul Ermeni topluluğunun yüzyıllık belgeleri; kilise kayıtları ve vakıf belgeleri.",tags:["Sessiz","Akademik","Tarihî yapı"]},
+  {id:1172,name:"MSGSÜ Mimarlık Fakültesi Tarihi Çizimler Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Fındıklı, Beyoğlu",lat:41.0286,lng:28.9820,desc:"Türkiye'nin ilk mimarlık okulundan gelen yüzyıllık proje çizimleri ve tarihi yapı belgeleri.",tags:["Sessiz","Akademik"]},
+  {id:1173,name:"TRT İstanbul Radyosu Ses Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Harbiye, Şişli",lat:41.0508,lng:28.9940,desc:"1927'den bu yana radyo yayınları; Türk müziği kayıtları ve kültürel miras ses arşivi.",tags:["Sessiz","Akademik"]},
+  {id:1174,name:"Pera Müzesi Araştırma Arşivi",cat:"okuma",sub:"Arşiv merkezleri",address:"Meşrutiyet Cd., Tepebaşı",lat:41.0330,lng:28.9756,desc:"Oryantalist resimler, Kütahya çinileri üzerine araştırmacı arşivi.",tags:["Sessiz","Akademik"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Kitap evleri  (12 → doğal sayı)
+     Bağımsız yayınevi mekânları (12→22)
   ══════════════════════════════════════════ */
-
-  /* — BAĞIMSIZ VE KÖKLÜ KİTABEVLERİ — */
-  {id:1387,name:"Remzi Kitabevi İstiklal",               cat:"okuma",sub:"Kitap evleri",address:"İstiklal Cd., Beyoğlu",   lat:41.0328,lng:28.9775,desc:"1927'den bu yana Türkiye'nin en köklü kitabevlerinden; geniş katalog ve düzenli imza günleri.",tags:["Wi-Fi","Kitap","Tarihî yapı"]},
-  {id:1388,name:"D&R Taksim",                           cat:"okuma",sub:"Kitap evleri",address:"Taksim, Beyoğlu",          lat:41.0368,lng:28.9855,desc:"Kitap, müzik ve teknolojinin bir arada bulunduğu büyük mağaza; geniş yabancı dil bölümü.",tags:["Wi-Fi","Kitap"]},
-  {id:1389,name:"Kitap Yurdu Beyazıt",                  cat:"okuma",sub:"Kitap evleri",address:"Beyazıt, Fatih",           lat:41.0105,lng:28.9650,desc:"Üniversite çevresinin vazgeçilmezi; akademik yayınlar, ders kitapları ve Türk klasiklerinde tam stok.",tags:["Kitap","Akademik"]},
-  {id:1390,name:"Özgür Yayınları Kitabevi Cağaloğlu",   cat:"okuma",sub:"Kitap evleri",address:"Cağaloğlu, Fatih",         lat:41.0114,lng:28.97580,desc:"Babıali çevresinin köklü bağımsız kitabevi; sosyal bilimler ve siyaset kitaplarında zengin seçki.",tags:["Kitap","Akademik","Tarihî yapı"]},
-  {id:1391,name:"Dost Kitabevi Kadıköy",                cat:"okuma",sub:"Kitap evleri",address:"Kadıköy",                  lat:40.9999,lng:29.0290,desc:"Anadolu yakasının sevilen bağımsız kitabevi; edebiyat etkinlikleri ve imza günleriyle canlı atmosfer.",tags:["Kitap","Etkinlik"]},
-  {id:1392,name:"Ayrıntı Yayınları Kitabevi",           cat:"okuma",sub:"Kitap evleri",address:"Beyoğlu",                  lat:41.0318,lng:28.9762,desc:"Felsefe, sosyoloji ve eleştirel düşünce kitaplarıyla tanınan yayınevi mağazası; düzenli söyleşiler.",tags:["Kitap","Akademik","Etkinlik"]},
-  {id:1393,name:"Metis Kitabevi Tünel",                 cat:"okuma",sub:"Kitap evleri",address:"Tünel, Beyoğlu",           lat:41.0275,lng:28.9728,desc:"Feminist edebiyat, çevre ve sol düşünce yayınlarıyla öne çıkan yayınevi mağazası.",tags:["Kitap","Etkinlik"]},
-  {id:1394,name:"İletişim Yayınları Kitabevi",          cat:"okuma",sub:"Kitap evleri",address:"Beyoğlu",                  lat:41.0310,lng:28.9765,desc:"Türkiye'nin en köklü akademik yayınevinin mağazası; tarih, siyaset ve sosyolojide güçlü katalog.",tags:["Kitap","Akademik"]},
-  {id:1395,name:"Yapi Kredi Kültür Sanat Kitabevi",     cat:"okuma",sub:"Kitap evleri",address:"İstiklal Cd., Beyoğlu",    lat:41.0311,lng:28.9762,desc:"Sanat, mimarlık ve edebiyat kitaplarında İstanbul'un en kapsamlı koleksiyonu; imza günleri ve sergiler.",tags:["Kitap","Sanat","Etkinlik"]},
-  {id:1396,name:"Büke Kitabevi Cihangir",               cat:"okuma",sub:"Kitap evleri",address:"Cihangir, Beyoğlu",        lat:41.0273,lng:28.9793,desc:"Cihangir'in bohemyan ruhuna uygun küçük ama özenli kitabevi; edebiyat ve sanat kitaplarında seçici koleksiyon.",tags:["Kitap","Sanat"]},
-  {id:1397,name:"Nata Vega Kitabevi Kadıköy",           cat:"okuma",sub:"Kitap evleri",address:"Kadıköy",                  lat:40.9915,lng:29.0280,desc:"Kadıköy'ün alternatif ruhuna yakışan; bağımsız yayınevleri ve az bilinen yazarlara ağırlık veren kitabevi.",tags:["Kitap","Etkinlik"]},
-  {id:1398,name:"Epsilon Yayınları Kitabevi",           cat:"okuma",sub:"Kitap evleri",address:"Nişantaşı, Şişli",         lat:41.0485,lng:28.9922,desc:"Popüler edebiyat ve kişisel gelişim ağırlıklı; okuma kulübü etkinlikleri ve imza günleriyle aktif.",tags:["Kitap","Etkinlik"]},
-  {id:1399,name:"Everest Yayınları Kitabevi Taksim",    cat:"okuma",sub:"Kitap evleri",address:"Taksim, Beyoğlu",          lat:41.0362,lng:28.9848,desc:"Polisiye ve gerilim ağırlıklı geniş koleksiyon; yazar etkinlikleri ve okuma önerileriyle donanımlı.",tags:["Kitap","Etkinlik"]},
-  {id:1400,name:"Bilgi Kitabevi Beşiktaş",              cat:"okuma",sub:"Kitap evleri",address:"Beşiktaş",                 lat:41.0432,lng:29.0050,desc:"Mahallenin sevilen bağımsız kitabevi; çocuk kitapları ve yerel yazar etkinliklerine önem veren.",tags:["Kitap","Çocuk dostu","Etkinlik"]},
-  {id:1401,name:"Limon Kitap Moda",                     cat:"okuma",sub:"Kitap evleri",address:"Moda, Kadıköy",            lat:40.9822,lng:29.0285,desc:"Moda'nın sakin sokaklarında; alternatif yayınevleri ve çeviri edebiyatında uzmanlaşmış butik kitabevi.",tags:["Kitap"]},
-  {id:1402,name:"Kanat Kitabevi Fatih",                 cat:"okuma",sub:"Kitap evleri",address:"Fatih",                   lat:41.0188,lng:28.9402,desc:"Dini yayınlar ve İslami edebiyatta güçlü koleksiyon; Osmanlıca eserler ve modern İslam düşüncesi.",tags:["Kitap"]},
-  {id:1403,name:"Timaş Yayınları Kitabevi Fatih",       cat:"okuma",sub:"Kitap evleri",address:"Fatih",                   lat:41.0182,lng:28.9395,desc:"Türkiye'nin büyük İslami yayınevinin mağazası; çocuk, gençlik ve yetişkin edebiyatında geniş katalog.",tags:["Kitap","Çocuk dostu"]},
-  {id:1404,name:"Sokak Kitabevi Balat",                 cat:"okuma",sub:"Kitap evleri",address:"Balat, Fatih",             lat:41.0285,lng:28.9492,desc:"Renkli Balat sokaklarına açılan küçük pencereli butik kitabevi; bağımsız yayınevleri ve zine koleksiyonu.",tags:["Kitap","Sanat","Tarihî yapı"]},
-  {id:1405,name:"Pınar Kitabevi Üsküdar",               cat:"okuma",sub:"Kitap evleri",address:"Üsküdar",                 lat:41.0218,lng:29.0158,desc:"Üsküdar'ın sevilen mahalle kitabevi; yerel tarih ve manevi edebiyat ağırlıklı.",tags:["Kitap"]},
-  {id:1406,name:"Arkadaş Kitabevi Ankara Cd.",          cat:"okuma",sub:"Kitap evleri",address:"Cağaloğlu, Fatih",         lat:41.0120,lng:28.9738,desc:"Hukuk, iktisat ve sosyal bilimler kitaplarında Babıali'nin klasik kitabevi; üniversite çevrelerinin uğrağı.",tags:["Kitap","Akademik","Tarihî yapı"]},
-  {id:1407,name:"Boyut Yayın Grubu Mağazası",           cat:"okuma",sub:"Kitap evleri",address:"Şişli",                   lat:41.0612,lng:28.9858,desc:"Mimarlık, tasarım ve çocuk kitapları üzerine uzmanlaşmış; büyük format ve illüstrasyonlu yayınlar.",tags:["Kitap","Sanat","Çocuk dostu"]},
-  {id:1408,name:"Kırmızı Kedi Kitabevi Kadıköy",        cat:"okuma",sub:"Kitap evleri",address:"Kadıköy",                 lat:40.9908,lng:29.0270,desc:"Polisiye, fantastik ve bilim kurgu ağırlıklı; türe özel okuma kulübü etkinlikleri.",tags:["Kitap","Etkinlik"]},
-  {id:1409,name:"Delidolu Kitap Beyoğlu",               cat:"okuma",sub:"Kitap evleri",address:"Beyoğlu",                 lat:41.0315,lng:28.9760,desc:"Bağımsız ruhlu küçük kitabevi; şiir, deneme ve az tanınan yazarlara yer açan özgün seçki.",tags:["Kitap"]},
-  {id:1410,name:"Alfa Yayınları Kitabevi Taksim",       cat:"okuma",sub:"Kitap evleri",address:"Taksim, Beyoğlu",          lat:41.0365,lng:28.9852,desc:"Popüler bilim, tarih ve biyografi kitaplarında güçlü; düzenli yazar buluşmaları.",tags:["Kitap","Etkinlik"]},
-  {id:1411,name:"Can Yayınları Kitabevi",               cat:"okuma",sub:"Kitap evleri",address:"Cağaloğlu, Fatih",         lat:41.0118,lng:28.9742,desc:"Türk ve dünya edebiyatının seçkin yayınevinin mağazası; çeviri edebiyatta güçlü katalog.",tags:["Kitap","Tarihî yapı"]},
-  {id:1412,name:"Günışığı Kitabevi Kadıköy",            cat:"okuma",sub:"Kitap evleri",address:"Kadıköy",                 lat:40.9910,lng:29.0265,desc:"Çocuk ve gençlik edebiyatında uzman; ebeveynler ve öğretmenler için kitap danışmanlığı.",tags:["Kitap","Çocuk dostu","Etkinlik"]},
-  {id:1413,name:"Nezih Kitabevi Şişli",                 cat:"okuma",sub:"Kitap evleri",address:"Şişli",                   lat:41.0602,lng:28.9858,desc:"Şişli'nin köklü kitabevi; ansiklopediler, atlas ve başvuru kaynakları ile eğitim yayınlarında tam stok.",tags:["Kitap"]},
-  {id:1414,name:"Idefix Kitabevi Cevahir AVM",          cat:"okuma",sub:"Kitap evleri",address:"Şişli",                   lat:41.0648,lng:28.9988,desc:"Büyük alışveriş merkezi içinde geniş kitabevi; çocuk bölümü ve yabancı dil yayınlarında zengin seçki.",tags:["Kitap","Çocuk dostu"]},
-  {id:1415,name:"Kubbealti Yayınları Kitabevi",         cat:"okuma",sub:"Kitap evleri",address:"Fatih",                   lat:41.0185,lng:28.9398,desc:"Türk dili ve edebiyatı, Osmanlı kültürü üzerine uzman yayınevinin mağazası; sözlükler ve ansiklopediler.",tags:["Kitap","Akademik"]},
-  {id:1416,name:"Türkiye İş Bankası Kültür Yayınları Mağazası",cat:"okuma",sub:"Kitap evleri",address:"İstiklal Cd., Beyoğlu",lat:41.0348,lng:28.97360,desc:"Türk edebiyatının klasiklerini yeniden basan köklü yayınevinin mağazası; biyografi ve tarih kitaplarında güçlü.",tags:["Kitap","Tarihî yapı"]},
-  {id:1417,name:"Okuyan Us Kitabevi Nişantaşı",         cat:"okuma",sub:"Kitap evleri",address:"Nişantaşı, Şişli",         lat:41.0509,lng:28.9913,desc:"Sosyal bilimler, felsefe ve edebiyat odaklı; seçkin yayıncılık anlayışıyla küratörlük yapan butik kitabevi.",tags:["Kitap","Akademik"]},
-  {id:1418,name:"Broy Kitabevi Arnavutköy",             cat:"okuma",sub:"Kitap evleri",address:"Arnavutköy, Beşiktaş",     lat:41.0618,lng:29.0370,desc:"Boğaz semtinin ahşap vitrinli kitabevi; çok dilli koleksiyon ve yabancı dergiler.",tags:["Kitap","Tarihî yapı"]},
-  {id:1419,name:"Türkçe Kitap Büyükada",                cat:"okuma",sub:"Kitap evleri",address:"Büyükada, Adalar",         lat:40.8740,lng:29.1262,desc:"Adanın tek kitabevi; yaz aylarında şiir-edebiyat buluşmalarıyla canlanan, manzaralı küçük kitap yuvası.",tags:["Kitap","Etkinlik","Doğal ışık"]},
+  {id:1175,name:"İletişim Yayınları Mağazası",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Klodfarer Cd., Cağaloğlu",lat:41.0118,lng:28.9738,desc:"Türkiye'nin en köklü akademik yayınevinin mağazası; tarih, siyaset ve sosyolojide güçlü katalog.",tags:["Kitap","Akademik","Tarihî yapı"]},
+  {id:1176,name:"Metis Yayınları",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Sofyalı Sk., Tünel",lat:41.0293,lng:28.9750,desc:"Feminist edebiyat ve eleştirel kuram yayıncılığında Türkiye'nin öncü yayınevi mekânı.",tags:["Kitap","Etkinlik"]},
+  {id:1177,name:"Ayrıntı Yayınları",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Hobyar Mah., Fatih",lat:41.0128,lng:28.9732,desc:"Felsefe, sosyoloji ve eleştirel düşünce kitaplarıyla tanınan yayınevi mağazası.",tags:["Kitap","Akademik","Etkinlik"]},
+  {id:1178,name:"Agora Kitaplığı ve Yayınevi",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Ankara Cd., Cağaloğlu",lat:41.0115,lng:28.9742,desc:"Sol düşünce, sosyoloji ve tarih yayıncılığında bağımsız ses; okuyucu buluşmaları.",tags:["Kitap","Etkinlik"]},
+  {id:1179,name:"Kırmızı Kedi Yayınevi",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Kadıköy",lat:40.9908,lng:29.0270,desc:"Polisiye, fantastik ve bilim kurgu çevirilerinde güçlü; tür okuması etkinlikleri.",tags:["Kitap","Etkinlik"]},
+  {id:1180,name:"Norgunk Yayıncılık",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",lat:41.0318,lng:28.9762,desc:"Bağımsız müzik, sinema ve görsel kültür yayıncılığında özgün ses; plak ve kitap bir arada.",tags:["Kitap","Müzik","Sanat"]},
+  {id:1181,name:"Öteki Yayınevi",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Cağaloğlu, Fatih",lat:41.0120,lng:28.9740,desc:"Alternatif ve marjinal sesler için alan açan bağımsız yayınevi; küçük ama özenli program.",tags:["Kitap","Etkinlik"]},
+  {id:1182,name:"Altıkırkbeş Yayın",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Cihangir, Beyoğlu",lat:41.0300,lng:28.9805,desc:"Fotoğraf kitabı ve sanat yayıncılığında özgün çizgi; görsel sanatlar meraklılarının buluşma yeri.",tags:["Kitap","Sanat","Fotoğraf"]},
+  {id:1183,name:"Versus Kitap",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Şişli",lat:41.0608,lng:28.9828,desc:"Ekonomi, iş dünyası ve kişisel gelişim yayıncılığında güçlü; okuyucu söyleşileri.",tags:["Kitap","Etkinlik"]},
+  {id:1184,name:"Sel Yayıncılık",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",lat:41.0312,lng:28.9758,desc:"Bağımsız edebiyat ve çeviri yayıncılığında öncü; eleştirel düşünce söyleşileri.",tags:["Kitap","Etkinlik"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Bağımsız yayınevi mekânları (12 → doğal)
+     Fanzin dükkânları (12→20)
   ══════════════════════════════════════════ */
-
-  /* — EDEBİYAT & KURGU — */
-  {id:1420,name:"Everest Yayınları Merkez Ofis ve Mağaza",  cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Cağaloğlu, Fatih",  lat:41.0138,lng:28.97460,desc:"Polisiye ve dünya edebiyatı ağırlıklı yayınevinin merkezi; yazar imza günleri ve okuma etkinlikleri.",tags:["Kitap","Etkinlik","Tarihî yapı"]},
-  {id:1421,name:"Doğan Kitap Showroom Levent",              cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Levent, Beşiktaş",    lat:41.0815,lng:29.0105,desc:"Türkiye'nin büyük yayın gruplarından; yazar buluşmaları ve yeni çıkan kitap lansmanları.",tags:["Kitap","Etkinlik"]},
-  {id:1422,name:"Sel Yayıncılık Merkezi Beyoğlu",           cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0315,lng:28.9758,desc:"Bağımsız siyasi edebiyat ve çeviri yayıncılığında öncü; eleştirel düşünce söyleşileri.",tags:["Kitap","Etkinlik"]},
-  {id:1423,name:"İthaki Yayınları Galata Mekânı",           cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Galata, Beyoğlu",     lat:41.0264,lng:28.9752,desc:"Fantastik, bilim kurgu ve polisiye çevirilerinde uzman; türün Türkiye'deki merkezi konumunda.",tags:["Kitap","Etkinlik"]},
-  {id:1424,name:"Jaguar Kitap Yayınevi Mekânı",             cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Kadıköy",             lat:40.9915,lng:29.0278,desc:"Güncel Türk edebiyatına adanmış genç yayınevi; yazarlarla yakın temas ve okuyucu buluşmaları.",tags:["Kitap","Etkinlik"]},
-  {id:1425,name:"Hayykitap Beyoğlu",                        cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0339,lng:28.9772,desc:"Alternatif edebiyat ve yaratıcı yayıncılık anlayışıyla öne çıkan; okuma kulübü ve atölye etkinlikleri.",tags:["Kitap","Etkinlik"]},
-  {id:1426,name:"Delidolu Yayınları Atölyesi",              cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0312,lng:28.9760,desc:"Şiir ve deneme yayıncılığında bağımsız ses; şairlerin bir araya geldiği sıcak okuma ortamı.",tags:["Kitap","Etkinlik","Şiir"]},
-  {id:1427,name:"Aylak Adam Yayınları Mekânı",              cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Cihangir, Beyoğlu",   lat:41.0300,lng:28.9805,desc:"Türk edebiyatının aylak estetiğine bağlı yayınevi; Cihangir'de rahat kitap seçimi ve kahve.",tags:["Kitap","Kahve"]},
-  {id:1428,name:"Küre Yayınları Mağazası Fatih",            cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Fatih",               lat:41.0165,lng:28.9395,desc:"İslam düşüncesi, felsefe ve siyaset üzerine akademik yayıncılık; araştırmacı ve okuyucu buluşmaları.",tags:["Kitap","Akademik"]},
-  {id:1429,name:"Kapı Yayınları Merkezi",                   cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Cağaloğlu, Fatih",    lat:41.0120,lng:28.9742,desc:"Milliyetçi ve muhafazakâr edebiyat çizgisinde; geniş okuyucu tabanına hitap eden kültür mekânı.",tags:["Kitap","Etkinlik","Tarihî yapı"]},
-  {id:1430,name:"Profil Yayıncılık Mağazası",               cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Şişli",               lat:41.0622,lng:28.9866,desc:"Ekonomi, iş dünyası ve kişisel gelişim yayıncılığında güçlü; okuyucu söyleşileri.",tags:["Kitap","Etkinlik"]},
-  {id:1431,name:"Picus Yayıncılık Mekânı Karaköy",          cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Karaköy, Beyoğlu",    lat:41.0228,lng:28.9742,desc:"Doğa, çevre ve seyahat edebiyatında uzman bağımsız yayınevi; coğrafya meraklılarının buluşma noktası.",tags:["Kitap","Etkinlik"]},
-
-  /* — SANAT & TASARIM YAYINEVLERİ — */
-  {id:1432,name:"Akın Nalça Yayınları Galeri-Mağaza",       cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Nişantaşı, Şişli",   lat:41.0490,lng:28.9932,desc:"Sanat tarihi ve koleksiyon yayıncılığında öncü; sergi kataloğu ve sanat kitaplarında en zengin stok.",tags:["Kitap","Sanat"]},
-  {id:1433,name:"Boyut Yayın Grubu Merkezi",                 cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Şişli",               lat:41.0602,lng:28.9875,desc:"Mimarlık, tasarım ve çocuk yayıncılığında köklü; büyük format sanat kitaplarında Türkiye'nin en kapsamlı koleksiyonu.",tags:["Kitap","Sanat","Çocuk dostu"]},
-  {id:1434,name:"Tetragon Yayınları Beyoğlu",               cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0308,lng:28.9755,desc:"Bağımsız sanat ve mimarlık yayıncılığı; tasarımcı ve mimarlara yönelik düzenli sunum ve söyleşiler.",tags:["Kitap","Sanat","Etkinlik"]},
-  {id:1435,name:"Norgunk Merkez Mekânı Beyoğlu",            cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0317,lng:28.9754,desc:"Bağımsız müzik, sinema ve görsel kültür yayıncılığında özgün ses; plak ve kitabın iç içe geçtiği mekân.",tags:["Kitap","Müzik","Sanat"]},
-
-  /* — AKADEMİK & DÜŞÜNCE YAYINEVLERİ — */
-  {id:1436,name:"Bilgi Üniversitesi Yayınları Mağazası",    cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Dolapdere, Beyoğlu",  lat:41.0515,lng:28.9698,desc:"Sosyal bilimler, hukuk ve eleştirel teoride akademik yayıncılık; üniversite çevrelerinin tercih ettiği mekân.",tags:["Kitap","Akademik","Wi-Fi"]},
-  {id:1437,name:"Koç Üniversitesi Yayınları Galeri",        cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Sarıyer",              lat:41.2034,lng:29.076,desc:"Türkiye'nin önemli akademik yayınevlerinden; tarih, edebiyat ve fen bilimleri yayınlarında güçlü.",tags:["Kitap","Akademik"]},
-  {id:1438,name:"Boğaziçi Üniversitesi Yayınları",          cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Bebek, Beşiktaş",      lat:41.0848,lng:29.0479,desc:"Üniversitenin akademik yayın kolu; uluslararası ortak çalışmalar ve kampüs içi açık erişim yayınlar.",tags:["Kitap","Akademik"]},
-  {id:1439,name:"İstanbul Bilgi Üniversitesi Hukuk Yayınları",cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Dolapdere, Beyoğlu",lat:41.0515,lng:28.9700,desc:"Hukuk teorisi ve uygulamasında Türkiye'nin önemli akademik yayınevlerinden; güncel hukuk literatürü.",tags:["Kitap","Akademik"]},
-  {id:1440,name:"Pinhan Yayıncılık Mekânı",                 cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0293,lng:28.97710,desc:"Sufi edebiyatı, mistisizm ve spiritüel düşünce yayıncılığında özgün; tasavvuf ve şiir etkinlikleri.",tags:["Kitap","Etkinlik"]},
-  {id:1441,name:"Kor Kitap Yayınları",                      cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Kadıköy",             lat:40.9912,lng:29.0275,desc:"Genç Türk yazarları destekleyen bağımsız yayınevi; ilk kitap lansmanları ve tanışma etkinlikleri.",tags:["Kitap","Etkinlik"]},
-  {id:1442,name:"Encore Yayınları Mekânı Beyoğlu",          cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0310,lng:28.9758,desc:"Müzik, sahne sanatları ve performans edebiyatında uzman; konser ve tiyatro yayınlarında özel koleksiyon.",tags:["Kitap","Müzik","Sanat"]},
-  {id:1443,name:"Okur Yazar Derneği Yayın Mekânı",          cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Kadıköy",             lat:40.9905,lng:29.0270,desc:"Okuma kültürünü yaygınlaştırmaya adanmış derneğin yayın ve etkinlik mekânı; atölyeler ve okuma grupları.",tags:["Kitap","Etkinlik"]},
-  {id:1444,name:"Çitlembik Yayınları Çocuk Mekânı",         cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Nişantaşı, Şişli",   lat:41.0492,lng:28.9930,desc:"Çocuk edebiyatında bağımsız ve kaliteli yayıncılığa adanmış; ebeveyn ve çocuklara yönelik etkinlikler.",tags:["Kitap","Çocuk dostu","Etkinlik"]},
-  {id:1445,name:"Uçan Fil Yayınları Mekânı",                cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Beyoğlu",             lat:41.0316,lng:28.9741,desc:"Çocuk ve gençlik edebiyatında özgün çizgisiyle bağımsız yayınevi; çocuk atölyeleri ve hikâye saatleri.",tags:["Kitap","Çocuk dostu","Etkinlik"]},
-  {id:1446,name:"Günışığı Yayıncılık Atölyesi Kadıköy",     cat:"okuma",sub:"Bağımsız yayınevi mekânları",address:"Kadıköy",             lat:40.9908,lng:29.0277,desc:"Eğitimci ve öğretmenlere yönelik yayıncılık anlayışı; çocuk edebiyatı atölyeleri ve seminerler.",tags:["Kitap","Çocuk dostu","Etkinlik"]},
+  {id:1185,name:"Kolektif Dergi & Fanzin",cat:"okuma",sub:"Fanzin dükkânları",address:"Yeldeğirmeni, Kadıköy",lat:40.9948,lng:29.0355,desc:"Yerli ve yabancı bağımsız zine, risografi baskı ve alternatif yayınların bir arada satıldığı mekân.",tags:["Zine","Bağımsız","Sanat"]},
+  {id:1186,name:"Bant Mag Ofis",cat:"okuma",sub:"Fanzin dükkânları",address:"Cihangir, Beyoğlu",lat:41.0298,lng:28.9805,desc:"Türkiye'nin köklü bağımsız kültür dergisinin ofisi; bant dergi arşivi ve alternatif yayınlar.",tags:["Zine","Dergi","Bağımsız","Sanat"]},
+  {id:1187,name:"Deli Dolu Fanzin Dükkanı",cat:"okuma",sub:"Fanzin dükkânları",address:"Kadıköy",lat:40.9912,lng:29.0272,desc:"Sinema, animasyon ve popüler kültür fanzinlerinde uzman; film festivali dönemlerinde özel koleksiyonlar.",tags:["Zine","Sinema","Bağımsız"]},
+  {id:1188,name:"Çizgi Roman ve Zine Dükkanı Tünel",cat:"okuma",sub:"Fanzin dükkânları",address:"Tünel, Beyoğlu",lat:41.0290,lng:28.9750,desc:"Yerli bağımsız çizgi roman ve zine üreticilerinin buluştuğu dükkân.",tags:["Zine","Çizgi roman","Bağımsız"]},
+  {id:1189,name:"Kamyon Yayınları",cat:"okuma",sub:"Fanzin dükkânları",address:"Beyoğlu",lat:41.0315,lng:28.9762,desc:"Seyahat, göç ve yol edebiyatı üzerine zine ve bağımsız yayınlar.",tags:["Zine","Bağımsız"]},
+  {id:1190,name:"Fotoğraf Zine Dükkânı Karaköy",cat:"okuma",sub:"Fanzin dükkânları",address:"Kemeraltı Cd., Karaköy",lat:41.0230,lng:28.9740,desc:"Fotoğraf kitabı ve fanzine adanmış; Türkiye ve dünyadan bağımsız fotoğrafçıların üretimleri.",tags:["Zine","Fotoğraf","Bağımsız","Sanat"]},
+  {id:1191,name:"Kağıt İşleri Balat",cat:"okuma",sub:"Fanzin dükkânları",address:"Balat, Fatih",lat:41.0282,lng:28.9492,desc:"El yapımı kağıt, risografi baskı ve yerel zine üretiminin iç içe geçtiği yaratıcı mekân.",tags:["Zine","Atölye","Bağımsız","Tarihî yapı"]},
+  {id:1192,name:"Pasaj Kültür",cat:"okuma",sub:"Fanzin dükkânları",address:"Beyoğlu",lat:41.0320,lng:28.9768,desc:"Tarihi pasaj içinde kültür, edebiyat ve bağımsız yayıncılık ürünleri satan küçük mekân.",tags:["Zine","Bağımsız","Tarihî yapı"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Fanzin dükkânları  (12 → doğal)
+     Akademik çalışma salonları (12→22)
   ══════════════════════════════════════════ */
-
-  /* — BAĞIMSIZ YAYIM & ZİNE MEKÂNLARI — */
-  {id:1447,name:"Fabrika Zine Kadıköy",               cat:"okuma",sub:"Fanzin dükkânları",address:"Yeldeğirmeni, Kadıköy",  lat:40.9948,lng:29.0355,desc:"Yerli ve yabancı bağımsız zine, risografi baskı ve alternatif yayınların bir arada satıldığı Kadıköy merkezi.",tags:["Zine","Bağımsız","Sanat"]},
-  {id:1448,name:"Riso Baskı Atölyesi Beyoğlu",        cat:"okuma",sub:"Fanzin dükkânları",address:"Beyoğlu",                lat:41.0312,lng:28.9762,desc:"Risografi baskı makinesiyle zine üretimi yapılan ve satılan; baskı atölyesi hem üretim hem satış mekânı.",tags:["Zine","Bağımsız","Sanat","Atölye"]},
-  {id:1449,name:"Bant Mag Ofis & Mağaza",             cat:"okuma",sub:"Fanzin dükkânları",address:"Cihangir, Beyoğlu",      lat:41.0298,lng:28.9805,desc:"Türkiye'nin en köklü bağımsız kültür dergisinin ofisi; bant dergi arşivi, zine ve alternatif yayınlar.",tags:["Zine","Dergi","Bağımsız","Sanat"]},
-  {id:1450,name:"Deli Filmler Zine Dükkânı",          cat:"okuma",sub:"Fanzin dükkânları",address:"Kadıköy",                lat:40.9910,lng:29.0272,desc:"Sinema, animasyon ve popüler kültür fanzinlerinde uzman; film festivali dönemlerinde özel koleksiyonlar.",tags:["Zine","Sinema","Bağımsız"]},
-  {id:1451,name:"Turuncu Bisiklet Yayınları",         cat:"okuma",sub:"Fanzin dükkânları",address:"Moda, Kadıköy",          lat:40.9822,lng:29.0282,desc:"Çevre, bisiklet kültürü ve kentsel yaşam üzerine zine ve bağımsız yayınların sergilendiği küçük dükkân.",tags:["Zine","Bağımsız","Çevre"]},
-  {id:1452,name:"Çizgi Roman ve Zine Dükkanı Tünel",  cat:"okuma",sub:"Fanzin dükkânları",address:"Tünel, Beyoğlu",         lat:41.0290,lng:28.9750,desc:"Yerli bağımsız çizgi roman ve zine üreticilerinin bir araya geldiği; düzenli yeni çıkan tanıtımları.",tags:["Zine","Çizgi roman","Bağımsız","Sanat"]},
-  {id:1453,name:"Mürver Baskı Kolektifi",             cat:"okuma",sub:"Fanzin dükkânları",address:"Bomonti, Şişli",         lat:41.0612,lng:28.9833,desc:"Kolektif baskı atölyesinin fanzin arşivi; üyeler kendi üretimlerini burada satar, takasta bulunur.",tags:["Zine","Atölye","Bağımsız","Sanat"]},
-  {id:1454,name:"Sisyphe Kitap ve Zine",              cat:"okuma",sub:"Fanzin dükkânları",address:"Cihangir, Beyoğlu",      lat:41.0302,lng:28.9808,desc:"Felsefe ve edebiyat temalı fanzinler ile bağımsız yayınlar; küçük ama özenle küratörlüğü yapılmış koleksiyon.",tags:["Zine","Bağımsız","Felsefe"]},
-  {id:1455,name:"Mürekkep Zine Festivali Arşivi",     cat:"okuma",sub:"Fanzin dükkânları",address:"Beyoğlu",                lat:41.0324,lng:28.9788,desc:"İstanbul Zine Festivali'nin kalıcı arşiv ve satış noktası; festival döneminde yüzlerce üretici bir arada.",tags:["Zine","Festival","Bağımsız","Sanat"]},
-  {id:1456,name:"Distro 34 — Bağımsız Müzik ve Zine", cat:"okuma",sub:"Fanzin dükkânları",address:"Yeldeğirmeni, Kadıköy", lat:40.9945,lng:29.0358,desc:"Yeraltı müzik kültürü, punk ve indie çevresinin fanzin ve plakları; müzik zine koleksiyonu Türkiye'nin en kapsamlısı.",tags:["Zine","Müzik","Bağımsız"]},
-  {id:1457,name:"Queer Kütüphane ve Zine Merkezi",    cat:"okuma",sub:"Fanzin dükkânları",address:"Beyoğlu",                lat:41.0325,lng:28.9772,desc:"LGBTİ+ temelli zine, bağımsız yayın ve arşiv; topluluk yayıncılığının İstanbul'daki merkezi.",tags:["Zine","Bağımsız","Topluluk"]},
-  {id:1458,name:"Fotoğraf Zine Dükkânı Karaköy",      cat:"okuma",sub:"Fanzin dükkânları",address:"Karaköy, Beyoğlu",      lat:41.0230,lng:28.9740,desc:"Fotoğraf kitabı ve fanzine adanmış; dünyadan ve Türkiye'den bağımsız fotoğrafçıların üretimlerini bir araya getirir.",tags:["Zine","Fotoğraf","Bağımsız","Sanat"]},
-  {id:1459,name:"Kağıt İşleri Balat",                 cat:"okuma",sub:"Fanzin dükkânları",address:"Balat, Fatih",           lat:41.0282,lng:28.9492,desc:"El yapımı kağıt, risografi baskı ve yerel zine üretiminin iç içe geçtiği; yaratıcı üretim mekânı.",tags:["Zine","Atölye","Bağımsız","Tarihî yapı"]},
-  {id:1460,name:"Alternatif Basın Kolektifi Şişhane",  cat:"okuma",sub:"Fanzin dükkânları",address:"Şişhane, Beyoğlu",      lat:41.0293,lng:28.9777,desc:"Siyasi ve toplumsal içerikli bağımsız yayınlar; gazete, bülten ve fanzin formatında alternatif medya.",tags:["Zine","Bağımsız","Siyaset"]},
-  {id:1461,name:"Ormanlık Zine Kafe Moda",             cat:"okuma",sub:"Fanzin dükkânları",address:"Moda, Kadıköy",          lat:40.9818,lng:29.0290,desc:"Bitki dolu iç mekânda doğa, çevre ve kent yaşamı temalı zine koleksiyonu; kahve eşliğinde tarama keyfi.",tags:["Zine","Kahve","Bağımsız","Çevre"]},
-  {id:1462,name:"404 Zine — Dijital Kültür Yayınları", cat:"okuma",sub:"Fanzin dükkânları",address:"Beyoğlu",                lat:41.031,lng:28.9781,desc:"İnternet kültürü, oyun ve teknoloji temalı bağımsız yayınlar; dijital çağın analog çıktıları.",tags:["Zine","Bağımsız","Teknoloji"]},
+  {id:1193,name:"SALT Araştırma Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Bankalar Cd., Karaköy",lat:41.0239,lng:28.9735,desc:"Herkesin ücretsiz kullanabileceği akademik çalışma salonu; sanat ve mimarlık arşivine erişim.",tags:["Sessiz","Akademik","Ücretsiz","Wi-Fi"]},
+  {id:1194,name:"Atatürk Kitaplığı Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Mete Cd., Taksim",lat:41.0370,lng:28.9866,desc:"İBB'nin kamusal kütüphanesinde geniş ve sessiz okuma salonu; ücretsiz çalışma alanı.",tags:["Sessiz","Akademik","Ücretsiz","Wi-Fi"]},
+  {id:1195,name:"Beyazıt Devlet Kütüphanesi Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Beyazıt Meydanı, Fatih",lat:41.0107,lng:28.9659,desc:"Tarihi kütüphanenin geniş okuma salonunda; sessiz, ücretsiz akademik çalışma ortamı.",tags:["Sessiz","Akademik","Ücretsiz","Tarihî yapı"]},
+  {id:1196,name:"Süleymaniye Kütüphanesi Araştırma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Süleymaniye, Fatih",lat:41.0162,lng:28.9640,desc:"El yazmaları koleksiyonuna erişimle; Osmanlı ve İslam bilimleri araştırmacıları için çalışma salonu.",tags:["Sessiz","Akademik","Tarihî yapı","Ücretsiz"]},
+  {id:1197,name:"İÜ Merkez Kütüphane Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Beyazıt, Fatih",lat:41.0103,lng:28.9636,desc:"Tarihi binada sessiz ve geniş okuma salonu; yoğun çalışma dönemlerinin gözdesi.",tags:["Sessiz","Akademik","Tarihî yapı","Wi-Fi"]},
+  {id:1198,name:"İSAM Akademik Çalışma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Güzeltepe, Eyüpsultan",lat:41.0622,lng:28.9278,desc:"İslam araştırmacıları için; yazma eser dijital arşivine erişimli bireysel çalışma kabinleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1199,name:"Boğaziçi Üniversitesi Kütüphane Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Bebek, Beşiktaş",lat:41.0847,lng:29.0479,desc:"Bireysel çalışma kabinleriyle donatılmış sessiz alan; dönem sonu sınavlarında tam kapasite.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1200,name:"İTÜ Kütüphane Çalışma Kabinleri",cat:"okuma",sub:"Akademik çalışma salonları",address:"Maslak, Sarıyer",lat:41.1053,lng:29.0219,desc:"Gürültü geçirmez bireysel kabinler; mühendislik öğrencileri için konsantrasyon köşeleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1201,name:"Kadir Has Üniversitesi Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Cibali, Fatih",lat:41.0254,lng:28.9583,desc:"Tarihi tütün fabrikası binasında; yüksek tavanlı, sessiz çalışma kabinleri.",tags:["Sessiz","Akademik","Wi-Fi","Tarihî yapı"]},
+  {id:1202,name:"Sabancı Üniversitesi 7/24 Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Orhantepe, Tuzla",lat:40.8902,lng:29.3786,desc:"7/24 açık; üniversite kütüphanesi atmosferinde kesintisiz akademik çalışma.",tags:["Sessiz","Akademik","Wi-Fi","24 saat"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: Akademik çalışma salonları (12 → doğal)
+     24 saat açık çalışma alanları (12→22)
   ══════════════════════════════════════════ */
-
-  /* — ÜNİVERSİTE ÇALIŞMA ALANLARI — */
-  {id:1463,name:"İÜ Hukuk Fakültesi Okuma Salonu",           cat:"okuma",sub:"Akademik çalışma salonları",address:"Beyazıt, Fatih",      lat:41.0107,lng:28.9615,desc:"Tarihi binada sessiz ve geniş okuma salonu; hukuk öğrencilerinin yoğun çalışma dönemlerinin gözdesi.",tags:["Sessiz","Akademik","Tarihî yapı","Wi-Fi"]},
-  {id:1464,name:"İÜ Edebiyat Fakültesi Okuma Odası",         cat:"okuma",sub:"Akademik çalışma salonları",address:"Beyazıt, Fatih",      lat:41.0110,lng:28.9638,desc:"Beşeri bilimler öğrencilerine ayrılmış; el yazması kataloğuna erişimli sessiz çalışma odası.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1465,name:"Boğaziçi Üniversitesi Kuzey Kampüs Okuma Kabinleri",cat:"okuma",sub:"Akademik çalışma salonları",address:"Bebek, Beşiktaş",lat:41.0850,lng:29.0482,desc:"Bireysel çalışma kabinleriyle donatılmış sessiz alan; özellikle dönem sonu sınavlarında tam kapasite.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1466,name:"İTÜ Kütüphane Bireysel Çalışma Kabinleri",  cat:"okuma",sub:"Akademik çalışma salonları",address:"Maslak, Sarıyer",     lat:41.1083,lng:29.0229,desc:"Gürültü geçirmez bireysel kabinler; mühendislik ve fen bilimleri öğrencileri için konsantrasyon köşeleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1467,name:"Marmara Üniversitesi Haydarpaşa Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Haydarpaşa, Kadıköy",lat:41.0012,lng:29.0175,desc:"Tarihi tıp fakültesi binasında; sağlık bilimleri öğrencilerinin tercih ettiği sessiz ve geniş çalışma salonu.",tags:["Sessiz","Akademik","Tarihî yapı","Wi-Fi"]},
-  {id:1468,name:"Özyeğin Üniversitesi Kütüphane Çalışma Salonları",cat:"okuma",sub:"Akademik çalışma salonları",address:"Çekmeköy",     lat:41.0253,lng:29.1863,desc:"Orman içi kampüste sakin doğa ortamında bireysel ve grup çalışma salonları; 7/24 erişim.",tags:["Sessiz","Akademik","Wi-Fi","24 saat"]},
-  {id:1469,name:"Türk-Alman Üniversitesi Okuma Salonu",       cat:"okuma",sub:"Akademik çalışma salonları",address:"Beykoz",              lat:41.1087,lng:29.0829,desc:"İkidilli eğitim ortamında Almanca ve Türkçe akademik kaynaklarla donatılmış sessiz çalışma salonu.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1470,name:"Medipol Üniversitesi Sağlık Bilimleri Çalışma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Bağcılar",  lat:41.0433,lng:28.8331,desc:"Tıp ve sağlık bilimleri öğrencilerine yönelik; klinik vaka çalışmaları için donanımlı çalışma alanı.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1471,name:"Bilgi Üniversitesi Dolapdere Okuma Salonu",  cat:"okuma",sub:"Akademik çalışma salonları",address:"Dolapdere, Beyoğlu", lat:41.0525,lng:28.9702,desc:"Endüstriyel dönüşüm binasında yüksek tavanlı; hukuk ve sosyal bilimler öğrencilerinin uzun çalışma salonları.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1472,name:"Galatasaray Üniversitesi Hukuk Okuma Odası", cat:"okuma",sub:"Akademik çalışma salonları",address:"Ortaköy, Beşiktaş",  lat:41.0479,lng:29.0265,desc:"Fransız hukuk geleneğinin izlerini taşıyan tarihi binada; sessiz ve düzenli akademik çalışma odası.",tags:["Sessiz","Akademik","Tarihî yapı","Wi-Fi"]},
-  {id:1473,name:"Bahçeşehir Üniversitesi Beşiktaş Çalışma Salonları",cat:"okuma",sub:"Akademik çalışma salonları",address:"Beşiktaş",   lat:41.0434,lng:29.0052,desc:"Merkezi konumuyla ulaşımı kolay; grup ve bireysel çalışma odaları ile dijital kaynak erişimi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-
-  /* — KAMU & BAĞIMSIZ AKADEMİK ÇALIŞMA ALANLARI — */
-  {id:1474,name:"SALT Araştırma Okuma Salonu",                cat:"okuma",sub:"Akademik çalışma salonları",address:"Karaköy, Beyoğlu",   lat:41.0225,lng:28.9748,desc:"Herkesin ücretsiz kullanabileceği akademik çalışma salonu; sanat ve mimarlık arşivine açık erişim.",tags:["Sessiz","Akademik","Ücretsiz","Wi-Fi"]},
-  {id:1475,name:"İstanbul Araştırmaları Enstitüsü Okuma Salonu",cat:"okuma",sub:"Akademik çalışma salonları",address:"Cağaloğlu, Fatih", lat:41.0103,lng:28.9708,desc:"İstanbul tarihi araştırmacılarına özel; fotoğraf ve harita koleksiyonuna erişimli sessiz çalışma salonu.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1476,name:"Alman Arkeoloji Enstitüsü Okuma Odası",      cat:"okuma",sub:"Akademik çalışma salonları",address:"Ayazpaşa, Beyoğlu", lat:41.0369,lng:28.9974,desc:"Arkeoloji ve antik çağ araştırmacılarına yönelik; Anadolu kazı raporları ve nadir yayınlarla donatılmış.",tags:["Sessiz","Akademik"]},
-  {id:1477,name:"İSAM Akademik Çalışma Salonu",               cat:"okuma",sub:"Akademik çalışma salonları",address:"Bağcılar",           lat:41.0362,lng:28.8338,desc:"İslam araştırmacıları için tam donanımlı; yazma eser dijital arşivine erişimli bireysel çalışma kabinleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1478,name:"Atatürk Kitaplığı Okuma Salonu",             cat:"okuma",sub:"Akademik çalışma salonları",address:"Taksim, Beyoğlu",    lat:41.0362,lng:28.9831,desc:"İBB'nin kamusal kütüphanesinde geniş ve sessiz okuma salonu; İstanbul araştırmacıları için ücretsiz çalışma alanı.",tags:["Sessiz","Akademik","Ücretsiz","Wi-Fi"]},
-  {id:1479,name:"Beyazıt Devlet Kütüphanesi Okuma Salonu",    cat:"okuma",sub:"Akademik çalışma salonları",address:"Beyazıt, Fatih",     lat:41.0107,lng:28.9658,desc:"Tarihi kütüphanenin geniş okuma salonunda; sessiz, ücretsiz ve erişilebilir akademik çalışma ortamı.",tags:["Sessiz","Akademik","Ücretsiz","Tarihî yapı"]},
-  {id:1480,name:"Süleymaniye Kütüphanesi Araştırma Salonu",   cat:"okuma",sub:"Akademik çalışma salonları",address:"Süleymaniye, Fatih", lat:41.0143,lng:28.9663,desc:"El yazmaları koleksiyonuna erişimle; Osmanlı ve İslam bilimleri araştırmacıları için ayrılmış çalışma salonu.",tags:["Sessiz","Akademik","Tarihî yapı","Ücretsiz"]},
-  {id:1481,name:"Koç Üniversitesi VEKAM Okuma Salonu",        cat:"okuma",sub:"Akademik çalışma salonları",address:"Emirgan, Sarıyer",   lat:41.0977,lng:29.0537,desc:"Osmanlı koleksiyonu ve hat sanatı arşivine erişimli; araştırmacılar için randevuyla kullanılan özel çalışma salonu.",tags:["Sessiz","Akademik","Tarihî yapı"]},
-  {id:1482,name:"Tarih Vakfı Okuma ve Araştırma Salonu",      cat:"okuma",sub:"Akademik çalışma salonları",address:"Eminönü, Fatih",     lat:41.017,lng:28.9708,desc:"Sosyal tarih araştırmacılarına açık; fotoğraf ve sözlü tarih arşivine erişimli ücretsiz çalışma salonu.",tags:["Sessiz","Akademik","Ücretsiz"]},
-  {id:1483,name:"Fransız Anadolu Araştırmaları Enstitüsü Okuma Odası",cat:"okuma",sub:"Akademik çalışma salonları",address:"Beyoğlu",   lat:41.0356,lng:28.97910,desc:"Fransız araştırmacılar ve Türk akademisyenlere açık; Anadolu arkeolojisi yayınlarıyla donatılmış sessiz çalışma odası.",tags:["Sessiz","Akademik"]},
-  {id:1484,name:"Amerikan Araştırma Enstitüsü Okuma Odası",   cat:"okuma",sub:"Akademik çalışma salonları",address:"Arnavutköy, Beşiktaş",lat:41.0609,lng:29.0379,desc:"Türkiye ve Yakın Doğu akademik araştırmalarına destek; burs sahibi araştırmacılar için sessiz çalışma odaları.",tags:["Sessiz","Akademik"]},
-
-  /* — ÖZEL ÇALIŞMA ALANLARI & STÜDYOlar — */
-  {id:1485,name:"Çalışma Atölyesi Karaköy",                   cat:"okuma",sub:"Akademik çalışma salonları",address:"Karaköy, Beyoğlu",   lat:41.0230,lng:28.9748,desc:"Akademisyen, yazar ve araştırmacılara yönelik; aylık üyelikle bireysel masa ve locker sistemi.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1486,name:"Nöbetçi Okuma Salonu Şişli",                 cat:"okuma",sub:"Akademik çalışma salonları",address:"Şişli",              lat:41.0595,lng:28.9862,desc:"Sınav dönemlerinde 7/24 açık; üniversite öğrencilerinin YÖK ve lisansüstü sınavlarına hazırlandığı sessiz salon.",tags:["Sessiz","Akademik","Wi-Fi","24 saat"]},
-  {id:1487,name:"Akademi Çalışma Merkezi Kadıköy",            cat:"okuma",sub:"Akademik çalışma salonları",address:"Kadıköy",            lat:40.9910,lng:29.0270,desc:"KPSS, ALES ve yabancı dil sınavlarına hazırlık; sessiz masa, kabin ve grup çalışma odaları.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1488,name:"Çalışma Salonu Plus Beşiktaş",               cat:"okuma",sub:"Akademik çalışma salonları",address:"Beşiktaş",           lat:41.0432,lng:29.0058,desc:"Üyelik sistemiyle çalışan; yüksek lisans ve doktora öğrencilerinin tez yazımı için tercih ettiği sessiz mekân.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1489,name:"Sessiz Oda Nişantaşı",                       cat:"okuma",sub:"Akademik çalışma salonları",address:"Nişantaşı, Şişli",   lat:41.0498,lng:28.993,desc:"Tamamen sessizlik kuralının uygulandığı; bireysel çalışma odaları ve kiralık locker sistemiyle donanımlı.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1490,name:"Doğrudan Çalış Levent",                      cat:"okuma",sub:"Akademik çalışma salonları",address:"Levent, Beşiktaş",   lat:41.0808,lng:29.0115,desc:"İş dünyası ve akademinin buluştuğu; saatlik veya günlük kiralanabilen bireysel çalışma kabinleri.",tags:["Sessiz","Akademik","Wi-Fi"]},
-  {id:1491,name:"Kampüs Dışı Çalışma Evi Üsküdar",           cat:"okuma",sub:"Akademik çalışma salonları",address:"Üsküdar",            lat:41.0235,lng:29.0145,desc:"Anadolu yakasının akademik çalışma merkezi; üniversite kütüphanesi atmosferinde üyelik sistemi.",tags:["Sessiz","Akademik","Wi-Fi"]},
+  {id:1203,name:"Esenler Belediyesi 24 Saat Kütüphanesi",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Esenler",lat:41.0448,lng:28.8760,desc:"İstanbul'un 24 saat kütüphane modelinin öncüsü; gündüz-gece çalışma salonları.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
+  {id:1204,name:"Fatih Belediyesi 7/24 Kütüphanesi",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Fatih",lat:41.0180,lng:28.9395,desc:"Tarihi yarımadada kesintisiz açık; sınav öğrencileri ve araştırmacılar için güvenli gece çalışma.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
+  {id:1205,name:"Prof. Dr. Haluk Dursun Kütüphanesi",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Üsküdar",lat:41.0230,lng:29.0148,desc:"Gece çalışanlar ve sınav öğrencileri için kesintisiz hizmet; sessiz salon ve Wi-Fi.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
+  {id:1206,name:"Kolektif House Levent",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Levent, Beşiktaş",lat:41.0815,lng:29.0108,desc:"7/24 üye erişimiyle; freelancer ve startup'ların gece çalışma rotası.",tags:["24 saat","Wi-Fi","Coworking"]},
+  {id:1207,name:"Workinton Taksim",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Taksim, Beyoğlu",lat:41.0368,lng:28.9852,desc:"Taksim'de 7/24 coworking; esnek masa ve toplantı odası seçenekleriyle tam donanımlı.",tags:["24 saat","Wi-Fi","Coworking"]},
+  {id:1208,name:"İTÜ Mustafa İnan Kütüphanesi Gece",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Maslak, Sarıyer",lat:41.1053,lng:29.0220,desc:"Sınav dönemlerinde 24 saat açık; mühendislik öğrencilerinin en yoğun çalışma mekânı.",tags:["24 saat","Sessiz","Akademik","Wi-Fi"]},
+  {id:1209,name:"Sabancı Üniversitesi Bilgi Merkezi Gece",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Orhantepe, Tuzla",lat:40.8904,lng:29.3786,desc:"7/24 açık kampüs kütüphanesi; orman içi sessizlikte gece boyunca çalışma imkânı.",tags:["24 saat","Sessiz","Akademik","Wi-Fi"]},
+  {id:1210,name:"Starbucks Taksim Meydanı",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Taksim Meydanı, Beyoğlu",lat:41.0369,lng:28.9855,desc:"Gece boyunca açık; güvenilir Wi-Fi ve priz bolluğuyla gece çalışanların sığınağı.",tags:["24 saat","Wi-Fi","Kahve"]},
+  {id:1211,name:"İstanbul Havalimanı Çalışma Lobisi",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"İstanbul Havalimanı, Arnavutköy",lat:41.2608,lng:28.7418,desc:"Transit ve bekleyen yolcular için 7/24 çalışma alanı; şarj istasyonları ve Wi-Fi.",tags:["24 saat","Wi-Fi","Havalimanı"]},
+  {id:1212,name:"Sabiha Gökçen Havalimanı Çalışma Köşesi",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Sabiha Gökçen Havalimanı, Pendik",lat:40.8986,lng:29.3092,desc:"Anadolu yakası havalimanında; uçuş beklerken verimli geçirmek isteyenler için çalışma köşesi.",tags:["24 saat","Wi-Fi","Havalimanı"]},
 
   /* ══════════════════════════════════════════
-     ALT BAŞLIK: 24 saat açık çalışma alanları (12 → doğal)
+     SESSİZ & ÜRETKen ÇALIŞMA
+     Paylaşımlı ofisler (16→35)
   ══════════════════════════════════════════ */
+  {id:1213,name:"Kolektif House Levent Ofis",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Levent, Beşiktaş",lat:41.0812,lng:29.0108,desc:"İstanbul'un en büyük coworking zincirinin amiral gemisi; açık ofis, kabin ve toplantı odaları.",tags:["Wi-Fi","Coworking","24 saat"]},
+  {id:1214,name:"Kolektif House Maslak",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Maslak, Sarıyer",lat:41.1090,lng:29.0205,desc:"Maslak iş merkezleri arasında; startup ve kurumsal kullanıcılara yönelik geniş coworking.",tags:["Wi-Fi","Coworking"]},
+  {id:1215,name:"Kolektif House Ataşehir",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Ataşehir",lat:41.0168,lng:29.1178,desc:"Anadolu yakasının büyük coworking merkezi; 7/24 üye erişimi ve toplantı odaları.",tags:["Wi-Fi","Coworking","24 saat"]},
+  {id:1216,name:"Workinton Galata",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Bankalar Cd., Karaköy",lat:41.0228,lng:28.9738,desc:"Tarihi banka binasında modern coworking; yaratıcı sektör profesyonellerinin gözdesi.",tags:["Wi-Fi","Coworking","Tarihî yapı"]},
+  {id:1217,name:"Workinton Nişantaşı",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Vali Konağı Cd., Şişli",lat:41.0490,lng:28.9935,desc:"Butik semtte sessiz ve tasarımlı coworking; freelancer ve danışmanların tercihi.",tags:["Wi-Fi","Coworking"]},
+  {id:1218,name:"Workinton Kadıköy",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Kadıköy",lat:40.9905,lng:29.0268,desc:"Anadolu yakasının merkezi coworking noktası; esnek masa ve özel ofis seçenekleri.",tags:["Wi-Fi","Coworking"]},
+  {id:1219,name:"Regus Levent",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Büyükdere Cd., Levent",lat:41.0808,lng:29.0112,desc:"Uluslararası coworking zincirinin Levent şubesi; kurumsal müşterilere tam donanımlı ofis.",tags:["Wi-Fi","Coworking"]},
+  {id:1220,name:"Regus Maslak",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Maslak, Sarıyer",lat:41.1088,lng:29.0208,desc:"Maslak plaza kulesinde; saatlik ve aylık esnek ofis kiralama seçenekleri.",tags:["Wi-Fi","Coworking"]},
+  {id:1221,name:"Impact Hub İstanbul",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Molla Gürani Cd., Şişli",lat:41.0502,lng:28.9715,desc:"Sosyal girişimcilik odaklı coworking; küresel Impact Hub ağıyla bağlantılı etki odaklı topluluk.",tags:["Wi-Fi","Coworking","Etkinlik"]},
+  {id:1222,name:"HAN Spaces Beşiktaş",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Beşiktaş",lat:41.0432,lng:29.0055,desc:"Yaratıcı sektör profesyonellerine özel; tasarımcı, reklamcı ve içerik üreticilerinin coworking evi.",tags:["Wi-Fi","Coworking","Sanat"]},
+  {id:1223,name:"Bomontiada Çalışma Alanları",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Bomonti, Şişli",lat:41.0583,lng:28.9804,desc:"Eski bira fabrikasının dönüştürüldüğü kültür kompleksinde yaratıcı çalışma alanı.",tags:["Wi-Fi","Coworking","Sanat","Tarihî yapı"]},
+  {id:1224,name:"Atölye Fadıl",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Kadıköy",lat:40.9895,lng:29.0265,desc:"Küçük sanatçı ve tasarımcılara yönelik paylaşımlı atölye ve çalışma alanı.",tags:["Wi-Fi","Coworking","Sanat","Atölye"]},
+  {id:1225,name:"Startupbootcamp Türkiye",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Ataşehir",lat:41.0170,lng:29.1180,desc:"Erken aşama startup'ların mentör desteği ve çalışma alanı bulduğu accelerator merkezi.",tags:["Wi-Fi","Coworking","Teknoloji"]},
+  {id:1226,name:"Santralistanbul Coworking",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Kazım Karabekir Cd., Eyüpsultan",lat:41.0668,lng:28.9457,desc:"Eski enerji santralinde kültür-endüstri dönüşümünün simgesi; sanat ve teknoloji buluşma noktası.",tags:["Wi-Fi","Coworking","Sanat","Tarihî yapı"]},
+  {id:1227,name:"Ofis Voyvoda",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Voyvoda Cd., Karaköy",lat:41.0242,lng:28.9738,desc:"Tarihi Karaköy'de butik coworking; fintech ve yaratıcı sektör profesyonelleri için.",tags:["Wi-Fi","Coworking","Tarihî yapı"]},
+  {id:1228,name:"Hub İstanbul Taksim",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Taksim, Beyoğlu",lat:41.0365,lng:28.9848,desc:"Taksim merkezde esnek çalışma alanı; toplantı odaları ve networking etkinlikleri.",tags:["Wi-Fi","Coworking","Etkinlik"]},
+  {id:1229,name:"Work & Co Maslak",cat:"calisma",sub:"Paylaşımlı ofisler",address:"Maslak, Sarıyer",lat:41.1095,lng:29.0200,desc:"Teknoloji ve tasarım odaklı coworking; hızlı büyüyen ekiplere yönelik esnek ofis çözümleri.",tags:["Wi-Fi","Coworking","Teknoloji"]},
 
-  /* — BELEDİYE 7/24 KÜTÜPHANELERİ — */
-  {id:1492,name:"Üsküdar Belediyesi 7/24 Kütüphanesi",        cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Üsküdar",            lat:41.021,lng:29.0168,desc:"Gece çalışanlar ve sınav öğrencileri için kesintisiz hizmet; güvenlikli giriş, sessiz salon ve Wi-Fi.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1493,name:"Esenler Belediyesi 24 Saat Kütüphanesi",     cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Esenler",             lat:41.0478,lng:28.87970,desc:"İstanbul'un 24 saat kütüphane modelinin öncüsü; gündüz-gece fark etmeksizin çalışma salonları.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1494,name:"Gaziosmanpaşa 7/24 Gençlik Kütüphanesi",     cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Gaziosmanpaşa",       lat:41.069,lng:28.9114,desc:"Sınav hazırlık dönemlerinde tam kapasiteye ulaşan; güvenlikli, aydınlık ve gece boyunca açık çalışma salonu.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1495,name:"Sultangazi Belediyesi Gece Kütüphanesi",      cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Sultangazi",          lat:41.1065,lng:28.8708,desc:"Gece çalışma imkânı sunan ilçe kütüphanesi; LGS ve YKS öğrencilerinin yoğun olarak tercih ettiği alan.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1496,name:"Bağcılar Belediyesi 24 Saat Okuma Salonu",   cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Bağcılar",            lat:41.0388,lng:28.8560,desc:"Kesintisiz çalışma imkânıyla; okul öncesi, sınav dönemi ve profesyoneller için esnek kullanım.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1497,name:"Pendik Belediyesi 7/24 Kütüphanesi",         cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Pendik",              lat:40.8762,lng:29.2315,desc:"Anadolu yakasının doğusunda; gece geç saatlere kadar açık çalışma salonu ve dijital kaynak erişimi.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1498,name:"Maltepe Belediyesi Gece Çalışma Salonu",     cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Maltepe",             lat:40.9328,lng:29.1333,desc:"Sahil ilçesinde gece boyunca açık; denize yakın konumuyla sınav öğrencilerine huzurlu çalışma ortamı.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1499,name:"Küçükçekmece 7/24 Gençlik Merkezi",          cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Küçükçekmece",        lat:41.0008,lng:28.7758,desc:"Gece çalışma salonları ve bireysel kabinleriyle; gençlere yönelik kesintisiz akademik destek.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-
-  /* — ORTAK ÇALIŞMA ALANLARI (COWORKING) — */
-  {id:1500,name:"Kolektif House Ataşehir",                     cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Ataşehir",            lat:41.0168,lng:29.1178,desc:"Anadolu yakasının büyük coworking merkezi; 7/24 üye erişimi, toplantı odaları ve konsantrasyon kabinleri.",tags:["24 saat","Wi-Fi","Coworking"]},
-  {id:1501,name:"Kolektif House Beşiktaş",                     cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Beşiktaş",            lat:41.0427,lng:29.0047,desc:"Merkezi konumda 7/24 açık coworking; girişimci ve freelancer'ların gece çalışma rotası.",tags:["24 saat","Wi-Fi","Coworking"]},
-  {id:1502,name:"Workinton Taksim",                            cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Taksim, Beyoğlu",     lat:41.0368,lng:28.9852,desc:"Taksim'de 7/24 coworking; esnek masa, özel ofis ve toplantı odası seçenekleriyle tam donanımlı.",tags:["24 saat","Wi-Fi","Coworking"]},
-  {id:1503,name:"Workinton Levent",                            cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Levent, Beşiktaş",    lat:41.0815,lng:29.0108,desc:"İş merkezinin kalbinde; 7/24 açık, gece sessizliğinde çalışmayı tercih eden profesyonellerin gözdesi.",tags:["24 saat","Wi-Fi","Coworking"]},
-  {id:1504,name:"Regus Maslak Çalışma Merkezi",               cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Maslak, Sarıyer",     lat:41.1113,lng:29.0205,desc:"Uluslararası coworking zincirinin Maslak şubesi; 7/24 erişim, posta adresi ve toplantı odaları.",tags:["24 saat","Wi-Fi","Coworking"]},
-  {id:1505,name:"Spaces Şişli",                               cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Şişli",               lat:41.0618,lng:28.9878,desc:"Yaratıcı atmosferde 7/24 esnek çalışma alanı; tasarımcı ve kreatif profesyonellerin tercih ettiği coworking.",tags:["24 saat","Wi-Fi","Coworking"]},
-  {id:1506,name:"İstanbul Teknopark Çalışma Alanları",        cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Maslak, Sarıyer",     lat:41.1068,lng:29.0218,desc:"Teknoloji girişimcilerine özel; 7/24 erişimli ofis ve çalışma alanları, hızlı internet altyapısı.",tags:["24 saat","Wi-Fi","Teknoloji"]},
-  {id:1507,name:"Arı Teknokent Çalışma Merkezi",              cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Beşiktaş",            lat:41.0416,lng:29.005,desc:"Yıldız Teknik bünyesinde teknoloji girişimlerine adanmış; gece çalışma imkânı ve teknik altyapı.",tags:["24 saat","Wi-Fi","Teknoloji"]},
-  {id:1508,name:"Cyberpark Bahçeşehir Çalışma Merkezi",       cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Bahçeşehir, Başakşehir",lat:41.0688,lng:28.6888,desc:"Suburban kampüste yazılımcı ve mühendislere yönelik; gece boyunca sakin ve hızlı internet bağlantılı çalışma.",tags:["24 saat","Wi-Fi","Teknoloji"]},
-
-  /* — KAFELER & LOBI ALANLARI — */
-  {id:1509,name:"Starbucks Kadıköy 7/24",                     cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Kadıköy",             lat:40.9912,lng:29.0282,desc:"Kadıköy'ün gece boyunca açık Starbucks şubesi; gece çalışanların sığınağı, güvenilir Wi-Fi ve priz bolluğu.",tags:["24 saat","Wi-Fi","Kahve"]},
-  {id:1510,name:"McDonald's Taksim Çalışma Köşesi",           cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Taksim, Beyoğlu",     lat:41.0370,lng:28.9858,desc:"Gece geç saatlere kadar açık; pratik çalışma köşeleri ve ücretsiz Wi-Fi ile gece ekonomisinin bir parçası.",tags:["24 saat","Wi-Fi","Gece"]},
-  {id:1511,name:"Havalimanı Çalışma Salonu Terminal 2",       cat:"okuma",sub:"24 saat açık çalışma alanları",address:"İstanbul Havalimanı, Arnavutköy",lat:41.2608,lng:28.7418,desc:"Transit ve bekleyen yolcular için 7/24 çalışma alanı; şarj istasyonları, Wi-Fi ve bireysel kabinler.",tags:["24 saat","Wi-Fi","Havalimanı"]},
-  {id:1512,name:"Sabiha Gökçen Havalimanı Çalışma Köşesi",   cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Sabiha Gökçen Havalimanı, Pendik",lat:40.8986,lng:29.3092,desc:"Anadolu yakası havalimanında; uçuş beklerken verimli geçirmek isteyenler için sessiz çalışma köşesi.",tags:["24 saat","Wi-Fi","Havalimanı"]},
-  {id:1513,name:"Gece Çalışanlar Derneği Mekânı Beyoğlu",    cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Beyoğlu",             lat:41.0289,lng:28.9759,desc:"Gece ekonomisinde çalışan yaratıcılara adanmış; gece yarısından sabaha açık, sessiz ve üretken çalışma alanı.",tags:["24 saat","Wi-Fi","Gece"]},
-  {id:1514,name:"Nöbetçi Kütüphane Bahçelievler",            cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Bahçelievler",         lat:40.9978,lng:28.8568,desc:"Avrupa yakasının batısında; gece boyunca güvenli ve aydınlık, ücretsiz çalışma salonu.",tags:["24 saat","Sessiz","Ücretsiz","Wi-Fi"]},
-  {id:1515,name:"Üniversite Hazırlık Gece Etüt Merkezi Kadıköy",cat:"okuma",sub:"24 saat açık çalışma alanları",address:"Kadıköy",          lat:40.9915,lng:29.0275,desc:"YKS ve DGS hazırlık sürecinde gece geç saatlere kadar açık; sessiz bireysel çalışma kabinleri.",tags:["24 saat","Sessiz","Wi-Fi"]},
-
-  /* ══════════════════════════════════════════
-     KATEGORİ 2: SESSİZ & ÜRETKen ÇALIŞMA
-     ALT BAŞLIK: Paylaşımlı ofisler  (16 → doğal)
-  ══════════════════════════════════════════ */
-
-  /* — KÖKLÜ COWORKING ZİNCİRLERİ — */
-  {id:1516,name:"Kolektif House Bağcılar",                    cat:"calisma",sub:"Paylaşımlı ofisler",address:"Bağcılar",              lat:41.0403,lng:28.85860,desc:"Avrupa yakasının batısında büyük coworking merkezi; açık ofis, kabin ve toplantı odaları.",tags:["Wi-Fi","Coworking","24 saat"]},
-  {id:1517,name:"Kolektif House Şişli",                       cat:"calisma",sub:"Paylaşımlı ofisler",address:"Şişli",                lat:41.0605,lng:28.9855,desc:"Şişli iş merkezlerinin kalbinde; freelancer ve startup'ların yoğun olarak tercih ettiği coworking.",tags:["Wi-Fi","Coworking"]},
-  {id:1518,name:"Workinton Kadıköy",                          cat:"calisma",sub:"Paylaşımlı ofisler",address:"Kadıköy",              lat:40.9891,lng:29.0291,desc:"Anadolu yakasının merkezi coworking noktası; esnek masa, özel ofis ve saatlik kiralama seçenekleri.",tags:["Wi-Fi","Coworking"]},
-  {id:1519,name:"Workinton Ataşehir",                         cat:"calisma",sub:"Paylaşımlı ofisler",address:"Ataşehir",             lat:41.0149,lng:29.1216,desc:"Finans merkezi yakınında kurumsal coworking; büyük toplantı salonları ve etkinlik alanları.",tags:["Wi-Fi","Coworking"]},
-  {id:1520,name:"Regus Taksim",                               cat:"calisma",sub:"Paylaşımlı ofisler",address:"Taksim, Beyoğlu",     lat:41.0342,lng:28.9845,desc:"Uluslararası coworking zincirinin Taksim şubesi; saatlik ve aylık esnek ofis kiralama.",tags:["Wi-Fi","Coworking"]},
-  {id:1521,name:"Regus Ataşehir",                             cat:"calisma",sub:"Paylaşımlı ofisler",address:"Ataşehir",             lat:41.0168,lng:29.1188,desc:"Yüksek katlı ofis kulesinde; kurumsal müşterilere yönelik tam donanımlı paylaşımlı ofis.",tags:["Wi-Fi","Coworking","Manzara"]},
-  {id:1522,name:"Spaces Beşiktaş",                            cat:"calisma",sub:"Paylaşımlı ofisler",address:"Beşiktaş",            lat:41.0448,lng:29.0045,desc:"Yaratıcı tasarım anlayışıyla öne çıkan; sanatçı, tasarımcı ve reklamcıların tercih ettiği coworking.",tags:["Wi-Fi","Coworking","Sanat"]},
-  {id:1523,name:"Spaces Maslak",                              cat:"calisma",sub:"Paylaşımlı ofisler",address:"Maslak, Sarıyer",     lat:41.1074,lng:29.0216,desc:"Maslak iş merkezleri arasında modern ve tasarımlı coworking; kurumsal ve bireysel üyelik.",tags:["Wi-Fi","Coworking"]},
-  {id:1524,name:"IWG Levent",                                 cat:"calisma",sub:"Paylaşımlı ofisler",address:"Levent, Beşiktaş",    lat:41.0802,lng:29.0112,desc:"Uluslararası çalışma alanı grubu; günlük, haftalık ve aylık esnek ofis seçenekleri.",tags:["Wi-Fi","Coworking"]},
-
-  /* — TOPLULUK ODAKLI COWORKING — */
-  {id:1525,name:"Impact Hub Karaköy",                         cat:"calisma",sub:"Paylaşımlı ofisler",address:"Karaköy, Beyoğlu",   lat:41.0235,lng:28.9752,desc:"Sosyal girişimcilik odaklı coworking; küresel Impact Hub ağıyla bağlantılı, etki odaklı topluluk.",tags:["Wi-Fi","Coworking","Etkinlik"]},
-  {id:1526,name:"Hubmeto Levent",                             cat:"calisma",sub:"Paylaşımlı ofisler",address:"Levent, Beşiktaş",   lat:41.0815,lng:29.0134,desc:"Mentorluk ve networking odaklı; startup ve girişimciler için etkinlik takvimi olan coworking mekânı.",tags:["Wi-Fi","Coworking","Etkinlik"]},
-  {id:1527,name:"Girişimci Evi Beyoğlu",                      cat:"calisma",sub:"Paylaşımlı ofisler",address:"Beyoğlu",            lat:41.0319,lng:28.9749,desc:"Erken aşama girişimcilere sübvansiyonlu çalışma alanı; mentor ağı ve yatırımcı buluşmaları.",tags:["Wi-Fi","Coworking","Etkinlik"]},
-  {id:1528,name:"Startups.Watch HQ Maslak",                   cat:"calisma",sub:"Paylaşımlı ofisler",address:"Maslak, Sarıyer",   lat:41.1095,lng:29.0205,desc:"Startup ekosistemi takip platformunun fiziksel merkezi; ekip odaları ve yatırımcı toplantıları.",tags:["Wi-Fi","Coworking","Teknoloji"]},
-  {id:1529,name:"Founding Years Coworking Kadıköy",            cat:"calisma",sub:"Paylaşımlı ofisler",address:"Kadıköy",           lat:40.9908,lng:29.0268,desc:"Anadolu yakasının girişimci odaklı coworking'i; haftalık demo day ve founder buluşmaları.",tags:["Wi-Fi","Coworking","Etkinlik"]},
-  {id:1530,name:"Creative Quarter Cihangir",                   cat:"calisma",sub:"Paylaşımlı ofisler",address:"Cihangir, Beyoğlu", lat:41.0288,lng:28.9811,desc:"Yaratıcı sektör profesyonellerine özel; reklamcı, tasarımcı ve içerik üreticilerinin coworking evi.",tags:["Wi-Fi","Coworking","Sanat"]},
-  {id:1531,name:"Atölye Istanbul Karaköy",                     cat:"calisma",sub:"Paylaşımlı ofisler",address:"Karaköy, Beyoğlu",  lat:41.0230,lng:28.9742,desc:"Sanat ve tasarım odaklı küçük atölye coworking; stüdyo kiralama ve ortak ekipman kullanımı.",tags:["Wi-Fi","Coworking","Sanat","Atölye"]},
-  {id:1532,name:"atolye+ Nişantaşı",                          cat:"calisma",sub:"Paylaşımlı ofisler",address:"Nişantaşı, Şişli",  lat:41.0502,lng:28.9917,desc:"Tasarım ve moda sektörüne yönelik butik coworking; küçük gruplar için konsantrasyon odaları.",tags:["Wi-Fi","Coworking","Tasarım"]},
-
-  /* — SEKTÖREL COWORKING — */
-  {id:1533,name:"Medya Merkezi Coworking Beşiktaş",            cat:"calisma",sub:"Paylaşımlı ofisler",address:"Beşiktaş",          lat:41.0440,lng:29.0060,desc:"Gazeteci, yayıncı ve içerik üreticilerine yönelik; podcast kabinleri ve video stüdyo erişimi.",tags:["Wi-Fi","Coworking","Medya","Podcast"]},
-  {id:1534,name:"Hukuk Coworking Cağaloğlu",                   cat:"calisma",sub:"Paylaşımlı ofisler",address:"Cağaloğlu, Fatih",  lat:41.0132,lng:28.972,desc:"Avukat ve hukuk danışmanlarına yönelik; toplantı odaları, posta adresi ve savcılığa yakın konum.",tags:["Wi-Fi","Coworking","Akademik"]},
-  {id:1535,name:"Sağlık Girişimleri Coworking Maslak",         cat:"calisma",sub:"Paylaşımlı ofisler",address:"Maslak, Sarıyer",  lat:41.1088,lng:29.0208,desc:"HealthTech ve medikal girişimlere özel; klinik AR-GE odaları ve sağlık sektörü networking.",tags:["Wi-Fi","Coworking","Teknoloji"]},
-  {id:1536,name:"Fintech Hub Levent",                          cat:"calisma",sub:"Paylaşımlı ofisler",address:"Levent, Beşiktaş",  lat:41.0812,lng:29.0115,desc:"Finans teknolojisi girişimlerine adanmış; güvenli ağ altyapısı ve düzenleyici kurum toplantıları.",tags:["Wi-Fi","Coworking","Teknoloji"]},
-  {id:1537,name:"Moda & Tasarım Coworking Nişantaşı",          cat:"calisma",sub:"Paylaşımlı ofisler",address:"Nişantaşı, Şişli", lat:41.0492,lng:28.9935,desc:"Moda tasarımcıları ve tekstil girişimcilerine özel; kumaş arşivi, dikiş atölyesi ve showroom.",tags:["Wi-Fi","Coworking","Tasarım","Moda"]},
-  {id:1538,name:"Oyun Geliştirici Coworking Şişli",             cat:"calisma",sub:"Paylaşımlı ofisler",address:"Şişli",            lat:41.0618,lng:28.9812,desc:"Oyun stüdyoları ve bağımsız geliştiriciler için; yüksek performanslı bilgisayar altyapısı ve test odaları.",tags:["Wi-Fi","Coworking","Teknoloji"]},
-
-  /* — YAKALAR & SEMTLER — */
-  {id:1539,name:"Sarıyer Coworking Boğaz",                    cat:"calisma",sub:"Paylaşımlı ofisler",address:"Sarıyer",            lat:41.166,lng:29.0485,desc:"Boğazın kuzeyinde sakin coworking; manzaralı çalışma masaları ve düşük kira avantajı.",tags:["Wi-Fi","Coworking","Boğaz manzarası"]},
-  {id:1540,name:"Üsküdar Coworking Merkezi",                  cat:"calisma",sub:"Paylaşımlı ofisler",address:"Üsküdar",           lat:41.0242,lng:29.0152,desc:"Anadolu yakasının tarihi ilçesinde modern coworking; köprüye yakın ve ulaşımı kolay.",tags:["Wi-Fi","Coworking"]},
-  {id:1541,name:"Bakırköy Coworking Sahil",                   cat:"calisma",sub:"Paylaşımlı ofisler",address:"Bakırköy",          lat:40.9815,lng:28.868,desc:"Sahil ilçesinde ulaşımı kolay coworking; metro bağlantısı ve deniz manzaralı çalışma köşeleri.",tags:["Wi-Fi","Coworking","Deniz manzarası"]},
-  {id:1542,name:"Pendik Coworking Anadolu Yakası",            cat:"calisma",sub:"Paylaşımlı ofisler",address:"Pendik",            lat:40.8758,lng:29.231,desc:"Havalimanına yakın konumuyla; sık seyahat eden profesyoneller için esnek çalışma alanı.",tags:["Wi-Fi","Coworking"]},
-  {id:1543,name:"Beylikdüzü Coworking Batı",                  cat:"calisma",sub:"Paylaşımlı ofisler",address:"Beylikdüzü",        lat:41.0028,lng:28.6538,desc:"İstanbul'un batı yakasında büyüyen coworking; düşük maliyet ve geniş çalışma alanı avantajı.",tags:["Wi-Fi","Coworking"]},
-  {id:1544,name:"Eyüpsultan Yaratıcı Çalışma Alanı",         cat:"calisma",sub:"Paylaşımlı ofisler",address:"Eyüpsultan",        lat:41.0478,lng:28.9324,desc:"Tarihi semtin dönüşen yaratıcı bölgesinde; genç girişimci ve tasarımcılara uygun fiyatlı coworking.",tags:["Wi-Fi","Coworking","Tarihî yapı"]},
-  {id:1545,name:"Santralistanbul Coworking",                  cat:"calisma",sub:"Paylaşımlı ofisler",address:"Eyüpsultan",        lat:41.0668,lng:28.9457,desc:"Eski enerji santralinde kültür-endüstri dönüşümünün simgesi; sanat ve teknoloji buluşma noktası.",tags:["Wi-Fi","Coworking","Sanat","Tarihî yapı"]},
-  {id:1546,name:"Fabrika Istanbul Coworking",                  cat:"calisma",sub:"Paylaşımlı ofisler",address:"Bomonti, Şişli",   lat:41.0564,lng:28.9807,desc:"Eski bira fabrikasının dönüştürüldüğü kültür kompleksinde; yaratıcı mekânda yaratıcı çalışma.",tags:["Wi-Fi","Coworking","Sanat","Tarihî yapı"]},
 ];
+
 
 let nid=200, map, bgMap, markers=[], mapReady=false, bgMapReady=false;
 let activeFilter=null, isMod=false, selTags=[];
@@ -3810,18 +3352,31 @@ function checkPw(){
     document.getElementById('profileRole').textContent='Moderatör';
     document.getElementById('modBtn').style.display='none';
     document.getElementById('modLogout').style.display='block';
+    document.getElementById('modPanel').style.display='block';
+    document.getElementById('placeCount').textContent = PLACES.length;
     showNotif('✏️ Moderatör modu aktif!');
   } else {
     document.getElementById('pwError').style.display='block';
     document.getElementById('pwInput').value='';
   }
 }
+function exportPlaces(){
+  const json = JSON.stringify(PLACES, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mekan-atlasi-places.json'; a.click();
+  URL.revokeObjectURL(url);
+  showNotif('📤 JSON indirildi');
+}
+
 function logoutMod(){
   isMod=false;
   document.getElementById('fabBtn').style.display='none';
   document.getElementById('profileRole').textContent='Ziyaretçi';
   document.getElementById('modBtn').style.display='block';
   document.getElementById('modLogout').style.display='none';
+  document.getElementById('modPanel').style.display='none';
   showNotif('👁️ Görüntüleme moduna geçildi');
 }
 
@@ -3860,6 +3415,90 @@ function savePlace(){
   buildList();
   if(mapReady) updateMarkers();
   showNotif(`✓ "${name}" eklendi`);
+}
+
+/* ════════════════ OTOMATİK KOORDİNAT DÜZELTME ════════════════ */
+const GAPI_KEY = 'AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0';
+let fixRunning = false;
+
+async function autoFixCoords(){
+  if(!isMod){ showNotif('⚠️ Önce moderatör girişi yapın'); return; }
+  if(fixRunning){ showNotif('⏳ Zaten çalışıyor…'); return; }
+  fixRunning = true;
+
+  const btn = document.getElementById('autoFixBtn');
+  const prog = document.getElementById('autoFixProgress');
+  btn.disabled = true;
+  prog.style.display = 'block';
+
+  const total = PLACES.length;
+  let fixed = 0, failed = 0;
+
+  for(let i = 0; i < PLACES.length; i++){
+    const p = PLACES[i];
+    prog.textContent = `${i+1}/${total} — "${p.name}" işleniyor… (${fixed} düzeltildi, ${failed} başarısız)`;
+
+    try {
+      const query = encodeURIComponent(p.name + ' ' + p.address + ' İstanbul');
+      const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${query}&inputtype=textquery&fields=geometry,name&locationbias=circle:50000@41.0082,28.9784&key=${GAPI_KEY}`;
+
+      // CORS nedeniyle doğrudan fetch çalışmaz — proxy ile dene
+      const proxyUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${query}&inputtype=textquery&fields=geometry&locationbias=circle:50000@41.0082,28.9784&key=${GAPI_KEY}`;
+
+      const res = await fetch(proxyUrl);
+      const data = await res.json();
+
+      if(data.status === 'OK' && data.candidates && data.candidates[0]){
+        const loc = data.candidates[0].geometry.location;
+        const oldLat = p.lat, oldLng = p.lng;
+        p.lat = loc.lat;
+        p.lng = loc.lng;
+        fixed++;
+        console.log(`✓ ${p.name}: (${oldLat},${oldLng}) → (${loc.lat},${loc.lng})`);
+      } else {
+        failed++;
+        console.warn(`✗ ${p.name}: ${data.status}`);
+      }
+    } catch(e) {
+      failed++;
+      console.error(`✗ ${p.name}:`, e.message);
+    }
+
+    // Rate limit — saniyede 10 istek
+    await new Promise(r => setTimeout(r, 120));
+  }
+
+  // Harita markerlarını güncelle
+  if(mapReady) updateMarkers();
+
+  prog.textContent = `✅ Tamamlandı! ${fixed} düzeltildi, ${failed} başarısız.`;
+  btn.disabled = false;
+  fixRunning = false;
+  showNotif(`✅ ${fixed} mekan koordinatı güncellendi`);
+}
+
+/* Tek mekan düzeltme — popup'tan */
+async function fixSingleCoord(id){
+  if(!isMod) return;
+  const p = PLACES.find(x=>x.id===id);
+  if(!p) return;
+  showNotif(`🔍 "${p.name}" aranıyor…`);
+  try {
+    const query = encodeURIComponent(p.name + ' ' + p.address + ' İstanbul');
+    const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${query}&inputtype=textquery&fields=geometry&locationbias=circle:50000@41.0082,28.9784&key=${GAPI_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.status==='OK' && data.candidates[0]){
+      const loc = data.candidates[0].geometry.location;
+      p.lat = loc.lat; p.lng = loc.lng;
+      if(mapReady) updateMarkers();
+      showNotif(`✅ "${p.name}" koordinatı güncellendi`);
+    } else {
+      showNotif(`⚠️ "${p.name}" bulunamadı: ${data.status}`);
+    }
+  } catch(e) {
+    showNotif(`❌ Hata: ${e.message}`);
+  }
 }
 
 /* ════════════════ NOTIF ════════════════ */
