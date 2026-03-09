@@ -2831,6 +2831,19 @@ function toggleMapTheme(){
   if(bgMap) bgMap.setOptions({styles: BG_MAP_STYLE});
 }
 
+function onGoogleMapsReady(){
+  // Google Maps API yüklendi, harita tab açılınca başlatılacak
+  // Arka plan haritasını şimdi başlat (home screen için)
+  if(!bgMapReady && document.getElementById('bgMap')){
+    bgMap = new google.maps.Map(document.getElementById('bgMap'),{
+      center:{lat:41.0082,lng:28.9784},zoom:12,
+      styles:BG_MAP_STYLE_DARK,
+      disableDefaultUI:true,gestureHandling:'none',
+    });
+    bgMapReady=true;
+  }
+}
+
 function initMap(){
   // Ana harita
   map=new google.maps.Map(document.getElementById('map'),{
@@ -2847,17 +2860,15 @@ function initMap(){
   });
   mapReady=true;
   document.getElementById('mapLoading').style.display='none';
+  // sc-map görünür olduktan sonra resize tetikle
+  setTimeout(()=>{
+    google.maps.event.trigger(map,'resize');
+    map.setCenter({lat:41.0082,lng:28.9784});
+    updateMarkers();
+    buildChips();
+  },100);
 
-  // Arka plan haritası (home screen)
-  if(!bgMapReady){
-    bgMap=new google.maps.Map(document.getElementById('bgMap'),{
-      center:{lat:41.0082,lng:28.9784},zoom:12,
-      styles:BG_MAP_STYLE_DARK,
-      disableDefaultUI:true,gestureHandling:'none',
-    });
-    bgMapReady=true;
-  }
-  updateMarkers(); buildChips();
+  // bgMap onGoogleMapsReady'de başlatıldı
 }
 
 function makeSVG(color,letter,size){
@@ -3361,7 +3372,16 @@ function goTab(id,el){
     document.querySelectorAll('#appContent .screen, .screen').forEach(s=>s.classList.remove('active'));
     const sc = document.getElementById('sc-'+id);
     if(sc) sc.classList.add('active');
-    if(id==='map'){if(!mapReady&&window.google)initMap();updateMarkers();buildChips();}
+    if(id==='map'){
+      if(!mapReady&&window.google){
+        initMap();
+      } else if(mapReady){
+        // Harita zaten var, boyutları yeniden hesapla
+        google.maps.event.trigger(map,'resize');
+        updateMarkers();
+        buildChips();
+      }
+    }
   }
 
   if(id==='list') buildList();
@@ -3480,7 +3500,7 @@ window.addEventListener('resize',()=>{
 </script>
 
 <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&libraries=places&callback=initMap">
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&libraries=places&callback=onGoogleMapsReady">
 
 /* ════════════════ RESPONSIVE LAYOUT JS ════════════════ */
 function initResponsive(){
