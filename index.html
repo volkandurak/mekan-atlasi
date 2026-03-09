@@ -2,13 +2,13 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mekan Atlası · İstanbul</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#1a1a2e}
-body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-width:430px;margin:0 auto;height:100vh;position:relative;}
+body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hidden;}
 
 /* ── SCREENS ── */
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
@@ -480,9 +480,296 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
 .form-tag.on{background:#64B5F6;color:#fff;border-color:#64B5F6}
 .sheet-btn{width:100%;background:#64B5F6;color:#fff;border:none;padding:13px;border-radius:13px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
 .pw-error{color:#EF9A9A;font-size:12px;font-weight:700;margin-top:-9px;margin-bottom:12px;display:none}
+
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE WRAPPER & LAYOUT SİSTEMİ
+═══════════════════════════════════════════ */
+
+/* Mobil: Tam ekran uygulama */
+#appWrapper{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  height:100vh;
+  max-width:430px;
+  margin:0 auto;
+  overflow:hidden;
+  background:#1a1a2e;
+}
+
+/* ── TABLET (768px+) ── */
+@media (min-width:768px){
+  html,body{ overflow:hidden; }
+
+  #appWrapper{
+    max-width:100%;
+    flex-direction:row;
+    height:100vh;
+  }
+
+  /* Sol sidebar */
+  #sidebar{
+    width:280px;
+    min-width:280px;
+    height:100vh;
+    background:#0f0f1f;
+    border-right:1px solid rgba(255,255,255,.07);
+    display:flex;
+    flex-direction:column;
+    z-index:100;
+    flex-shrink:0;
+  }
+
+  /* Ana içerik alanı */
+  #mainContent{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* Tab bar → sidebar'a taşı */
+  .tab-bar{
+    position:static !important;
+    flex-direction:column !important;
+    height:auto !important;
+    border-top:none !important;
+    border-right:none !important;
+    padding:8px !important;
+    gap:4px;
+    background:transparent !important;
+    backdrop-filter:none !important;
+    transform:none !important;
+  }
+  .tab-bar.hidden{ transform:none !important; opacity:1 !important; pointer-events:auto !important; }
+
+  .tab-item{
+    flex-direction:row !important;
+    justify-content:flex-start !important;
+    padding:12px 16px !important;
+    border-radius:12px !important;
+    gap:12px !important;
+    font-size:13px !important;
+  }
+  .tab-item:hover{ background:rgba(255,255,255,.06); }
+  .tab-item.active{ background:rgba(100,181,246,.12) !important; color:#64B5F6 !important; }
+  .tab-ico{ font-size:18px !important; }
+
+  /* Sidebar header */
+  .sidebar-header{
+    padding:24px 20px 16px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    flex-shrink:0;
+  }
+  .sidebar-logo{
+    font-size:20px;font-weight:900;color:#fff;letter-spacing:.3px;
+    margin-bottom:4px;
+  }
+  .sidebar-logo span{color:#64B5F6}
+  .sidebar-city{
+    font-size:11px;font-weight:700;color:rgba(255,255,255,.3);
+    letter-spacing:2px;text-transform:uppercase;
+  }
+
+  /* Sidebar stats */
+  .sidebar-stats{
+    display:flex;gap:8px;padding:12px 20px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    flex-shrink:0;
+  }
+  .sidebar-stat{
+    flex:1;background:rgba(255,255,255,.04);border-radius:10px;
+    padding:10px 8px;text-align:center;
+  }
+  .sidebar-stat-num{font-size:18px;font-weight:900;color:#64B5F6}
+  .sidebar-stat-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);margin-top:2px}
+
+  /* Sidebar nav */
+  .sidebar-nav{ flex:1; padding:8px; overflow-y:auto; }
+
+  /* Sidebar footer */
+  .sidebar-footer{
+    padding:16px 20px;
+    border-top:1px solid rgba(255,255,255,.07);
+    font-size:11px;color:rgba(255,255,255,.2);font-weight:600;
+    flex-shrink:0;
+  }
+
+  /* Home ekranı tablet */
+  #sc-home .home-header{ display:none; }
+  #sc-home .tab-bar{ display:none; }
+
+  /* Popup tablet */
+  .popup{
+    position:absolute !important;
+    left:auto !important;
+    right:0 !important;
+    bottom:0 !important;
+    width:380px !important;
+    border-radius:16px 16px 0 0 !important;
+    max-height:85vh !important;
+  }
+
+  /* Nearby panel tablet */
+  #nearbyPanel{
+    position:absolute !important;
+    left:0 !important;
+    bottom:0 !important;
+    width:360px !important;
+    border-radius:16px 16px 0 0 !important;
+    max-height:80vh !important;
+  }
+
+  /* Map topbar tablet */
+  .map-topbar{ display:none !important; }
+
+  /* Map chips tablet - üstte */
+  #mapChips{
+    position:absolute;
+    top:16px;left:16px;right:420px;
+    z-index:30;
+    display:flex !important;
+    gap:6px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+
+  /* Wheel boyutu tablet */
+  #wheelCenter{ width:130px !important; height:130px !important; }
+  #centerTitle{ font-size:20px !important; }
+}
+
+/* ── DESKTOP (1200px+) ── */
+@media (min-width:1200px){
+
+  #sidebar{ width:300px; min-width:300px; }
+
+  /* Ana içerik iki kolona bölün */
+  #mainContent{
+    flex-direction:row !important;
+  }
+
+  /* Sol: wheel/home/list için */
+  #contentLeft{
+    width:420px;
+    min-width:420px;
+    height:100vh;
+    overflow:hidden;
+    border-right:1px solid rgba(255,255,255,.06);
+    display:flex;
+    flex-direction:column;
+    flex-shrink:0;
+  }
+
+  /* Sağ: harita her zaman görünür */
+  #contentRight{
+    flex:1;
+    height:100vh;
+    position:relative;
+    display:flex !important;
+  }
+
+  /* Harita her zaman görünür */
+  #sc-map{
+    display:flex !important;
+    flex:1;
+  }
+
+  /* Sol paneldeki screen'ler */
+  #sc-home, #sc-list, #sc-profile{
+    position:absolute;
+    inset:0;
+    z-index:10;
+  }
+
+  /* Popup desktop - haritanın sağ köşesi */
+  .popup{
+    width:400px !important;
+    right:0 !important;
+    bottom:0 !important;
+    position:absolute !important;
+    border-radius:20px 20px 0 0 !important;
+  }
+
+  /* Nearby panel desktop */
+  #nearbyPanel{
+    width:380px !important;
+    left:auto !important;
+    right:400px !important;
+    bottom:0 !important;
+    position:absolute !important;
+    border-radius:16px 16px 0 0 !important;
+  }
+
+  /* Map chips desktop */
+  #mapChips{
+    right:420px !important;
+    top:16px !important;
+    left:16px !important;
+  }
+
+  /* Header desktop sidebar'da göster */
+  #sc-home .home-header{ display:flex !important; position:static; background:transparent; padding:20px 20px 12px; }
+  .header-title{ font-size:20px !important; }
+
+  /* Wheel daha büyük */
+  #wheelCenter{ width:150px !important; height:150px !important; }
+  #centerTitle{ font-size:22px !important; }
+  #centerCityLine{ font-size:11px !important; }
+
+  /* Sheet genişliği */
+  .sheet{ max-width:400px !important; }
+}
+
+/* ── LARGE DESKTOP (1600px+) ── */
+@media (min-width:1600px){
+  #sidebar{ width:320px; }
+  #contentLeft{ width:480px; min-width:480px; }
+  .popup{ width:440px !important; }
+}
 </style>
 </head>
 <body>
+<div id="appWrapper">
+
+  <!-- ════ SIDEBAR (tablet/desktop) ════ -->
+  <div id="sidebar" style="display:none">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">MEKAN <span>ATLASI</span></div>
+      <div class="sidebar-city">İstanbul</div>
+    </div>
+    <div class="sidebar-stats">
+      <div class="sidebar-stat">
+        <div class="sidebar-stat-num" id="sideStatMekan">1197</div>
+        <div class="sidebar-stat-lbl">Mekan</div>
+      </div>
+      <div class="sidebar-stat">
+        <div class="sidebar-stat-num">12</div>
+        <div class="sidebar-stat-lbl">Kategori</div>
+      </div>
+      <div class="sidebar-stat">
+        <div class="sidebar-stat-num">84</div>
+        <div class="sidebar-stat-lbl">Alt Başlık</div>
+      </div>
+    </div>
+    <div class="sidebar-nav" id="sidebarNav">
+      <!-- Tab bar buraya taşınacak JS ile -->
+    </div>
+    <div class="sidebar-footer">
+      © 2025 Mekan Atlası · İstanbul
+    </div>
+  </div>
+
+  <!-- ════ ANA İÇERİK ════ -->
+  <div id="mainContent">
+    <!-- Desktop: Sol panel + Sağ harita -->
+    <div id="contentLeft"></div>
+    <div id="contentRight" style="display:none"></div>
+
 
 <div class="notif" id="notif"></div>
 
@@ -2262,7 +2549,15 @@ function gc(id){return CATS.find(c=>c.id===id)}
 /* ════════════════ WHEEL ════════════════ */
 let wheelMode = 'home'; // 'home' | 'sub'
 let activeCat = null;
-const SEG_RADIUS = 130; // px, segment merkezlerin uzaklığı
+// Dinamik radius - ekran boyutuna göre
+function getWheelRadius(){
+  const w = window.innerWidth;
+  const wrapW = document.getElementById('wheelWrap')?.offsetWidth || 400;
+  if(w >= 1200) return Math.min(wrapW * 0.30, 160);
+  if(w >= 768)  return Math.min(wrapW * 0.32, 150);
+  return Math.min(wrapW * 0.33, 130);
+}
+const SEG_RADIUS = 130;
 const SUB_RADIUS = 130;
 
 function initWheel(){
@@ -2312,6 +2607,7 @@ function buildSegments(){
   const cx = wrap.offsetWidth/2;
   const cy = wrap.offsetHeight/2;
   const n  = CATS.length;
+  const SEG_RADIUS = getWheelRadius();
   const CIRC_R = 30;     // daire yarıçapı
   const LBL_GAP = 6;     // daire kenarı ile etiket arası boşluk
   const LBL_DIST = CIRC_R + LBL_GAP; // daire merkezinden etiket kenarına
@@ -3099,11 +3395,29 @@ function buildList(){
 
 /* ════════════════ NAV ════════════════ */
 function goTab(id,el){
+  const isDesktop = window.innerWidth >= 1200;
+
   document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
   if(el) el.classList.add('active');
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('sc-'+id).classList.add('active');
-  if(id==='map'){if(!mapReady&&window.google)initMap();updateMarkers();buildChips();}
+
+  // Desktop: harita sağda sabit, sol panel değişir
+  if(isDesktop){
+    if(id==='map'){
+      // Harita zaten görünüyor, sol panel home'da kalsın
+      if(!mapReady&&window.google){ initMap(); updateMarkers(); buildChips(); }
+      return;
+    }
+    // Sol panel içindeki screen'leri değiştir
+    document.querySelectorAll('#contentLeft .screen').forEach(s=>s.classList.remove('active'));
+    const sc = document.getElementById('sc-'+id);
+    if(sc) sc.classList.add('active');
+  } else {
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const sc = document.getElementById('sc-'+id);
+    if(sc) sc.classList.add('active');
+    if(id==='map'){if(!mapReady&&window.google)initMap();updateMarkers();buildChips();}
+  }
+
   if(id==='list') buildList();
   if(id==='home'){ resetWheel(); setTimeout(drawWheelConnectors,50); }
 }
@@ -3221,6 +3535,94 @@ window.addEventListener('resize',()=>{
 
 <script async defer
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&libraries=places&callback=initMap">
+
+/* ════════════════ RESPONSIVE LAYOUT JS ════════════════ */
+function initResponsive(){
+  const w = window.innerWidth;
+  const appWrapper    = document.getElementById('appWrapper');
+  const sidebar       = document.getElementById('sidebar');
+  const mainContent   = document.getElementById('mainContent');
+  const contentLeft   = document.getElementById('contentLeft');
+  const contentRight  = document.getElementById('contentRight');
+  const sidebarNav    = document.getElementById('sidebarNav');
+  const tabBar        = document.querySelector('.tab-bar');
+  const scHome        = document.getElementById('sc-home');
+  const scMap         = document.getElementById('sc-map');
+
+  if(w >= 768){
+    // TABLET & DESKTOP
+    sidebar.style.display = 'flex';
+    sidebar.style.flexDirection = 'column';
+
+    // Tab bar'ı sidebar nav'a taşı
+    if(tabBar && sidebarNav && !sidebarNav.contains(tabBar)){
+      sidebarNav.appendChild(tabBar);
+    }
+
+    if(w >= 1200){
+      // DESKTOP: Sol panel + Sağ harita her zaman
+      contentLeft.style.display  = 'flex';
+      contentLeft.style.flexDirection = 'column';
+      contentRight.style.display = 'flex';
+      contentRight.style.flex    = '1';
+      contentRight.style.position = 'relative';
+
+      // Ekranları contentLeft'e taşı (harita hariç)
+      [scHome,
+       document.getElementById('sc-list'),
+       document.getElementById('sc-profile')
+      ].forEach(sc => { if(sc && !contentLeft.contains(sc)) contentLeft.appendChild(sc); });
+
+      // Haritayı contentRight'a taşı
+      if(scMap && !contentRight.contains(scMap)){
+        contentRight.appendChild(scMap);
+        scMap.style.display = 'flex';
+        scMap.style.flex = '1';
+        scMap.classList.add('active');
+      }
+
+      // chips'i harita içine taşı
+      const chips = document.getElementById('mapChips');
+      const mapTopbar = document.querySelector('.map-topbar');
+      if(chips && mapTopbar) mapTopbar.style.display='none';
+
+    } else {
+      // TABLET: Tek içerik alanı
+      contentLeft.style.display  = 'none';
+      contentRight.style.display = 'none';
+      // Ekranlar mainContent'de kalır
+    }
+
+  } else {
+    // MOBİL
+    sidebar.style.display = 'none';
+    contentLeft.style.display = 'none';
+    contentRight.style.display = 'none';
+    // Tab bar ana konumuna geri
+    const appEl = document.getElementById('sc-home');
+    if(tabBar && appEl && !appEl.parentElement.contains(tabBar)){
+      appEl.parentElement.insertBefore(tabBar, appEl.nextSibling);
+    }
+  }
+
+  // Wheel'i yeniden hesapla
+  if(typeof buildSegments === 'function') setTimeout(buildSegments, 50);
+  if(typeof drawWheelConnectors === 'function') setTimeout(drawWheelConnectors, 50);
+}
+
+// Ekran boyutu değişince yeniden hesapla
+let _resizeTimer;
+window.addEventListener('resize', ()=>{
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(initResponsive, 150);
+});
+
+// İlk yükleme
+document.addEventListener('DOMContentLoaded', ()=>{
+  initResponsive();
+  // Sidebar stat güncelle
+  const el = document.getElementById('sideStatMekan');
+  if(el && typeof PLACES !== 'undefined') el.textContent = PLACES.length.toLocaleString();
+});
+
 </script>
-</body>
-</html>
