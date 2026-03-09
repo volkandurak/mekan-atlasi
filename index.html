@@ -8,7 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#1a1a2e}
-body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-width:430px;margin:0 auto;height:100vh;position:relative;}
+body{font-family:'Nunito',sans-serif;display:flex;flex-direction:row;max-width:430px;margin:0 auto;height:100vh;position:relative;overflow:hidden;}
 
 /* ── SCREENS ── */
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
@@ -480,9 +480,152 @@ body{font-family:'Nunito',sans-serif;display:flex;flex-direction:column;max-widt
 .form-tag.on{background:#64B5F6;color:#fff;border-color:#64B5F6}
 .sheet-btn{width:100%;background:#64B5F6;color:#fff;border:none;padding:13px;border-radius:13px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
 .pw-error{color:#EF9A9A;font-size:12px;font-weight:700;margin-top:-9px;margin-bottom:12px;display:none}
+
+/* ═══════════════════════════════════
+   RESPONSIVE — TABLET & DESKTOP
+═══════════════════════════════════ */
+
+/* ── TABLET (768px+) ── */
+@media (min-width:768px){
+  body{
+    flex-direction:row;
+    max-width:100%;
+  }
+
+  /* Sol sidebar */
+  #sidebar{
+    width:260px;min-width:260px;
+    height:100vh;
+    background:#0c0c1e;
+    border-right:1px solid rgba(255,255,255,.07);
+    display:flex !important;
+    flex-direction:column;
+    flex-shrink:0;
+    z-index:100;
+  }
+  .sidebar-header{
+    padding:22px 20px 14px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  .sidebar-logo{font-size:18px;font-weight:900;color:#fff;margin-bottom:3px;}
+  .sidebar-logo span{color:#64B5F6}
+  .sidebar-city{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;}
+  .sidebar-stats{
+    display:flex;gap:8px;padding:12px 16px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  .sidebar-stat{flex:1;background:rgba(255,255,255,.04);border-radius:10px;padding:10px 6px;text-align:center;}
+  .sidebar-stat-num{font-size:17px;font-weight:900;color:#64B5F6;}
+  .sidebar-stat-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);margin-top:2px;}
+  .sidebar-nav{flex:1;padding:8px;overflow-y:auto;}
+  .sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);font-size:10px;color:rgba(255,255,255,.2);font-weight:600;}
+
+  /* Tab bar → sidebar'a taşı */
+  .tab-bar{
+    position:static !important;
+    transform:none !important;
+    flex-direction:column !important;
+    background:transparent !important;
+    border-top:none !important;
+    padding:8px !important;
+    gap:4px;
+    backdrop-filter:none !important;
+  }
+  .tab-bar.hidden{transform:none !important;pointer-events:auto !important;}
+  .tab-item{
+    flex-direction:row !important;
+    justify-content:flex-start !important;
+    padding:11px 14px !important;
+    border-radius:12px !important;
+    gap:12px !important;
+    font-size:13px !important;
+  }
+  .tab-item:hover{background:rgba(255,255,255,.06);}
+  .tab-item.active{background:rgba(100,181,246,.12) !important;color:#64B5F6 !important;}
+  .tab-ico{font-size:18px !important;}
+
+  /* Ana içerik */
+  #appBody{
+    flex:1;display:flex;flex-direction:column;
+    height:100vh;overflow:hidden;position:relative;
+  }
+
+  /* Home header göster */
+  #sc-home .home-header{display:flex !important;}
+
+  /* Popup tablet - köşede */
+  .popup{
+    position:fixed !important;
+    right:0 !important; left:auto !important;
+    bottom:0 !important;
+    width:400px !important;
+    max-height:82vh !important;
+    border-radius:20px 20px 0 0 !important;
+  }
+
+  /* Nearby panel tablet */
+  #nearbyPanel{
+    position:fixed !important;
+    left:260px !important; right:auto !important;
+    bottom:0 !important;
+    width:380px !important;
+    max-height:78vh !important;
+    border-radius:16px 16px 0 0 !important;
+  }
+}
+
+/* ── DESKTOP (1200px+) ── */
+@media (min-width:1200px){
+  #sidebar{width:280px;min-width:280px;}
+
+  .popup{width:420px !important;}
+
+  #nearbyPanel{left:280px !important;width:400px !important;}
+
+  /* Map chips harita üstünde */
+  .map-topbar{
+    position:absolute;top:0;left:0;right:0;z-index:30;
+    background:transparent !important;
+    backdrop-filter:none !important;
+  }
+  .back-btn{
+    background:rgba(15,15,35,.85) !important;
+    backdrop-filter:blur(12px);
+  }
+  .chip{
+    background:rgba(15,15,35,.85) !important;
+    backdrop-filter:blur(8px);
+  }
+  .chip.on{background:#64B5F6 !important;}
+}
+
+/* ── LARGE (1600px+) ── */
+@media (min-width:1600px){
+  #sidebar{width:300px;}
+  .popup{width:460px !important;}
+}
 </style>
 </head>
 <body>
+
+<!-- ════ SIDEBAR (tablet/desktop) ════ -->
+<div id="sidebar" style="display:none">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">MEKAN <span>ATLASI</span></div>
+    <div class="sidebar-city">İstanbul</div>
+  </div>
+  <div class="sidebar-stats">
+    <div class="sidebar-stat"><div class="sidebar-stat-num" id="sideStatTotal">—</div><div class="sidebar-stat-lbl">Mekan</div></div>
+    <div class="sidebar-stat"><div class="sidebar-stat-num">12</div><div class="sidebar-stat-lbl">Kategori</div></div>
+    <div class="sidebar-stat"><div class="sidebar-stat-num">84</div><div class="sidebar-stat-lbl">Başlık</div></div>
+  </div>
+  <div class="sidebar-nav" id="sidebarNav"></div>
+  <div class="sidebar-footer">© 2025 Mekan Atlası · İstanbul</div>
+</div>
+
+<!-- ════ UYGULAMA GÖVDE ════ -->
+<div id="appBody" style="flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;position:relative;">
+
 
 <div class="notif" id="notif"></div>
 
@@ -2589,8 +2732,20 @@ function toggleMapTheme(){
   if(bgMap) bgMap.setOptions({styles: BG_MAP_STYLE});
 }
 
+function gmapsLoaded(){
+  // API hazır — arka plan haritasını başlat (home screen)
+  if(!bgMapReady && document.getElementById('bgMap')){
+    bgMap=new google.maps.Map(document.getElementById('bgMap'),{
+      center:{lat:41.0082,lng:28.9784},zoom:12,
+      styles:BG_MAP_STYLE_DARK,
+      disableDefaultUI:true,gestureHandling:'none',
+    });
+    bgMapReady=true;
+  }
+}
+
 function initMap(){
-  // Ana harita
+  // sc-map görünür olduğunda çağrılır
   map=new google.maps.Map(document.getElementById('map'),{
     center:{lat:41.0082,lng:28.9784},zoom:13,
     styles:MAP_STYLE,
@@ -2605,17 +2760,13 @@ function initMap(){
   });
   mapReady=true;
   document.getElementById('mapLoading').style.display='none';
-
-  // Arka plan haritası (home screen)
-  if(!bgMapReady){
-    bgMap=new google.maps.Map(document.getElementById('bgMap'),{
-      center:{lat:41.0082,lng:28.9784},zoom:12,
-      styles:BG_MAP_STYLE_DARK,
-      disableDefaultUI:true,gestureHandling:'none',
-    });
-    bgMapReady=true;
-  }
-  updateMarkers(); buildChips();
+  // sc-map artık display:flex, resize ile boyutları hesapla
+  setTimeout(()=>{
+    google.maps.event.trigger(map,'resize');
+    map.setCenter({lat:41.0082,lng:28.9784});
+    updateMarkers();
+    buildChips();
+  }, 80);
 }
 
 function makeSVG(color,letter,size){
@@ -2703,6 +2854,7 @@ function showPopup(pl){
 
   document.getElementById('popup').classList.add('visible');
   document.getElementById('popup').scrollTop = 0;
+  document.querySelector('.tab-bar')?.classList.add('hidden');
   // Navbar gizle
   document.querySelector('.tab-bar') && document.querySelector('.tab-bar').classList.add('hidden');
 
@@ -3103,7 +3255,10 @@ function goTab(id,el){
   if(el) el.classList.add('active');
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('sc-'+id).classList.add('active');
-  if(id==='map'){if(!mapReady&&window.google)initMap();updateMarkers();buildChips();}
+  if(id==='map'){
+    if(!mapReady && window.google){ initMap(); }
+    else if(mapReady){ google.maps.event.trigger(map,'resize'); updateMarkers(); buildChips(); }
+  }
   if(id==='list') buildList();
   if(id==='home'){ resetWheel(); setTimeout(drawWheelConnectors,50); }
 }
@@ -3111,8 +3266,8 @@ function goTab(id,el){
 function toMapFilter(catId,sub){
   activeFilter={cat:catId,sub};
   goTab('map',document.getElementById('tab-map'));
-  if(!mapReady&&window.google)initMap();
-  setTimeout(()=>{updateMarkers();buildChips();},100);
+  if(!mapReady&&window.google){ initMap(); }
+  else if(mapReady){ setTimeout(()=>{google.maps.event.trigger(map,'resize');updateMarkers();buildChips();},100); }
 }
 
 function switchToMap(){
@@ -3220,7 +3375,59 @@ window.addEventListener('resize',()=>{
 </script>
 
 <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&libraries=places&callback=initMap">
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSrtVBE5f-SdaIUGtRCHpDkB9fgwMu-n0&libraries=places&callback=gmapsLoaded">
+
+/* ════════════════ RESPONSIVE JS ════════════════ */
+(function(){
+  function initResponsive(){
+    const w = window.innerWidth;
+    const sidebar = document.getElementById('sidebar');
+    const sidebarNav = document.getElementById('sidebarNav');
+    const tabBar = document.querySelector('.tab-bar');
+    const statEl = document.getElementById('sideStatTotal');
+
+    if(w >= 768){
+      // Sidebar göster
+      sidebar.style.display = 'flex';
+      // Tab bar'ı sidebar nav'a taşı
+      if(tabBar && sidebarNav && !sidebarNav.contains(tabBar)){
+        sidebarNav.appendChild(tabBar);
+      }
+      // body max-width kaldır
+      document.body.style.maxWidth = 'none';
+      // appBody flex:1
+      const appBody = document.getElementById('appBody');
+      if(appBody){ appBody.style.flex = '1'; appBody.style.maxWidth = 'none'; }
+      // Mekan sayısını güncelle
+      if(statEl && typeof PLACES !== 'undefined') statEl.textContent = PLACES.length.toLocaleString();
+    } else {
+      sidebar.style.display = 'none';
+      // Tab bar body içine geri al
+      const appBody = document.getElementById('appBody');
+      if(tabBar && appBody && !appBody.contains(tabBar)){
+        appBody.appendChild(tabBar);
+      }
+      document.body.style.maxWidth = '430px';
+    }
+
+    // Harita resize
+    if(typeof map !== 'undefined' && map && typeof google !== 'undefined'){
+      google.maps.event.trigger(map, 'resize');
+    }
+    // Wheel yeniden çiz
+    if(typeof buildSegments === 'function') setTimeout(buildSegments, 60);
+    if(typeof drawWheelConnectors === 'function') setTimeout(drawWheelConnectors, 60);
+  }
+
+  // İlk yüklemede çalıştır
+  document.addEventListener('DOMContentLoaded', initResponsive);
+
+  // Boyut değişiminde
+  let _rt;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(_rt);
+    _rt = setTimeout(initResponsive, 150);
+  });
+})();
+
 </script>
-</body>
-</html>
