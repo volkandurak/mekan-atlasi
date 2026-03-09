@@ -8,11 +8,18 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#1a1a2e}
-body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hidden;}
+body{font-family:'Nunito',sans-serif;display:flex;flex-direction:row;background:#0a0a1a;height:100vh;overflow:hidden;}
 
 /* ── SCREENS ── */
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .screen.active{display:flex}
+
+/* Mobil layout wrapper */
+body:not(.is-tablet) #appWrapper{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
 
 /* ── NOTIF ── */
 .notif{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999;background:#111;color:#fff;padding:9px 20px;border-radius:30px;font-size:13px;font-weight:700;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3);}
@@ -486,33 +493,35 @@ body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hi
    RESPONSIVE WRAPPER & LAYOUT SİSTEMİ
 ═══════════════════════════════════════════ */
 
-/* Mobil: Tam ekran uygulama */
-#appWrapper{
-  position:relative;
+/* appContent - uygulama ana sarmalayıcı */
+#appContent{
+  flex:1;
   display:flex;
   flex-direction:column;
-  width:100%;
   height:100vh;
-  max-width:430px;
-  margin:0 auto;
   overflow:hidden;
   background:#1a1a2e;
+  position:relative;
+  max-width:430px;
+  margin:0 auto;
+  width:100%;
 }
 
 /* ── TABLET (768px+) ── */
 @media (min-width:768px){
-  html,body{ overflow:hidden; }
+  body{ flex-direction:row; }
 
-  #appWrapper{
-    max-width:100%;
-    flex-direction:row;
+  /* appContent tablet'te tam yükseklik */
+  #appContent{
+    max-width:none;
+    flex:1;
     height:100vh;
   }
 
   /* Sol sidebar */
   #sidebar{
-    width:280px;
-    min-width:280px;
+    width:260px;
+    min-width:260px;
     height:100vh;
     background:#0f0f1f;
     border-right:1px solid rgba(255,255,255,.07);
@@ -520,16 +529,7 @@ body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hi
     flex-direction:column;
     z-index:100;
     flex-shrink:0;
-  }
-
-  /* Ana içerik alanı */
-  #mainContent{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-    overflow:hidden;
-    position:relative;
+    order:-1;
   }
 
   /* Tab bar → sidebar'a taşı */
@@ -648,78 +648,24 @@ body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hi
 
   #sidebar{ width:300px; min-width:300px; }
 
-  /* Ana içerik iki kolona bölün */
-  #mainContent{
-    flex-direction:row !important;
-  }
-
-  /* Sol: wheel/home/list için */
-  #contentLeft{
-    width:420px;
-    min-width:420px;
-    height:100vh;
-    overflow:hidden;
+  /* appContent desktop - sidebar yanında */
+  #appContent{
+    max-width:460px;
+    min-width:340px;
     border-right:1px solid rgba(255,255,255,.06);
-    display:flex;
-    flex-direction:column;
     flex-shrink:0;
   }
 
-  /* Sağ: harita her zaman görünür */
-  #contentRight{
-    flex:1;
-    height:100vh;
-    position:relative;
+  /* Header desktop'ta göster */
+  #sc-home .home-header{
     display:flex !important;
+    position:relative !important;
+    background:linear-gradient(to bottom, rgba(10,10,30,.9) 0%, transparent 100%) !important;
   }
 
-  /* Harita her zaman görünür */
-  #sc-map{
-    display:flex !important;
-    flex:1;
-  }
-
-  /* Sol paneldeki screen'ler */
-  #sc-home, #sc-list, #sc-profile{
-    position:absolute;
-    inset:0;
-    z-index:10;
-  }
-
-  /* Popup desktop - haritanın sağ köşesi */
-  .popup{
-    width:400px !important;
-    right:0 !important;
-    bottom:0 !important;
-    position:absolute !important;
-    border-radius:20px 20px 0 0 !important;
-  }
-
-  /* Nearby panel desktop */
-  #nearbyPanel{
-    width:380px !important;
-    left:auto !important;
-    right:400px !important;
-    bottom:0 !important;
-    position:absolute !important;
-    border-radius:16px 16px 0 0 !important;
-  }
-
-  /* Map chips desktop */
-  #mapChips{
-    right:420px !important;
-    top:16px !important;
-    left:16px !important;
-  }
-
-  /* Header desktop sidebar'da göster */
-  #sc-home .home-header{ display:flex !important; position:static; background:transparent; padding:20px 20px 12px; }
-  .header-title{ font-size:20px !important; }
-
-  /* Wheel daha büyük */
-  #wheelCenter{ width:150px !important; height:150px !important; }
-  #centerTitle{ font-size:22px !important; }
-  #centerCityLine{ font-size:11px !important; }
+  /* Wheel biraz büyük */
+  #wheelCenter{ width:140px !important; height:140px !important; }
+  #centerTitle{ font-size:21px !important; }
 
   /* Sheet genişliği */
   .sheet{ max-width:400px !important; }
@@ -727,17 +673,15 @@ body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hi
 
 /* ── LARGE DESKTOP (1600px+) ── */
 @media (min-width:1600px){
-  #sidebar{ width:320px; }
-  #contentLeft{ width:480px; min-width:480px; }
+  #sidebar{ width:300px; }
+  #appContent{ max-width:500px; }
   .popup{ width:440px !important; }
 }
 </style>
 </head>
 <body>
-<div id="appWrapper">
-
-  <!-- ════ SIDEBAR (tablet/desktop) ════ -->
-  <div id="sidebar" style="display:none">
+<!-- ════ SIDEBAR (tablet/desktop) ════ -->
+  <div id="sidebar" style="display:none" style="display:none">
     <div class="sidebar-header">
       <div class="sidebar-logo">MEKAN <span>ATLASI</span></div>
       <div class="sidebar-city">İstanbul</div>
@@ -764,16 +708,17 @@ body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hi
     </div>
   </div>
 
-  <!-- ════ ANA İÇERİK ════ -->
-  <div id="mainContent">
-    <!-- Desktop: Sol panel + Sağ harita -->
-    <div id="contentLeft"></div>
-    <div id="contentRight" style="display:none"></div>
 
 
 <div class="notif" id="notif"></div>
 
 <!-- ════ HOME ════ -->
+
+</div><!-- sidebar end -->
+
+<!-- ════ UYGULAMA İÇERİĞİ ════ -->
+<div id="appContent">
+
 <div class="screen active" id="sc-home">
   <!-- Arka plan harita -->
   <div id="bgMap"></div>
@@ -800,7 +745,8 @@ body{font-family:'Nunito',sans-serif;background:#0a0a1a;height:100vh;overflow:hi
     <div id="subContainer"></div>
   </div>
 
-  <!-- Tab bar -->
+
+
   <div class="tab-bar">
     <div class="tab-item active" id="tab-home" onclick="goTab('home',this)">
       <div class="tab-ico">🗺</div><span>Keşfet</span>
@@ -3408,11 +3354,11 @@ function goTab(id,el){
       return;
     }
     // Sol panel içindeki screen'leri değiştir
-    document.querySelectorAll('#contentLeft .screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     const sc = document.getElementById('sc-'+id);
     if(sc) sc.classList.add('active');
   } else {
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('#appContent .screen, .screen').forEach(s=>s.classList.remove('active'));
     const sc = document.getElementById('sc-'+id);
     if(sc) sc.classList.add('active');
     if(id==='map'){if(!mapReady&&window.google)initMap();updateMarkers();buildChips();}
@@ -3539,73 +3485,29 @@ window.addEventListener('resize',()=>{
 /* ════════════════ RESPONSIVE LAYOUT JS ════════════════ */
 function initResponsive(){
   const w = window.innerWidth;
-  const appWrapper    = document.getElementById('appWrapper');
-  const sidebar       = document.getElementById('sidebar');
-  const mainContent   = document.getElementById('mainContent');
-  const contentLeft   = document.getElementById('contentLeft');
-  const contentRight  = document.getElementById('contentRight');
-  const sidebarNav    = document.getElementById('sidebarNav');
-  const tabBar        = document.querySelector('.tab-bar');
-  const scHome        = document.getElementById('sc-home');
-  const scMap         = document.getElementById('sc-map');
+  const body = document.body;
 
   if(w >= 768){
-    // TABLET & DESKTOP
-    sidebar.style.display = 'flex';
-    sidebar.style.flexDirection = 'column';
-
-    // Tab bar'ı sidebar nav'a taşı
+    body.classList.add('is-tablet');
+    const sb=document.getElementById('sidebar'); if(sb){sb.style.display='flex';sb.style.flexDirection='column';}
+    const sidebarNav = document.getElementById('sidebarNav');
+    const tabBar = document.querySelector('.tab-bar');
     if(tabBar && sidebarNav && !sidebarNav.contains(tabBar)){
       sidebarNav.appendChild(tabBar);
     }
-
-    if(w >= 1200){
-      // DESKTOP: Sol panel + Sağ harita her zaman
-      contentLeft.style.display  = 'flex';
-      contentLeft.style.flexDirection = 'column';
-      contentRight.style.display = 'flex';
-      contentRight.style.flex    = '1';
-      contentRight.style.position = 'relative';
-
-      // Ekranları contentLeft'e taşı (harita hariç)
-      [scHome,
-       document.getElementById('sc-list'),
-       document.getElementById('sc-profile')
-      ].forEach(sc => { if(sc && !contentLeft.contains(sc)) contentLeft.appendChild(sc); });
-
-      // Haritayı contentRight'a taşı
-      if(scMap && !contentRight.contains(scMap)){
-        contentRight.appendChild(scMap);
-        scMap.style.display = 'flex';
-        scMap.style.flex = '1';
-        scMap.classList.add('active');
-      }
-
-      // chips'i harita içine taşı
-      const chips = document.getElementById('mapChips');
-      const mapTopbar = document.querySelector('.map-topbar');
-      if(chips && mapTopbar) mapTopbar.style.display='none';
-
-    } else {
-      // TABLET: Tek içerik alanı
-      contentLeft.style.display  = 'none';
-      contentRight.style.display = 'none';
-      // Ekranlar mainContent'de kalır
-    }
-
+    if(w >= 1200) body.classList.add('is-desktop');
+    else body.classList.remove('is-desktop');
   } else {
-    // MOBİL
-    sidebar.style.display = 'none';
-    contentLeft.style.display = 'none';
-    contentRight.style.display = 'none';
-    // Tab bar ana konumuna geri
-    const appEl = document.getElementById('sc-home');
-    if(tabBar && appEl && !appEl.parentElement.contains(tabBar)){
-      appEl.parentElement.insertBefore(tabBar, appEl.nextSibling);
+    body.classList.remove('is-tablet','is-desktop');
+    document.getElementById('sidebar').style.display = 'none';
+    // Tab bar'ı sc-home'un arkasına geri taşı
+    const tabBar = document.querySelector('.tab-bar');
+    const scHome = document.getElementById('sc-home');
+    if(tabBar && scHome && scHome.parentNode && !scHome.parentNode.contains(tabBar)){
+      scHome.parentNode.appendChild(tabBar);
     }
   }
 
-  // Wheel'i yeniden hesapla
   if(typeof buildSegments === 'function') setTimeout(buildSegments, 50);
   if(typeof drawWheelConnectors === 'function') setTimeout(drawWheelConnectors, 50);
 }
@@ -3625,4 +3527,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(el && typeof PLACES !== 'undefined') el.textContent = PLACES.length.toLocaleString();
 });
 
-</script>
+</script</div><!-- appContent end -->
+</body>
