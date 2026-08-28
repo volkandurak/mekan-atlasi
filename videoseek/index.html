@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VideoSeek</title>
+<style>
+:root{--bg:#f6f6f8;--card:#fff;--text:#17171b;--muted:#73737d;--line:#e6e6ec;--p:#5b4be7;--p2:#7667ef;--ok:#17813b;--bad:#b33a3a}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#fafafe 0,#f2f2f5 100%);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text)}
+.wrap{max-width:980px;margin:auto;padding:34px 18px 60px}
+.hero{padding:12px 3px 26px}.brand{font-size:42px;font-weight:950;letter-spacing:-1.8px}.brand span{color:var(--p)}
+.tag{font-size:19px;color:#54545e;margin-top:4px}.sub{font-size:13px;color:var(--muted);margin-top:7px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:25px;padding:21px;box-shadow:0 12px 35px rgba(45,40,80,.055)}
+h2{font-size:19px;margin:0 0 15px}label{display:block;font-size:13px;font-weight:800;margin:11px 0 7px}
+input,select{width:100%;height:51px;border:1px solid #d8d8df;border-radius:14px;background:#fff;padding:0 14px;font-size:15px;outline:none}
+input:focus,select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(91,75,231,.09)}
+button{border:0;border-radius:14px;height:51px;font-weight:900;font-size:14px;cursor:pointer}
+.primary{width:100%;margin-top:14px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+.primary:disabled{opacity:.45}.status{font-size:13px;line-height:1.4;margin-top:12px;min-height:18px;color:var(--muted)}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.chip{height:35px;padding:0 12px;background:#eeeeF5;color:#555;border-radius:99px;font-size:12px}.chip.on{background:#e9e5ff;color:#4537d0}
+.meta{display:none;margin-top:17px}.title{font-size:20px;font-weight:900}.meta2{font-size:13px;color:var(--muted);margin-top:5px}
+.results{margin-top:20px}.result{background:#fff;border:1px solid var(--line);border-radius:19px;padding:16px;margin:9px 0}
+.time{font-size:22px;font-weight:950;color:var(--p);text-decoration:none}.snippet{line-height:1.52;margin:8px 0 13px}.snippet mark{background:#fff0a4;border-radius:4px;padding:0 2px}.watch{display:inline-flex;text-decoration:none;background:#eeeeF6;color:#373747;border-radius:11px;height:38px;align-items:center;padding:0 13px;font-size:12px;font-weight:900}
+.empty{text-align:center;color:var(--muted);padding:32px}.footer{text-align:center;color:#999;font-size:11px;margin-top:30px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.brand{font-size:36px}.tag{font-size:16px}.wrap{padding-top:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="brand">VIDEO<span>SEEK</span></div>
+    <div class="tag">3 saat izleme. Aradığın 3 dakikayı bul.</div>
+    <div class="sub">YouTube altyazısında ara, sonucu doğrudan o saniyeden aç.</div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h2>1. Videoyu hazırla</h2>
+      <label>YouTube linki</label>
+      <input id="url" placeholder="https://www.youtube.com/watch?v=..." />
+      <label>Videoda bulunan altyazılar</label>
+      <select id="lang"><option value="">Önce videoyu kontrol et</option></select>
+      <button id="load" class="primary">ALTYAZIYI GETİR</button>
+      <div id="loadStatus" class="status">Linki yapıştır. Önce videodaki gerçek altyazı dilleri bulunur.</div>
+    </div>
+    <div class="card">
+      <h2>2. Videoda ara</h2>
+      <label>Kelime veya ifade</label>
+      <input id="q" placeholder="fotoğraf, mimarlık, saniye..." />
+      <div class="chips">
+        <button class="chip on" data-mode="any">Herhangi biri</button>
+        <button class="chip" data-mode="all">Hepsi</button>
+        <button class="chip" data-mode="phrase">Tam ifade</button>
+      </div>
+      <button id="search" class="primary" disabled>VİDEODA ARA</button>
+      <div id="searchStatus" class="status">Önce altyazıyı yükle.</div>
+    </div>
+  </div>
+  <div id="meta" class="card meta"><div id="title" class="title">Video hazır</div><div id="meta2" class="meta2"></div></div>
+  <div id="results" class="results"></div>
+  <div class="footer">VideoSeek Web v2 • Gerçek altyazı dili seçimi • API anahtarı yok • OpenAI yok</div>
+</div>
+<script>
+let segments=[], mode="any", currentUrl="";
+const $=id=>document.getElementById(id);
+document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));b.classList.add("on");mode=b.dataset.mode;});
+function vid(u){try{const x=new URL(u.trim());if(x.hostname.includes("youtu.be")) return x.pathname.slice(1).split("/")[0];if(x.pathname.startsWith("/shorts/")||x.pathname.startsWith("/live/")) return x.pathname.split("/")[2];return x.searchParams.get("v");}catch{return null}}
+function norm(s){return s.toLocaleLowerCase("tr-TR").normalize("NFD").replace(/\p{Diacritic}/gu,"").replaceAll("ı","i").replace(/\s+/g," ").trim()}
+function secFromStamp(s){const p=s.split(":").map(Number);if(p.length===3)return p[0]*3600+p[1]*60+p[2];if(p.length===2)return p[0]*60+p[1];return Number(s)||0;}
+function fmt(sec){sec=Math.max(0,Math.floor(sec));let h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
+function timed(sec){const id=vid(currentUrl);return `https://www.youtube.com/watch?v=${id}&t=${Math.max(0,Math.floor(sec)-2)}s`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function hi(text,terms){let out=esc(text);for(const t of terms.sort((a,b)=>b.length-a.length)){if(!t)continue;const safe=t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");out=out.replace(new RegExp(`(${safe})`,"gi"),"<mark>$1</mark>")}return out}
+function parseTranscript(txt){const lines=txt.split(/\r?\n/);let out=[], current=null;for(const raw of lines){const line=raw.trim();if(!line) continue;const m=line.match(/^\[(\d{1,2}:\d{2}(?::\d{2})?)\]\s*(.*)$/);if(m){if(current&&current.text.trim())out.push(current);current={start:secFromStamp(m[1]),text:m[2].trim()};}else if(current){current.text+=" "+line;}}if(current&&current.text.trim())out.push(current);return out;}
+function parseMeta(txt){const language=(txt.match(/^Language:\s*([^\s·]+)/mi)||[])[1]||"";const other=(txt.match(/^Other available languages:\s*(.+)$/mi)||[])[1]||"";return {language,other};}
+function languageLabel(code){const base=code.replace(/^a-/,"").split("-")[0].toLowerCase();const names={tr:"Türkçe",en:"English",de:"Deutsch",fr:"Français",es:"Español",it:"Italiano",pt:"Português",ar:"العربية",ru:"Русский",ja:"日本語",ko:"한국어",zh:"中文"};return (names[base]||code)+(code.startsWith("a-")?" (otomatik)":"");}
+function extractAvailable(meta){const set=new Set();if(meta.language)set.add(meta.language);const re=/([a-z]{2,3}(?:-[A-Za-z0-9]+)?|a-[a-z]{2,3})(?:\s*\([^)]*\))?/g;let m;while((m=re.exec(meta.other))!==null)set.add(m[1]);return [...set];}
+async function inspectLanguages(id){const r=await fetch(`https://youtube-transcript.ai/transcript/${encodeURIComponent(id)}.txt`,{cache:"no-store"});if(!r.ok)throw new Error(`Altyazı bilgisi alınamadı (${r.status}).`);const txt=await r.text(),meta=parseMeta(txt),langs=extractAvailable(meta);return {txt,meta,langs};}
+$("load").onclick=async()=>{const url=$("url").value.trim(),id=vid(url);if(!id){$("loadStatus").className="status bad";$("loadStatus").textContent="Geçerli bir YouTube linki gir.";return}currentUrl=url;segments=[];$("results").innerHTML="";$("search").disabled=true;$("load").disabled=true;$("loadStatus").className="status";$("loadStatus").textContent="Videodaki altyazı dilleri kontrol ediliyor...";try{const info=await inspectLanguages(id);let langs=info.langs;const sel=$("lang");sel.innerHTML="";if(!langs.length&&info.meta.language)langs=[info.meta.language];if(!langs.length)throw new Error("Bu videoda erişilebilir altyazı dili bulunamadı.");langs.sort((a,b)=>{const atr=a.replace(/^a-/,"").toLowerCase().startsWith("tr")?0:1;const btr=b.replace(/^a-/,"").toLowerCase().startsWith("tr")?0:1;return atr-btr;});langs.forEach(code=>{const o=document.createElement("option");o.value=code;o.textContent=languageLabel(code);sel.appendChild(o);});const tr=langs.find(x=>x.replace(/^a-/,"").toLowerCase().startsWith("tr"));sel.value=tr||info.meta.language||langs[0];$("loadStatus").textContent=`${langs.length} altyazı dili bulundu. ${languageLabel(sel.value)} yükleniyor...`;let lang=sel.value;let r=await fetch(`https://youtube-transcript.ai/transcript/${encodeURIComponent(id)}.txt?lang=${encodeURIComponent(lang)}`,{cache:"no-store"});if(!r.ok)throw new Error(`Seçilen altyazı alınamadı (${r.status}).`);let txt=await r.text();const actual=parseMeta(txt).language;segments=parseTranscript(txt);if(!segments.length)throw new Error("Altyazı geldi ancak zaman kodları okunamadı.");$("loadStatus").className="status ok";$("loadStatus").textContent=`${segments.length} altyazı bölümü hazır • Gelen dil: ${languageLabel(actual||lang)}`;$("search").disabled=false;$("searchStatus").textContent="Aramak istediğin kelimeyi yaz.";$("meta").style.display="block";$("title").textContent="Video hazır";$("meta2").textContent=`${segments.length} zaman kodlu bölüm • ${languageLabel(actual||lang)}`;}catch(e){$("loadStatus").className="status bad";$("loadStatus").textContent=e.message;}finally{$("load").disabled=false}};
+$("lang").addEventListener("change",async()=>{const id=vid($("url").value.trim()),lang=$("lang").value;if(!id||!lang)return;$("loadStatus").className="status";$("loadStatus").textContent=`${languageLabel(lang)} yükleniyor...`;$("search").disabled=true;try{const r=await fetch(`https://youtube-transcript.ai/transcript/${encodeURIComponent(id)}.txt?lang=${encodeURIComponent(lang)}`,{cache:"no-store"});const txt=await r.text();const actual=parseMeta(txt).language;segments=parseTranscript(txt);if(!segments.length)throw new Error("Bu altyazı track'i okunamadı.");$("loadStatus").className="status ok";$("loadStatus").textContent=`${segments.length} bölüm hazır • Gelen dil: ${languageLabel(actual||lang)}`;$("search").disabled=false;$("meta2").textContent=`${segments.length} zaman kodlu bölüm • ${languageLabel(actual||lang)}`;}catch(e){$("loadStatus").className="status bad";$("loadStatus").textContent=e.message}});
+$("search").onclick=()=>{const q=$("q").value.trim();if(!q)return;const terms=q.split(/[,;]/).map(x=>x.trim()).filter(Boolean),nts=terms.map(norm),nq=norm(q);let hits=[];segments.forEach((s,i)=>{const n=norm(s.text);let ok=mode==="phrase"?n.includes(nq):mode==="all"?nts.length&&nts.every(t=>n.includes(t)):nts.some(t=>n.includes(t));if(ok){const snippet=segments.slice(Math.max(0,i-1),Math.min(segments.length,i+2)).map(x=>x.text).join(" ");hits.push({sec:s.start,text:snippet});}});hits=hits.filter((h,i,a)=>!i||h.sec-a[i-1].sec>5);$("searchStatus").textContent=`${hits.length} sonuç bulundu.`;$("results").innerHTML=hits.length?`<h2>${hits.length} SONUÇ</h2>`+hits.map(h=>`<div class="result"><a class="time" href="${timed(h.sec)}" target="_blank">${fmt(h.sec)}</a><div class="snippet">${hi(h.text,mode==="phrase"?[q]:terms)}</div><a class="watch" href="${timed(h.sec)}" target="_blank">▶ BURADAN İZLE</a></div>`).join(""):`<div class="empty">Bu kelime veya ifade altyazıda bulunamadı.</div>`;};
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter"&&!$("search").disabled)$("search").click()});
+</script>
+</body>
+</html>
