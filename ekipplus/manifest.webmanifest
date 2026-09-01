@@ -1,0 +1,10 @@
+{
+  "name":"EKİP+",
+  "short_name":"EKİP+",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#f7f7f5",
+  "theme_color":"#111111",
+  "description":"Mimarlık, tasarım ve sanat için ekip arkadaşı ağı."
+}
