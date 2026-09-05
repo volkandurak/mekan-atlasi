@@ -1,1 +1,9 @@
-document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('menuBtn'),n=document.getElementById('mainNav');if(b&&n)b.addEventListener('click',()=>n.classList.toggle('open'));document.querySelectorAll('[data-lightbox]').forEach(el=>el.addEventListener('click',()=>{const img=el.querySelector('img');if(img)window.open(img.src,'_blank')}));});
+document.addEventListener('DOMContentLoaded',()=>{
+  const menuButton=document.getElementById('menuBtn');
+  const navigation=document.getElementById('mainNav');
+  if(menuButton&&navigation){
+    menuButton.addEventListener('click',()=>navigation.classList.toggle('open'));
+    navigation.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>navigation.classList.remove('open')));
+  }
+  document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+});
