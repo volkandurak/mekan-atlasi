@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sanat Mezat — Volkan Durak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top">Sanat Mezat</a>
+  <button id="accountBtn" class="btn btn-dark">Hesap Aç / Giriş</button>
+</header>
+<main id="top">
+<section class="hero">
+  <div>
+    <p class="kicker">SANAT MEZAT</p>
+    <h1>Volkan Durak</h1>
+    <p class="hero-copy">Seçili eserler için süreli müzayede ve Hemen Al.</p>
+    <a class="btn btn-dark btn-lg" href="#eserler">Eserleri Gör</a>
+  </div>
+  <div class="info-card">
+    <strong>Pey vermek için ücretsiz hesap gerekir.</strong>
+    <p>Ad Soyad, telefon, e-posta, şehir ve şifre.</p>
+    <button id="accountBtn2" class="btn btn-outline">Hesap Aç</button>
+  </div>
+</section>
+<section id="eserler" class="works-wrap">
+  <p class="kicker">CANLI MÜZAYEDE</p>
+  <h2>Eserler</h2>
+  <div id="groups"></div>
+</section>
+</main>
+<footer><div class="brand">Sanat Mezat</div><small>Volkan Durak · 2026</small></footer>
+<div id="overlay" class="overlay hidden"></div>
+<div id="accountModal" class="modal hidden">
+  <button class="close" data-close>×</button><h3>Hesap</h3>
+  <div id="loggedInBox" class="hidden"><h4 id="userName"></h4><p id="userInfo"></p><button id="logoutBtn" class="btn btn-outline full">Çıkış Yap</button></div>
+  <div id="authBox">
+    <label>Ad Soyad<input id="nameInput"></label><label>Telefon<input id="phoneInput" inputmode="tel"></label><label>Şehir<input id="cityInput"></label><label>E-posta<input id="emailInput" type="email"></label><label>Şifre<input id="passInput" type="password"></label>
+    <button id="saveAccount" class="btn btn-dark full">Hesabımı Aç / Giriş Yap</button><p id="authError" class="error"></p>
+  </div>
+</div>
+<div id="bidModal" class="modal hidden"><button class="close" data-close>×</button><h3 id="bidTitle">Pey Ver</h3><p class="muted">Güncel durum</p><div id="bidCurrent" class="modal-price">5.000 TL</div><strong>Pey artış miktarı: 500 TL</strong><label class="mt">Pey miktarı<input id="bidInput" type="number" step="500"></label><button id="confirmBid" class="btn btn-dark full">Peyi Onayla</button><p id="bidError" class="error"></p></div>
+<div id="detailModal" class="modal modal-wide hidden"><button class="close" data-close>×</button><div class="detail-grid"><img id="detailImage" alt="Eser görseli" /><div><p class="muted">Volkan Durak</p><h3 id="detailName"></h3><p class="muted">Tuval üzerine akrilik · 50 × 70 cm</p><hr><p class="muted">Güncel pey</p><div id="detailPrice" class="modal-price">5.000 TL</div><p><span id="detailCount">0</span> pey</p><strong>Pey artış miktarı: 500 TL</strong><div id="detailTimer" class="timer wait">İlk pey verildiğinde 3 günlük müzayede başlar.</div><p class="muted mt">Hemen Al</p><div class="modal-price">18.000 TL</div><div class="actions mt"><button id="detailBid" class="btn btn-dark">Pey Ver</button><button id="detailBuy" class="btn btn-outline">Hemen Al</button></div></div></div></div>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
